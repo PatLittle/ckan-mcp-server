@@ -469,17 +469,17 @@ Args:
   - server_url (string): Base URL of CKAN server
   - all_fields (boolean): Return full objects vs just names (default: false)
   - sort (string): Sort field (default: "name asc")
-  - limit (number): Maximum results (default: 100)
+  - limit (number): Maximum results (default: 100). Use 0 to get only the count via faceting
   - offset (number): Pagination offset (default: 0)
   - response_format ('markdown' | 'json'): Output format
 
 Returns:
-  List of organizations with metadata`,
+  List of organizations with metadata. When limit=0, returns only the count of organizations with datasets.`,
     inputSchema: z.object({
       server_url: z.string().url(),
       all_fields: z.boolean().optional().default(false),
       sort: z.string().optional().default("name asc"),
-      limit: z.number().int().min(1).optional().default(100),
+      limit: z.number().int().min(0).optional().default(100),
       offset: z.number().int().min(0).optional().default(0),
       response_format: ResponseFormatSchema
     }).strict(),
@@ -492,6 +492,35 @@ Returns:
   },
   async (params) => {
     try {
+      // Special case: limit=0 means only return count using faceting
+      if (params.limit === 0) {
+        const searchResult = await makeCkanRequest<any>(
+          params.server_url,
+          'package_search',
+          {
+            rows: 0,
+            'facet.field': JSON.stringify(['organization']),
+            'facet.limit': -1
+          }
+        );
+
+        const orgCount = searchResult.search_facets?.organization?.items?.length || 0;
+
+        if (params.response_format === ResponseFormat.JSON) {
+          return {
+            content: [{ type: "text", text: JSON.stringify({ count: orgCount }, null, 2) }],
+            structuredContent: { count: orgCount }
+          };
+        }
+
+        const markdown = `# CKAN Organizations Count\n\n**Server**: ${params.server_url}\n**Total organizations (with datasets)**: ${orgCount}\n`;
+
+        return {
+          content: [{ type: "text", text: markdown }]
+        };
+      }
+
+      // Normal case: list organizations
       const result = await makeCkanRequest<any>(
         params.server_url,
         'organization_list',
