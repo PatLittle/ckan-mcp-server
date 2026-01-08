@@ -11,6 +11,7 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 - 📦 Complete dataset and resource metadata
 - 🎨 Output in Markdown or JSON format
 - ⚡ Pagination and faceting support
+- 🧪 Comprehensive test suite (79 tests, 100% passing)
 
 ## Installation
 
@@ -23,6 +24,9 @@ npm install
 
 # Build with esbuild (fast, ~4ms)
 npm run build
+
+# Run tests (79 tests)
+npm test
 ```
 
 ## Usage

@@ -41,6 +41,15 @@ The server exposes MCP tools for:
 # Build project (uses esbuild - fast and lightweight)
 npm run build
 
+# Run test suite (79 tests - unit + integration)
+npm test
+
+# Watch mode for tests during development
+npm run test:watch
+
+# Test coverage report
+npm run test:coverage
+
 # Start server in stdio mode (default for local integration)
 npm start
 
@@ -56,14 +65,42 @@ npm run dev
 
 ### Build System
 
-The project uses **esbuild** for compilation instead of tsc to ensure:
-- Ultra-fast builds (milliseconds instead of minutes)
-- Minimal memory usage (important in WSL environments)
-- Automatic bundling with tree-shaking
+The project uses **esbuild** for compilation and **vitest** for testing:
+
+- **Build**: Ultra-fast builds (milliseconds instead of minutes)
+- **Tests**: 79 tests (unit + integration) with 100% success rate
+- **Coverage**: Available via vitest with v8 coverage engine
 
 The `build:tsc` script is available as a fallback but can cause memory issues in some environments (particularly WSL). Always use `npm run build` which uses esbuild.
 
 The esbuild build bundles all internal modules but keeps external dependencies (`@modelcontextprotocol/sdk`, `axios`, `express`, `zod`) as external, so they must be present in `node_modules`.
+
+### Testing
+
+The project has a comprehensive test suite using **Vitest**:
+
+```
+tests/
+├── unit/
+│   ├── formatting.test.ts    # Utility functions (19 tests)
+│   └── http.test.ts           # HTTP client (6 tests)
+├── integration/
+│   ├── package.test.ts        # Package tools (29 tests)
+│   ├── organization.test.ts   # Organization tools (6 tests)
+│   ├── datastore.test.ts      # DataStore tools (17 tests)
+│   └── status.test.ts         # Status tools (2 tests)
+└── fixtures/
+    ├── responses/             # Success response mocks
+    └── errors/                # Error scenario mocks
+```
+
+**Test Coverage**: 79 tests total (25 unit + 54 integration)
+
+When making changes:
+1. Run tests before committing: `npm test`
+2. Ensure all tests pass
+3. Add tests for new features or bug fixes
+4. Follow existing test patterns in `tests/` directory
 
 ## Architecture
 
