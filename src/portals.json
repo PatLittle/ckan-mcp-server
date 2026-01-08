@@ -1,0 +1,20 @@
+{
+  "portals": [
+    {
+      "id": "dati-gov-it",
+      "name": "dati.gov.it",
+      "api_url": "https://www.dati.gov.it/opendata",
+      "api_url_aliases": [
+        "https://dati.gov.it/opendata",
+        "http://www.dati.gov.it/opendata",
+        "http://dati.gov.it/opendata"
+      ],
+      "dataset_view_url": "https://www.dati.gov.it/view-dataset/dataset?id={id}",
+      "organization_view_url": "https://www.dati.gov.it/view-dataset?organization={name}"
+    }
+  ],
+  "defaults": {
+    "dataset_view_url": "{server_url}/dataset/{name}",
+    "organization_view_url": "{server_url}/organization/{name}"
+  }
+}

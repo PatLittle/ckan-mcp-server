@@ -2,6 +2,14 @@
 
 ## 2026-01-08
 
+### Configuration & URL Management
+- **Portal-Specific URLs**: Introduced configuration system for non-standard CKAN portals
+  - New `src/portals.json`: Configurable mapping for portals like `dati.gov.it`
+  - New `src/utils/url-generator.ts`: Utility for generating context-aware view URLs
+  - Fixed issue where `dati.gov.it` links pointed to standard CKAN paths instead of custom `/view-dataset/` paths
+  - Automated replacement of `{id}`, `{name}` and `{server_url}` placeholders in URL templates
+  - Updated `ckan_package_search`, `ckan_package_show`, `ckan_organization_list` and `ckan_organization_show` tools to use the new system
+
 ### Version 0.3.0
 - **MCP Resource Templates**: Direct data access via `ckan://` URI scheme
   - `ckan://{server}/dataset/{id}` - Dataset metadata

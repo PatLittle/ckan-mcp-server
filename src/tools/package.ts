@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
 import { truncateText, formatDate } from "../utils/formatting.js";
+import { getDatasetViewUrl } from "../utils/url-generator.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export function registerPackageTools(server: McpServer) {
@@ -170,7 +171,7 @@ ${params.fq ? `**Filter**: ${params.fq}\n` : ''}
             }
             markdown += `- **Resources**: ${pkg.num_resources || 0}\n`;
             markdown += `- **Modified**: ${formatDate(pkg.metadata_modified)}\n`;
-            markdown += `- **Link**: ${params.server_url}/dataset/${pkg.name}\n\n`;
+            markdown += `- **Link**: ${getDatasetViewUrl(params.server_url, pkg)}\n\n`;
           }
         } else {
           markdown += `No datasets found matching your query.\n`;
@@ -260,7 +261,7 @@ Examples:
         // Markdown format
         let markdown = `# Dataset: ${result.title || result.name}\n\n`;
         markdown += `**Server**: ${params.server_url}\n`;
-        markdown += `**Link**: ${params.server_url}/dataset/${result.name}\n\n`;
+        markdown += `**Link**: ${getDatasetViewUrl(params.server_url, result)}\n\n`;
 
         markdown += `## Basic Information\n\n`;
         markdown += `- **ID**: \`${result.id}\`\n`;

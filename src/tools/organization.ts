@@ -6,6 +6,7 @@ import { z } from "zod";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
 import { truncateText, formatDate } from "../utils/formatting.js";
+import { getOrganizationViewUrl } from "../utils/url-generator.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export function registerOrganizationTools(server: McpServer) {
@@ -110,7 +111,7 @@ Returns:
               if (org.description) markdown += `- **Description**: ${org.description.substring(0, 200)}\n`;
               markdown += `- **Datasets**: ${org.package_count || 0}\n`;
               markdown += `- **Created**: ${formatDate(org.created)}\n`;
-              markdown += `- **Link**: ${params.server_url}/organization/${org.name}\n\n`;
+              markdown += `- **Link**: ${getOrganizationViewUrl(params.server_url, org)}\n\n`;
             }
           } else {
             markdown += result.map((name: string) => `- ${name}`).join('\n');
@@ -185,7 +186,7 @@ Returns:
 
         let markdown = `# Organization: ${result.title || result.name}\n\n`;
         markdown += `**Server**: ${params.server_url}\n`;
-        markdown += `**Link**: ${params.server_url}/organization/${result.name}\n\n`;
+        markdown += `**Link**: ${getOrganizationViewUrl(params.server_url, result)}\n\n`;
 
         markdown += `## Details\n\n`;
         markdown += `- **ID**: \`${result.id}\`\n`;
