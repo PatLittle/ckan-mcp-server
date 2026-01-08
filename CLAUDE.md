@@ -67,32 +67,59 @@ Il build esbuild esegue il bundle di tutti i moduli interni ma mantiene le dipen
 
 ### Struttura del Codice
 
-Il server è implementato come file TypeScript singolo (`src/index.ts`) che:
+Il server è implementato con una struttura modulare per migliorare manutenibilità e testabilità:
 
-1. **Configurazione Server MCP**
-   - Registra 6 tool MCP per interagire con API CKAN
-   - Supporta due modalità di trasporto: stdio (default) e HTTP
+```
+src/
+├── index.ts              # Entry point (39 lines)
+├── server.ts             # MCP server setup (12 lines)
+├── types.ts              # Types & schemas (16 lines)
+├── utils/
+│   ├── http.ts           # CKAN API client (51 lines)
+│   └── formatting.ts     # Output formatting (37 lines)
+├── tools/
+│   ├── package.ts        # Package tools (350 lines)
+│   ├── organization.ts   # Organization tools (341 lines)
+│   ├── datastore.ts      # DataStore tools (146 lines)
+│   └── status.ts         # Status tools (66 lines)
+└── transport/
+    ├── stdio.ts          # Stdio transport (12 lines)
+    └── http.ts           # HTTP transport (27 lines)
+```
 
-2. **Tool Registrati**
-   - `ckan_package_search` - Ricerca dataset con query Solr
-   - `ckan_package_show` - Dettagli completi di un dataset
-   - `ckan_package_list` - Lista tutti i dataset
-   - `ckan_organization_list` - Lista organizzazioni
-   - `ckan_organization_show` - Dettagli organizzazione
-   - `ckan_datastore_search` - Query dati tabulari
-   - `ckan_status_show` - Verifica stato server
+**Total**: 1097 lines (modularizzato da file unico di 1021 lines)
 
-3. **Utility Functions**
-   - `makeCkanRequest<T>()` - Gestisce tutte le chiamate HTTP alle API CKAN v3
-   - `truncateText()` - Limita output a 50000 caratteri
-   - `formatDate()` - Formattazione date in locale italiano
-   - `formatBytes()` - Conversione dimensioni file in formato leggibile
+Il server (`src/index.ts`) che:
 
-4. **Schema di Validazione**
+1. **Entry Point** (`index.ts`)
+   - Importa e registra tutti i tool
+   - Sceglie transport (stdio/http) da variabile ambiente
+   - Gestisce startup e error handling
+
+2. **Tool Registrati** (in moduli separati)
+   - `tools/package.ts`: `ckan_package_search`, `ckan_package_show`
+   - `tools/organization.ts`: `ckan_organization_list`, `ckan_organization_show`, `ckan_organization_search`
+   - `tools/datastore.ts`: `ckan_datastore_search`
+   - `tools/status.ts`: `ckan_status_show`
+
+3. **Utility Functions** (`utils/`)
+   - `http.ts`: `makeCkanRequest<T>()` - Client HTTP per API CKAN v3
+   - `formatting.ts`: `truncateText()`, `formatDate()`, `formatBytes()`
+
+4. **Type Definitions** (`types.ts`)
+   - `ResponseFormat` enum (MARKDOWN, JSON)
+   - `ResponseFormatSchema` Zod validator
+   - `CHARACTER_LIMIT` constant
+
+5. **Transport Layer** (`transport/`)
+   - `stdio.ts`: Standard input/output (Claude Desktop)
+   - `http.ts`: HTTP server (accesso remoto)
+
+6. **Schema di Validazione**
    - Utilizza Zod per validare tutti gli input dei tool
    - Ogni tool ha uno schema strict che rifiuta parametri extra
 
-5. **Output Formatting**
+7. **Output Formatting**
    - Tutti i tool supportano due formati: `markdown` (default) e `json`
    - Formato markdown ottimizzato per leggibilità umana
    - Formato JSON per elaborazione programmatica
@@ -194,9 +221,26 @@ Per testare con Claude Desktop, aggiungere al config file la configurazione MCP.
 
 ## Note di Sviluppo
 
+### Refactoring 2026-01-08
+Il codebase è stato refactorizzato da un singolo file di 1021 righe a 11 moduli. Vedi `REFACTORING.md` per dettagli.
+
+**Vantaggi**:
+- File più piccoli (max 350 righe)
+- Modifiche localizzate e sicure
+- Testing isolato possibile
+- Manutenzione semplificata
+- Zero breaking changes
+
+### To Do
 - Non ci sono test automatizzati - considerare di aggiungerli per tool critici
-- Il limite di 50000 caratteri per l'output è hardcoded - potrebbe essere configurabile
-- Formato date usa locale 'it-IT' - potrebbe essere parametrizzato
+- Il limite di 50000 caratteri per l'output è hardcoded in `types.ts` - potrebbe essere configurabile
+- Formato date usa locale 'it-IT' in `utils/formatting.ts` - potrebbe essere parametrizzato
 - Il server supporta solo lettura (tutti i tool sono read-only, non modificano dati su CKAN)
 - Non c'è caching - ogni richiesta fa una chiamata HTTP fresca alle API CKAN
 - Non c'è autenticazione - usa solo endpoint pubblici CKAN
+
+### Adding New Tools
+1. Crea nuovo file in `src/tools/`
+2. Esporta `registerXxxTools(server: McpServer)`
+3. Importa e chiama in `src/index.ts`
+4. Build e test

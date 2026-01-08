@@ -51,9 +51,30 @@ ckan_package_search({
 })
 ```
 
-### Cerca organizzazioni con wildcard
+### Cerca organizzazioni per nome (metodo semplice)
 ```typescript
-// Trova tutte le organizzazioni che contengono "salute" nel nome
+// Trova organizzazioni che contengono "toscana" nel nome
+ckan_organization_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  pattern: "toscana"
+})
+// → Restituisce: Regione Toscana (10988 dataset), Autorità Idrica Toscana (12 dataset)
+
+// Altri esempi
+ckan_organization_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  pattern: "salute"
+})
+
+ckan_organization_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  pattern: "comune"
+})
+```
+
+### Cerca organizzazioni con wildcard (metodo avanzato)
+```typescript
+// Metodo alternativo usando package_search (più flessibile ma più complesso)
 ckan_package_search({
   server_url: "https://www.dati.gov.it/opendata",
   q: "organization:*salute*",
