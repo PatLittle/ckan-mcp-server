@@ -1,10 +1,14 @@
 import { describe, it, expect } from 'vitest';
-import { getDatasetViewUrl } from '../../src/utils/url-generator';
+import { getDatasetViewUrl, getOrganizationViewUrl } from '../../src/utils/url-generator';
 
 describe('url-generator', () => {
   const dataset = {
     id: 'test-dataset-id',
     name: 'test-dataset-name'
+  };
+  const organization = {
+    id: 'test-org-id',
+    name: 'test-org-name'
   };
 
   describe('getDatasetViewUrl', () => {
@@ -29,6 +33,23 @@ describe('url-generator', () => {
       const url = getDatasetViewUrl('https://example.com', dataset);
       // Default template uses {server_url} which is replaced by input url
       expect(url).toBe('https://example.com/dataset/test-dataset-name');
+    });
+  });
+
+  describe('getOrganizationViewUrl', () => {
+    it('uses custom template for exact URL match with trailing slash', () => {
+      const url = getOrganizationViewUrl('https://www.dati.gov.it/opendata/', organization);
+      expect(url).toBe('https://www.dati.gov.it/view-dataset?organization=test-org-name');
+    });
+
+    it('uses custom template for aliased URL', () => {
+      const url = getOrganizationViewUrl('http://dati.gov.it/opendata', organization);
+      expect(url).toBe('https://www.dati.gov.it/view-dataset?organization=test-org-name');
+    });
+
+    it('uses default template for unknown server', () => {
+      const url = getOrganizationViewUrl('https://example.com/', organization);
+      expect(url).toBe('https://example.com/organization/test-org-name');
     });
   });
 });

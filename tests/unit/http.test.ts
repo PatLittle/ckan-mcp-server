@@ -85,6 +85,64 @@ describe('makeCkanRequest', () => {
     ).rejects.toThrow('CKAN API returned success=false');
   });
 
+  it('throws CKAN API error with status and message from response', async () => {
+    const axiosError = {
+      response: {
+        status: 400,
+        data: { error: { message: 'Bad request' } }
+      }
+    };
+
+    vi.mocked(axios.isAxiosError).mockReturnValue(true);
+    vi.mocked(axios.get).mockRejectedValue(axiosError);
+
+    await expect(
+      makeCkanRequest('http://demo.ckan.org', 'ckan_status_show')
+    ).rejects.toThrow('CKAN API error (400): Bad request');
+  });
+
+  it('throws timeout error when request exceeds timeout', async () => {
+    const axiosError = { code: 'ECONNABORTED' };
+
+    vi.mocked(axios.isAxiosError).mockReturnValue(true);
+    vi.mocked(axios.get).mockRejectedValue(axiosError);
+
+    await expect(
+      makeCkanRequest('http://demo.ckan.org', 'ckan_status_show')
+    ).rejects.toThrow('Request timeout connecting to http://demo.ckan.org');
+  });
+
+  it('throws not found error when server cannot be resolved', async () => {
+    const axiosError = { code: 'ENOTFOUND' };
+
+    vi.mocked(axios.isAxiosError).mockReturnValue(true);
+    vi.mocked(axios.get).mockRejectedValue(axiosError);
+
+    await expect(
+      makeCkanRequest('http://demo.ckan.org', 'ckan_status_show')
+    ).rejects.toThrow('Server not found: http://demo.ckan.org');
+  });
+
+  it('throws network error for other axios errors', async () => {
+    const axiosError = { message: 'Socket hang up' };
+
+    vi.mocked(axios.isAxiosError).mockReturnValue(true);
+    vi.mocked(axios.get).mockRejectedValue(axiosError);
+
+    await expect(
+      makeCkanRequest('http://demo.ckan.org', 'ckan_status_show')
+    ).rejects.toThrow('Network error: Socket hang up');
+  });
+
+  it('rethrows non-axios errors', async () => {
+    vi.mocked(axios.isAxiosError).mockReturnValue(false);
+    vi.mocked(axios.get).mockRejectedValue(new Error('Unexpected failure'));
+
+    await expect(
+      makeCkanRequest('http://demo.ckan.org', 'ckan_status_show')
+    ).rejects.toThrow('Unexpected failure');
+  });
+
   it('uses correct timeout setting', async () => {
     vi.mocked(axios.get).mockResolvedValue({ data: successResponse });
 

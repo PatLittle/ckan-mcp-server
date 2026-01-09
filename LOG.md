@@ -20,12 +20,17 @@
 - **Impact**: Low barrier to entry, standard npm workflow, better discoverability
 
 ### Project Evaluation v0.3.2
-- **Overall Rating**: 9.5/10 (maintained)
-- **Distribution**: 8/10 → 10/10 (upgraded)
-- **Key Achievement**: Publicly published and easily installable
-- **Installation Complexity**: Medium → Low
-- **Status**: Production-ready, publicly available on npm
+- **Overall Rating**: 9.0/10 (local evidence; external distribution not verified)
+- **Distribution readiness**: 9/10 (metadata and CLI entry point verified)
+- **Testing**: 113 tests passing; coverage 97%+ (2026-01-09)
+- **Status**: Packaging and docs production-ready; npm/GitHub release require external verification
 - See `docs/evaluation-v0.3.2.md` for full assessment
+
+### Tests & Coverage Update
+- Added unit tests for HTTP error branches and URL generator org paths
+  - Tests: `tests/unit/http.test.ts`, `tests/unit/url-generator.test.ts`
+- `npm test`: 113 tests passing
+- `npm run test:coverage`: 97.01% statements, 89.36% branches, 100% functions, 96.87% lines
 
 ### README Enhancement - Real-World Advanced Examples
 - **New Section**: "Advanced Query Examples" in README.md

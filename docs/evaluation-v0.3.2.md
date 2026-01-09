@@ -13,8 +13,8 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 | npm package metadata (`name`, `version`) | `package.json` | `@aborruso/ckan-mcp-server`, version `0.3.2` |
 | Global CLI entry point | `package.json` | `bin: { "ckan-mcp-server": "dist/index.js" }` |
 | Build artifact target | `package.json` | `main: "dist/index.js"` |
-| Test tooling present | `package.json`, `tests/` | `vitest` + tests directory; `npm test` passed 105 tests (2026-01-09) |
-| Coverage run | `npm run test:coverage` | 70.14% statements, 61.7% branches, 84.61% functions, 68.75% lines; below thresholds (2026-01-09) |
+| Test tooling present | `package.json`, `tests/` | `vitest` + tests directory; `npm test` passed 113 tests (2026-01-09) |
+| Coverage run | `npm run test:coverage` | 97.01% statements, 89.36% branches, 100% functions, 96.87% lines (2026-01-09) |
 | Docs present | `README.md`, `docs/` | README + evaluation docs |
 
 ## Key Improvements Claimed Since v0.3.1
@@ -60,7 +60,7 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 | npm Published | ✗/Unknown | Unknown | **Needs external verification** |
 | Global Command | ✗ | ✓ | Declared in `package.json` |
 | GitHub Release | ✗/Unknown | Unknown | **Needs external verification** |
-| Total Tests | 101 (README claim) | 105 (verified) | `npm test` on 2026-01-09 |
+| Total Tests | 113 (README claim) | 113 (verified) | `npm test` on 2026-01-09 |
 
 ## Strengths (Local Evidence)
 
@@ -79,8 +79,8 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 
 ### Testing (9/10)
 - `vitest` configured; tests directory present.
-- `npm test` passes 105 tests (2026-01-09).
-- Coverage run fails thresholds (lines 68.75%, statements 70.14%, branches 61.7% vs thresholds 80/80/75).
+- `npm test` passes 113 tests (2026-01-09).
+- Coverage run passes thresholds (lines 96.87%, statements 97.01%, branches 89.36%).
 
 ## Remaining Weaknesses (Local, unchanged)
 
@@ -99,7 +99,7 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 3. Confirm README installation options match the intended 3 paths.
 
 ### Short Term
-4. Update docs with coverage results; consider lowering thresholds or adding tests in `src/utils`.
+4. Keep coverage results updated after test additions.
 5. Make CHARACTER_LIMIT configurable.
 6. Make date locale configurable.
 
@@ -119,15 +119,15 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 - [ ] npm package version `0.3.2` is published
 - [ ] GitHub release `v0.3.2` exists with notes
 - [ ] Package size reported by npm (or `npm pack` locally)
-- [x] `npm test` passes (105 tests, 2026-01-09)
-- [x] `npm run test:coverage` run (fails thresholds; 2026-01-09)
+- [x] `npm test` passes (113 tests, 2026-01-09)
+- [x] `npm run test:coverage` passes (2026-01-09)
 - [ ] README contains 3 installation options
 
 ## Conclusion (Evidence-based)
 
 Locally, the project is packaged and structured like a publishable npm CLI with solid documentation and test tooling. The step from “ready for distribution” to “publicly distributed” requires external verification. Once those checks are confirmed, the original distribution claims can be reinstated with citations.
 
-Local discrepancy noted: README claimed 101 tests, but `npm test` reported 105 tests on 2026-01-09 (README updated).
+
 
 **Date**: 2026-01-09
 **Evaluator**: Codex (local review)
