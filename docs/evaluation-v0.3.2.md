@@ -2,9 +2,9 @@
 
 ## Summary
 
-**Overall Rating**: 9.0/10 (locally verified code + docs; external distribution not verified in this report)
+**Overall Rating**: 9.5/10 (code + docs verified locally; distribution verified via GitHub release and npm registry)
 
-This evaluation focuses on what is verifiable from the repository at `/home/aborruso/git/idee/ckan-mcp-server` on 2026-01-09. Claims that require external checks (npm registry, GitHub releases, package size, download stats) are explicitly marked as **Needs external verification**. External verification could not be completed in this environment because the web tool only allows opening URLs that appear in search results.
+This evaluation focuses on what is verifiable from the repository at `/home/aborruso/git/idee/ckan-mcp-server` on 2026-01-09. Claims that require external checks (npm registry, GitHub releases, package size, download stats) are explicitly marked as **Needs external verification**. GitHub release verification was completed via the release page; npm verification was completed via `npm view` because the npm package page is blocked by a 403 in this environment.
 
 ## Evidence Snapshot (Local)
 
@@ -15,21 +15,26 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 | Build artifact target | `package.json` | `main: "dist/index.js"` |
 | Test tooling present | `package.json`, `tests/` | `vitest` + tests directory; `npm test` passed 113 tests (2026-01-09) |
 | Coverage run | `npm run test:coverage` | 97.01% statements, 89.36% branches, 100% functions, 96.87% lines (2026-01-09) |
+| npm package published | npm registry (`npm view`) | Version 0.3.2; unpacked size 236,012 bytes; file count 43 |
+| GitHub release | GitHub Releases | Release `v0.3.2` with notes (published 2026-01-09) |
 | Docs present | `README.md`, `docs/` | README + evaluation docs |
 
 ## Key Improvements Claimed Since v0.3.1
 
-### Distribution & Accessibility (Local readiness: 9/10)
+### Distribution & Accessibility (Verified: 10/10)
 
 **Verified locally:**
 - npm package metadata set (`name`, `version`, `publishConfig: { access: "public" }`).
 - Global CLI declared via `bin` field.
 - README includes multiple installation options (see `README.md`).
 
+**Verified externally:**
+- npm package published (version 0.3.2; unpacked size 236,012 bytes; file count 43).
+- GitHub release `v0.3.2` with notes.
+
 **Needs external verification:**
-- Actual npm publication.
-- GitHub release tag and notes.
-- Published package size and unpacked size.
+- npm web page accessibility (blocked by 403 in this environment).
+- Download stats.
 
 ### Documentation Improvements (Local readiness: 9.5/10)
 
@@ -54,12 +59,12 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 
 | Metric | v0.3.1 | v0.3.2 | Status |
 |--------|--------|--------|--------|
-| Distribution readiness | 8/10 | 9/10 | Local metadata supports publishable package |
+| Distribution readiness | 8/10 | 10/10 | npm published + GitHub release verified |
 | Installation complexity | Medium | Low | **Conditional** on npm publication |
 | Overall rating | 9.0/10 | 9.0/10 | Local evidence only |
-| npm Published | ✗/Unknown | Unknown | **Needs external verification** |
+| npm Published | ✗/Unknown | ✓ | Verified via `npm view` |
 | Global Command | ✗ | ✓ | Declared in `package.json` |
-| GitHub Release | ✗/Unknown | Unknown | **Needs external verification** |
+| GitHub Release | ✗/Unknown | ✓ | Release `v0.3.2` verified |
 | Total Tests | 113 (README claim) | 113 (verified) | `npm test` on 2026-01-09 |
 
 ## Strengths (Local Evidence)
@@ -94,7 +99,7 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 ## Recommendations (Actionable & Verifiable)
 
 ### Immediate
-1. Verify npm publication and GitHub release; record evidence (links, release tag, npm page).
+1. ✅ Verify npm publication and GitHub release (completed 2026-01-09).
 2. ✅ Update README test count to 113 (completed 2026-01-09).
 3. ✅ Confirm README installation options match the intended 3 paths (completed 2026-01-09).
 
@@ -115,9 +120,9 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 
 ## Verification Checklist (For Auditability)
 
-- [ ] npm page exists for `@aborruso/ckan-mcp-server` (screenshot or link)
-- [ ] npm package version `0.3.2` is published
-- [ ] GitHub release `v0.3.2` exists with notes
+- [ ] npm page exists for `@aborruso/ckan-mcp-server` (blocked by 403 in this environment)
+- [x] npm package version `0.3.2` is published (verified via `npm view`)
+- [x] GitHub release `v0.3.2` exists with notes
 - [ ] Package size reported by npm (or `npm pack` locally)
 - [x] `npm test` passes (113 tests, 2026-01-09)
 - [x] `npm run test:coverage` passes (2026-01-09)
@@ -125,7 +130,7 @@ This evaluation focuses on what is verifiable from the repository at `/home/abor
 
 ## Conclusion (Evidence-based)
 
-Locally, the project is packaged and structured like a publishable npm CLI with solid documentation and test tooling. The step from “ready for distribution” to “publicly distributed” requires external verification. Once those checks are confirmed, the original distribution claims can be reinstated with citations.
+Locally, the project is packaged and structured like a publishable npm CLI with solid documentation and test tooling. Distribution status is now verified via the GitHub release page and npm registry metadata; only web-page accessibility and download stats remain unverified in this environment.
 
 **Date**: 2026-01-09
 **Evaluator**: Codex (local review)
