@@ -212,6 +212,110 @@ q: "popolaz*"
 fq: "metadata_modified:[2023-01-01T00:00:00Z TO *]"
 ```
 
+### Advanced Query Examples
+
+These real-world examples demonstrate powerful Solr query combinations tested on the Italian open data portal (dati.gov.it):
+
+#### 1. Fuzzy Search + Date Math + Boosting
+
+Find healthcare datasets (tolerating spelling errors) modified in the last 6 months, prioritizing title matches:
+
+```typescript
+ckan_package_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  q: "(title:sanità~2^3 OR title:salute~2^3 OR notes:sanità~1) AND metadata_modified:[NOW-6MONTHS TO *]",
+  sort: "score desc, metadata_modified desc",
+  rows: 30
+})
+```
+
+**Techniques used**:
+- `sanità~2` - Fuzzy search with edit distance 2 (finds "sanita", "sanitá", minor typos)
+- `^3` - Boosts title matches 3x higher in relevance scoring
+- `NOW-6MONTHS` - Dynamic date math for rolling time windows
+- Combined boolean logic with multiple field searches
+
+**Results**: 871 datasets including hospital units, healthcare organizations, medical services
+
+#### 2. Proximity Search + Complex Boolean
+
+Environmental datasets where "inquinamento" and "aria" (air pollution) appear close together, excluding water-related datasets:
+
+```typescript
+ckan_package_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  q: "(notes:\"inquinamento aria\"~5 OR title:\"qualità aria\"~3) AND NOT (title:acqua OR title:mare)",
+  facet_field: ["organization", "res_format"],
+  rows: 25
+})
+```
+
+**Techniques used**:
+- `"inquinamento aria"~5` - Proximity search (words within 5 positions)
+- `~3` - Tighter proximity for title matches
+- `NOT (title:acqua OR title:mare)` - Exclude water/sea datasets
+- Faceting for statistical breakdown
+
+**Results**: 306 datasets, primarily air quality monitoring from Milan (44) and Palermo (161), formats: XML (150), CSV (124), JSON (76)
+
+#### 3. Wildcard + Field Existence + Range Queries
+
+Regional datasets with at least 5 resources, published in the last year:
+
+```typescript
+ckan_package_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  q: "organization:regione* AND num_resources:[5 TO *] AND metadata_created:[NOW-1YEAR TO *] AND res_format:*",
+  sort: "num_resources desc, metadata_modified desc",
+  facet_field: ["organization"],
+  rows: 40
+})
+```
+
+**Techniques used**:
+- `regione*` - Wildcard matches all regional organizations
+- `[5 TO *]` - Inclusive range (5 or more resources)
+- `res_format:*` - Field existence check (has at least one resource format)
+- `NOW-1YEAR` - Rolling 12-month window
+
+**Results**: 5,318 datasets, top contributors: Lombardy (3,012), Tuscany (1,151), Puglia (460)
+
+#### 4. Date Ranges + Exclusive Bounds
+
+ISTAT datasets with moderate resource count (10-50), modified in specific date range:
+
+```typescript
+ckan_package_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  q: "(title:istat OR organization:*istat*) AND num_resources:{9 TO 51} AND metadata_modified:[2025-07-01T00:00:00Z TO 2025-12-31T23:59:59Z]",
+  sort: "metadata_modified desc",
+  facet_field: ["res_format", "tags"],
+  rows: 30
+})
+```
+
+**Techniques used**:
+- `{9 TO 51}` - Exclusive bounds (10-50 resources, excluding 9 and 51)
+- `[2025-07-01T00:00:00Z TO 2025-12-31T23:59:59Z]` - Explicit date range
+- Combined organization wildcard with title search
+- Multiple facets for content analysis
+
+**Note**: This specific query returned 0 results due to the narrow time window, demonstrating how precise constraints work.
+
+### Solr Query Syntax Reference
+
+**Boolean Operators**: `AND`, `OR`, `NOT`, `+required`, `-excluded`
+**Wildcards**: `*` (multiple chars), `?` (single char) - Note: left truncation not supported
+**Fuzzy**: `~N` (edit distance), e.g., `health~2`
+**Proximity**: `"phrase"~N` (words within N positions)
+**Boosting**: `^N` (relevance multiplier), e.g., `title:water^2`
+**Ranges**:
+  - Inclusive: `[a TO b]`, e.g., `num_resources:[5 TO 10]`
+  - Exclusive: `{a TO b}`, e.g., `num_resources:{0 TO 100}`
+  - Open-ended: `[2024-01-01T00:00:00Z TO *]`
+**Date Math**: `NOW`, `NOW-1YEAR`, `NOW-6MONTHS`, `NOW-7DAYS`, `NOW/DAY`
+**Field Existence**: `field:*` (field exists), `NOT field:*` (field missing)
+
 ## Project Structure
 
 ```

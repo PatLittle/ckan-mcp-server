@@ -2,6 +2,18 @@
 
 ## 2026-01-09
 
+### README Enhancement - Real-World Advanced Examples
+- **New Section**: "Advanced Query Examples" in README.md
+  - 4 real-world examples tested on dati.gov.it portal
+  - English explanations with Italian query terms maintained
+  - Each example includes: use case, query, techniques, results
+- **Example 1**: Fuzzy search + date math + boosting (871 healthcare datasets)
+- **Example 2**: Proximity search + complex boolean (306 air quality datasets)
+- **Example 3**: Wildcard + range + field existence (5,318 regional datasets)
+- **Example 4**: Date ranges + exclusive bounds (demonstrates precise constraints)
+- **Solr Syntax Reference**: Quick reference table for all query operators
+- **Impact**: Users have practical, tested examples for advanced searches
+
 ### Documentation Enhancement - Advanced Solr Queries
 - **Tool Description**: Enhanced `ckan_package_search` tool description with comprehensive Solr query syntax
   - Added boolean operators (AND, OR, NOT, +, -, grouping)
