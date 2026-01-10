@@ -120,15 +120,9 @@ Then add to `claude_desktop_config.json`:
 }
 ```
 
-### Option 2: Local Installation
+### Option 2: Local Installation (Optional)
 
-Install in a specific project:
-
-```bash
-npm install @aborruso/ckan-mcp-server
-```
-
-Then add to `claude_desktop_config.json`:
+If you installed locally (see Installation), use this config:
 
 ```json
 {
