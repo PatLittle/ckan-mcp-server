@@ -14,7 +14,7 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 - 🎨 Output in Markdown or JSON format
 - ⚡ Pagination and faceting support
 - 📄 MCP Resource Templates for direct data access
-- 🧪 Comprehensive test suite (113 tests, 100% passing)
+- 🧪 Comprehensive test suite (120 tests, 100% passing)
 
 ## Installation
 
@@ -36,7 +36,7 @@ npm install
 # Build with esbuild (fast, ~4ms)
 npm run build
 
-# Run tests (113 tests)
+# Run tests (120 tests)
 npm test
 ```
 
@@ -175,6 +175,7 @@ Use the public Cloudflare Workers deployment (no local installation required):
 - **ckan_package_search**: Search datasets with Solr queries
 - **ckan_package_show**: Complete details of a dataset
 - **ckan_package_list**: List all datasets
+- **ckan_tag_list**: List tags with counts
 
 ### Organizations
 
@@ -185,6 +186,12 @@ Use the public Cloudflare Workers deployment (no local installation required):
 
 - **ckan_datastore_search**: Query tabular data
 - **ckan_datastore_search_sql**: SQL queries (in development)
+
+### Groups
+
+- **ckan_group_list**: List groups
+- **ckan_group_show**: Show group details
+- **ckan_group_search**: Search groups by name
 
 ### Utilities
 
@@ -248,6 +255,25 @@ ckan_package_search({
   server_url: "https://www.dati.gov.it/opendata",
   facet_field: ["organization", "tags", "res_format"],
   rows: 0
+})
+```
+
+### List tags (natural language: "show top tags about health")
+
+```typescript
+ckan_tag_list({
+  server_url: "https://www.dati.gov.it/opendata",
+  tag_query: "salute",
+  limit: 25
+})
+```
+
+### Search groups (natural language: "find groups about environment")
+
+```typescript
+ckan_group_search({
+  server_url: "https://www.dati.gov.it/opendata",
+  pattern: "ambiente"
 })
 ```
 

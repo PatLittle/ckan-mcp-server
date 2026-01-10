@@ -2,6 +2,12 @@
 
 ## 2026-01-10
 
+### Version 0.4.3 - Tags and Groups
+- **Tags**: Added `ckan_tag_list` with faceting and filtering
+- **Groups**: Added `ckan_group_list`, `ckan_group_show`, `ckan_group_search`
+- **Docs**: Updated README with examples and tool list
+- **Tests**: Added tag/group fixtures and tests
+
 ### Version 0.4.2 - Packaging
 - **npm package**: Added `.npmignore` to exclude dev artifacts
 
