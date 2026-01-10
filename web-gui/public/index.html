@@ -598,19 +598,27 @@
 Available MCP tools:
 ${toolList}
 
-Choose the most appropriate tool and generate its arguments.
-Respond ONLY with JSON in this format:
+CRITICAL RULES FOR TOOL SELECTION:
+1. If user asks about ORGANIZATIONS (like "which organizations", "organizations with most datasets", "list organizations"):
+   → Use ckan_organization_list with all_fields=true and sort="package_count desc"
+
+2. If user asks about DATASETS (like "find datasets about X", "datasets on topic Y"):
+   → Use ckan_package_search or ckan_find_relevant_datasets
+
+3. If user asks about TAGS:
+   → Use ckan_tag_list
+
+4. NEVER use ckan_package_search with faceting to get organizations - use ckan_organization_list instead!
+
+Respond ONLY with JSON in this exact format:
 {
   "tool": "tool_name",
   "arguments": {
     "server_url": "CKAN_SERVER",
-    ...other params based on tool schema
+    ...other params
   }
 }
 
-For dataset searches use ckan_package_search or ckan_find_relevant_datasets.
-For organization queries use ckan_organization_list, ckan_organization_show, or ckan_organization_search.
-For tags use ckan_tag_list.
 Always include server_url parameter.
 Use conversation context to refine queries.`;
 
