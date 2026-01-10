@@ -40,27 +40,11 @@ npm run build
 npm test
 ```
 
-## Usage
-
-### Start with stdio (for local integration)
-
-```bash
-npm start
-```
-
-### Start with HTTP (for remote access)
-
-```bash
-TRANSPORT=http PORT=3000 npm start
-```
-
-The server will be available at `http://localhost:3000/mcp`
-
 ## Usage Options
 
 ### Option 1: Local Installation (stdio mode)
 
-**Best for**: Personal use with Claude Desktop
+**Best for**: Personal use with local MCP clients
 
 Install and run locally on your machine (see Installation section above).
 
@@ -92,7 +76,7 @@ Use the public Workers endpoint (no local install required):
 
 Want your own deployment? See [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-## Claude Desktop Configuration
+### Claude Desktop Configuration
 
 Configuration file location:
 
@@ -100,7 +84,7 @@ Configuration file location:
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 - **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
-### Option 1: Global Installation (Recommended)
+#### Option 1: Global Installation (Recommended)
 
 Install globally to use across all projects:
 
@@ -120,7 +104,7 @@ Then add to `claude_desktop_config.json`:
 }
 ```
 
-### Option 2: Local Installation (Optional)
+#### Option 2: Local Installation (Optional)
 
 If you installed locally (see Installation), use this config:
 
@@ -137,7 +121,7 @@ If you installed locally (see Installation), use this config:
 
 Replace `/absolute/path/to/project` with your actual project path.
 
-### Option 3: From Source
+#### Option 3: From Source
 
 If you cloned the repository:
 
@@ -152,7 +136,7 @@ If you cloned the repository:
 }
 ```
 
-### Option 4: Cloudflare Workers (HTTP transport)
+#### Option 4: Cloudflare Workers (HTTP transport)
 
 Use the public Cloudflare Workers deployment (no local installation required):
 
@@ -477,28 +461,32 @@ ckan_package_search({
 ```
 ckan-mcp-server/
 ├── src/
-│   ├── index.ts          # Entry point
-│   ├── server.ts         # MCP server setup
-│   ├── types.ts          # Types & schemas
+│   ├── index.ts            # Entry point
+│   ├── server.ts           # MCP server setup
+│   ├── worker.ts           # Cloudflare Workers entry
+│   ├── types.ts            # Types & schemas
 │   ├── utils/
-│   │   ├── http.ts       # CKAN API client
-│   │   └── formatting.ts # Output formatting
+│   │   ├── http.ts         # CKAN API client
+│   │   ├── formatting.ts   # Output formatting
+│   │   └── url-generator.ts
 │   ├── tools/
-│   │   ├── package.ts    # Package search/show
+│   │   ├── package.ts      # Package search/show
 │   │   ├── organization.ts # Organization tools
-│   │   ├── datastore.ts  # DataStore queries
-│   │   └── status.ts     # Server status
-│   ├── resources/        # MCP Resource Templates
+│   │   ├── datastore.ts    # DataStore queries
+│   │   ├── status.ts       # Server status
+│   │   ├── tag.ts          # Tag tools
+│   │   └── group.ts        # Group tools
+│   ├── resources/          # MCP Resource Templates
 │   │   ├── index.ts
-│   │   ├── uri.ts        # URI parsing
+│   │   ├── uri.ts          # URI parsing
 │   │   ├── dataset.ts
 │   │   ├── resource.ts
 │   │   └── organization.ts
 │   └── transport/
-│       ├── stdio.ts      # Stdio transport
-│       └── http.ts       # HTTP transport
-├── tests/                # Test suite (113 tests)
-├── dist/                 # Compiled files (generated)
+│       ├── stdio.ts        # Stdio transport
+│       └── http.ts         # HTTP transport
+├── tests/                  # Test suite (120 tests)
+├── dist/                   # Compiled files (generated)
 ├── package.json
 └── README.md
 ```
