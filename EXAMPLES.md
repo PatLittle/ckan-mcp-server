@@ -285,6 +285,25 @@ ckan_package_search({
 })
 ```
 
+## Tags and Groups
+
+### List groups
+```typescript
+ckan_group_list({
+  server_url: "https://www.dati.gov.it/opendata",
+  all_fields: true,
+  limit: 20
+})
+```
+
+### Show group details
+```typescript
+ckan_group_show({
+  server_url: "https://www.dati.gov.it/opendata",
+  id: "ambiente"
+})
+```
+
 ## Advanced Solr Query Features
 
 CKAN uses Apache Solr for search. The `q` parameter supports advanced Solr query syntax including fuzzy matching, proximity search, boosting, and complex boolean logic.
