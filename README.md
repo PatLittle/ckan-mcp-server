@@ -135,7 +135,7 @@ Then add to `claude_desktop_config.json`:
   "mcpServers": {
     "ckan": {
       "command": "node",
-      "args": ["/absolute/path/to/project/node_modules/@aborruso/ckan-mcp-server/dist/index.js"]
+      "args": ["/absolute/path/to/project/node_modules/@username/ckan-mcp-server/dist/index.js"]
     }
   }
 }
