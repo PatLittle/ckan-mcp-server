@@ -204,7 +204,7 @@ ckan://data.gov/organization/sample-org
 
 ## Usage Examples
 
-### Search datasets on dati.gov.it
+### Search datasets on dati.gov.it (natural language: "search for population datasets")
 
 ```typescript
 ckan_package_search({
@@ -214,7 +214,7 @@ ckan_package_search({
 })
 ```
 
-### Force text-field parser for long OR queries
+### Force text-field parser for long OR queries (natural language: "find hotel or accommodation datasets")
 
 ```typescript
 ckan_package_search({
@@ -225,7 +225,7 @@ ckan_package_search({
 })
 ```
 
-### Rank datasets by relevance
+### Rank datasets by relevance (natural language: "find most relevant datasets about urban mobility")
 
 ```typescript
 ckan_find_relevant_datasets({
@@ -235,7 +235,7 @@ ckan_find_relevant_datasets({
 })
 ```
 
-### Filter by organization
+### Filter by organization (natural language: "show recent datasets from Sicilian Region")
 
 ```typescript
 ckan_package_search({
@@ -245,7 +245,7 @@ ckan_package_search({
 })
 ```
 
-### Search organizations with wildcard
+### Search organizations with wildcard (natural language: "find all organizations with health/salute in name")
 
 ```typescript
 // Find all organizations containing "salute" in the name
@@ -258,7 +258,7 @@ ckan_package_search({
 })
 ```
 
-### Get statistics with faceting
+### Get statistics with faceting (natural language: "show statistics by organization, tags and format")
 
 ```typescript
 ckan_package_search({
@@ -287,7 +287,7 @@ ckan_group_search({
 })
 ```
 
-### DataStore Query
+### DataStore Query (natural language: "query tabular data filtering by region and year")
 
 ```typescript
 ckan_datastore_search({
@@ -299,7 +299,7 @@ ckan_datastore_search({
 })
 ```
 
-### DataStore SQL Query
+### DataStore SQL Query (natural language: "count records by country with SQL")
 
 ```typescript
 ckan_datastore_search_sql({
@@ -365,7 +365,7 @@ fq: "metadata_modified:[2023-01-01T00:00:00Z TO *]"
 
 These real-world examples demonstrate powerful Solr query combinations tested on the Italian open data portal (dati.gov.it):
 
-#### 1. Fuzzy Search + Date Math + Boosting
+#### 1. Fuzzy Search + Date Math + Boosting (natural language: "find healthcare datasets modified in last 6 months")
 
 Find healthcare datasets (tolerating spelling errors) modified in the last 6 months, prioritizing title matches:
 
@@ -387,7 +387,7 @@ ckan_package_search({
 
 **Results**: 871 datasets including hospital units, healthcare organizations, medical services
 
-#### 2. Proximity Search + Complex Boolean
+#### 2. Proximity Search + Complex Boolean (natural language: "find air pollution datasets excluding water")
 
 Environmental datasets where "inquinamento" and "aria" (air pollution) appear close together, excluding water-related datasets:
 
@@ -409,7 +409,7 @@ ckan_package_search({
 
 **Results**: 306 datasets, primarily air quality monitoring from Milan (44) and Palermo (161), formats: XML (150), CSV (124), JSON (76)
 
-#### 3. Wildcard + Field Existence + Range Queries
+#### 3. Wildcard + Field Existence + Range Queries (natural language: "regional datasets with many resources from last year")
 
 Regional datasets with at least 5 resources, published in the last year:
 
@@ -432,7 +432,7 @@ ckan_package_search({
 
 **Results**: 5,318 datasets, top contributors: Lombardy (3,012), Tuscany (1,151), Puglia (460)
 
-#### 4. Date Ranges + Exclusive Bounds
+#### 4. Date Ranges + Exclusive Bounds (natural language: "ISTAT datasets with 10-50 resources from specific period")
 
 ISTAT datasets with moderate resource count (10-50), modified in specific date range:
 
