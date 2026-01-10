@@ -6,6 +6,31 @@ Ideas and enhancements for CKAN MCP Server, collected from analysis and external
 
 Source: https://skywork.ai/skypage/en/unlocking-government-data-mcp-server/
 
+## From openascot-ckan-mcp (2026-01-10)
+
+Source: https://lobehub.com/it/mcp/openascot-ckan-mcp
+
+### Portal presets and overrides
+
+- Curated portal catalog with overrides (dataset URL templates, datastore alias, action transport).
+- Optional init tool to select portal and store session metadata.
+
+### Probe and audit tools
+
+- Audit tool to probe API behavior and suggest overrides.
+- Availability tool to list known portals and current selection.
+
+### Insight tools
+
+- Relevance scoring on title/notes/tags/org with top-N results.
+- Update cadence analysis with stale alerts.
+- Structure summary with schema + null-rate (when DataStore enabled).
+- Wrapper tool combining relevance + freshness + structure.
+
+### Download helper
+
+- Dataset download helper with MIME detection and local cache hints.
+
 ### 1. ~~MCP Resource Templates~~ ✅ IMPLEMENTED (v0.3.0)
 
 Implemented in v0.3.0 with three resource templates:
@@ -73,7 +98,7 @@ ckan_group_show({
 
 ### Missing Features
 
-- [ ] Implement `ckan_datastore_search_sql` (mentioned in README)
+- [x] Implement `ckan_datastore_search_sql`
 - [ ] Add optional response caching with TTL
 - [ ] Add CKAN API key authentication support
 
@@ -176,5 +201,6 @@ export default {
 ## Backlog Priority
 
 1. ~~**High**: MCP Resource Templates~~ ✅ Done (v0.3.0)
-2. **Medium**: `ckan_tag_list`, `ckan_group_list/show`, group resource template
-3. **Low**: Caching, authentication, SQL queries, config options
+2. ~~**Medium**: `ckan_tag_list`, `ckan_group_list/show`~~ ✅ Done (v0.4.3)
+3. **Medium**: Portal presets, audit tool, insight tools
+4. **Low**: Caching, authentication, config options
