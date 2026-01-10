@@ -21,7 +21,7 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 ### From npm (recommended)
 
 ```bash
-npm install ckan-mcp-server
+npm install -g @aborruso/ckan-mcp-server
 ```
 
 ### From source
