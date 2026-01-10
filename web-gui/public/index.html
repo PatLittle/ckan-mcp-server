@@ -505,13 +505,32 @@
       };
 
       const extractStructured = (result) => {
-        if (!result) return null;
+        if (!result) {
+          console.error("extractStructured: result is null/undefined");
+          return null;
+        }
+
+        if (result.isError) {
+          console.error("MCP returned error:", result);
+          const errorText = result.content?.[0]?.text || "Unknown MCP error";
+          console.error("Error text:", errorText);
+          throw new Error(errorText);
+        }
+
         if (result.structuredContent) return result.structuredContent;
+
         const text = result.content?.[0]?.text;
-        if (!text) return null;
+        if (!text) {
+          console.error("extractStructured: no text in result.content[0]");
+          return null;
+        }
+
         try {
-          return JSON.parse(text);
-        } catch {
+          const parsed = JSON.parse(text);
+          console.log("Successfully parsed JSON from MCP response");
+          return parsed;
+        } catch (e) {
+          console.error("Failed to parse JSON:", e, "Text was:", text);
           return null;
         }
       };
