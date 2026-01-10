@@ -1,8 +1,34 @@
-src/
-tests/
+# Source and tests
+/src/
+/tests/
 *.ts
-tsconfig.json
-.gitignore
-docs/
-.git/
-.github/
+/tsconfig.json
+
+# Git and docs
+/.gitignore
+/docs/
+/.git/
+/.github/
+
+# Build artifacts
+/dist/
+
+# Dependencies
+/node_modules/
+
+# Coverage
+/coverage/
+
+# Temporary
+/tmp/
+/temp/
+
+# Local tooling
+/.claude/
+/.gemini/
+/.opencode/
+/.mcp.json
+
+# Project notes
+/spunti.md
+/tasks/

@@ -2,6 +2,9 @@
 
 ## 2026-01-10
 
+### Version 0.4.2 - Packaging
+- **npm package**: Added `.npmignore` to exclude dev artifacts
+
 ### Version 0.4.1 - Maintenance
 - **Date formatting**: ISO `YYYY-MM-DD` output, tests aligned
 - **HTTP transport**: Single shared transport per process
