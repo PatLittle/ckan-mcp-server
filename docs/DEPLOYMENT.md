@@ -380,6 +380,13 @@ When releasing a new version with code changes, follow all these steps to ensure
 
 ### Step 1: Update Version
 
+Update the version in these files:
+
+- `package.json`
+- `package-lock.json`
+- `src/server.ts`
+- `src/worker.ts` (health endpoint)
+
 Edit `package.json` and bump version:
 
 ```json
