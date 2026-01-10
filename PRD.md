@@ -11,30 +11,30 @@
 
 ## 1. Executive Summary
 
-CKAN MCP Server è un server Model Context Protocol (MCP) che permette a AI agent (come Claude Desktop) di interagire con oltre 500 portali di dati aperti basati su CKAN in tutto il mondo. Il server espone strumenti MCP per ricercare dataset, esplorare organizzazioni, interrogare dati tabulari e accedere a metadati completi.
+CKAN MCP Server is a Model Context Protocol (MCP) server that enables AI agents (like Claude Desktop) to interact with over 500 CKAN-based open data portals worldwide. The server exposes MCP tools to search datasets, explore organizations, query tabular data, and access complete metadata.
 
 ### 1.1 Problem Statement
 
-Gli AI agent non hanno un modo nativo per:
-- Scoprire e cercare dataset negli open data portal
-- Interrogare metadati strutturati di dataset governativi
-- Eseguire query su dati tabulari pubblicati su portali CKAN
-- Esplorare organizzazioni pubbliche e la loro produzione di dati aperti
+AI agents lack native capabilities to:
+- Discover and search datasets in open data portals
+- Query structured metadata from government datasets
+- Execute queries on tabular data published on CKAN portals
+- Explore public organizations and their open data production
 
 ### 1.2 Solution
 
-Un server MCP che espone tool per interagire con le API CKAN v3, permettendo agli AI agent di:
-- Cercare dataset con query Solr avanzate e ranking per rilevanza
-- Ottenere metadati completi di dataset e risorse
-- Esplorare organizzazioni, gruppi e tag
-- Interrogare il DataStore con filtri, sorting e SQL queries
-- Analizzare statistiche tramite faceting
-- Deploy globale su Cloudflare Workers per accesso edge worldwide
+An MCP server that exposes tools to interact with CKAN API v3, enabling AI agents to:
+- Search datasets with advanced Solr queries and relevance ranking
+- Get complete metadata for datasets and resources
+- Explore organizations, groups, and tags
+- Query DataStore with filters, sorting, and SQL queries
+- Analyze statistics through faceting
+- Global deployment on Cloudflare Workers for worldwide edge access
 
 **Distribution Strategy**: Multi-platform deployment:
-- **npm registry**: Installazione globale con `npm install -g @aborruso/ckan-mcp-server`
-- **Cloudflare Workers**: Deploy globale edge (https://ckan-mcp-server.andy-pr.workers.dev)
-- **Self-hosted**: HTTP server mode per infrastruttura custom
+- **npm registry**: Global installation with `npm install -g @aborruso/ckan-mcp-server`
+- **Cloudflare Workers**: Global edge deployment (https://ckan-mcp-server.andy-pr.workers.dev)
+- **Self-hosted**: HTTP server mode for custom infrastructure
 
 ---
 
@@ -42,16 +42,16 @@ Un server MCP che espone tool per interagire con le API CKAN v3, permettendo agl
 
 ### 2.1 Primary Users
 
-- **Data Scientist & Analyst**: Ricerca e analisi di dataset pubblici
-- **Civic Hacker & Developer**: Sviluppo applicazioni su dati aperti
-- **Researcher & Journalist**: Investigazione e analisi dati governativi
-- **Public Administration**: Esplorazione cataloghi dati aperti
+- **Data Scientist & Analyst**: Research and analysis of public datasets
+- **Civic Hacker & Developer**: Application development on open data
+- **Researcher & Journalist**: Investigation and analysis of government data
+- **Public Administration**: Exploration of open data catalogs
 
 ### 2.2 AI Agent Use Cases
 
-- **Claude Desktop**: Integrazione nativa tramite configurazione MCP
-- **Altri client MCP**: Qualsiasi client compatibile con MCP protocol
-- **Automazioni**: Script e workflow che necessitano accesso a CKAN
+- **Claude Desktop**: Native integration via MCP configuration
+- **Other MCP clients**: Any MCP protocol-compatible client
+- **Automation**: Scripts and workflows requiring CKAN access
 
 ---
 
@@ -61,135 +61,135 @@ Un server MCP che espone tool per interagire con le API CKAN v3, permettendo agl
 
 #### FR-1: Dataset Search
 - **Priority**: High
-- **Description**: Cercare dataset su qualsiasi server CKAN usando sintassi Solr
+- **Description**: Search datasets on any CKAN server using Solr syntax
 - **Acceptance Criteria**:
-  - Supporto query full-text (q parameter)
-  - Filtri avanzati (fq parameter)
-  - Faceting per statistiche (organization, tags, formats)
-  - Paginazione (start/rows)
-  - Ordinamento (sort parameter)
-  - Output in formato Markdown o JSON
+  - Full-text query support (q parameter)
+  - Advanced filters (fq parameter)
+  - Faceting for statistics (organization, tags, formats)
+  - Pagination (start/rows)
+  - Sorting (sort parameter)
+  - Output in Markdown or JSON format
 - **Implementation Status**: ✅ Implemented (`ckan_package_search`)
 
 #### FR-2: Dataset Details
 - **Priority**: High
-- **Description**: Ottenere metadati completi di un dataset specifico
+- **Description**: Get complete metadata for a specific dataset
 - **Acceptance Criteria**:
-  - Ricerca per ID o name
-  - Metadati base (title, description, author, license)
-  - Lista risorse con dettagli (format, size, URL, DataStore status)
-  - Organizzazione e tag
-  - Campi extra custom
-  - Tracking statistics opzionale
+  - Search by ID or name
+  - Basic metadata (title, description, author, license)
+  - Resource list with details (format, size, URL, DataStore status)
+  - Organization and tags
+  - Custom extra fields
+  - Optional tracking statistics
 - **Implementation Status**: ✅ Implemented (`ckan_package_show`)
 
 #### FR-3: Organization Discovery
 - **Priority**: Medium
-- **Description**: Esplorare organizzazioni che pubblicano dataset
+- **Description**: Explore organizations publishing datasets
 - **Acceptance Criteria**:
-  - Lista tutte le organizzazioni (con/senza dettagli completi)
-  - Ricerca per pattern nel nome
-  - Ordinamento e paginazione
-  - Conteggio dataset per organizzazione
-  - Dettagli completi organizzazione con lista dataset
+  - List all organizations (with/without full details)
+  - Search by name pattern
+  - Sorting and pagination
+  - Dataset count per organization
+  - Complete organization details with dataset list
 - **Implementation Status**: ✅ Implemented (`ckan_organization_list`, `ckan_organization_show`, `ckan_organization_search`)
 
 #### FR-4: DataStore Query
 - **Priority**: High
-- **Description**: Interrogare dati tabulari nel CKAN DataStore con query standard e SQL
+- **Description**: Query tabular data in CKAN DataStore with standard queries and SQL
 - **Acceptance Criteria**:
-  - Query per resource_id
-  - Filtri chiave-valore
+  - Query by resource_id
+  - Key-value filters
   - Full-text search (q parameter)
-  - Ordinamento e selezione campi
-  - Paginazione (limit/offset)
-  - Valori distinct
-  - SQL queries con SELECT, WHERE, JOIN, GROUP BY
+  - Sorting and field selection
+  - Pagination (limit/offset)
+  - Distinct values
+  - SQL queries with SELECT, WHERE, JOIN, GROUP BY
 - **Implementation Status**: ✅ Implemented (`ckan_datastore_search`, `ckan_datastore_search_sql`)
 
 #### FR-5: Tag Management
 - **Priority**: Medium
-- **Description**: Esplorare tag disponibili nei portali CKAN
+- **Description**: Explore available tags in CKAN portals
 - **Acceptance Criteria**:
-  - Lista tutti i tag con conteggio dataset
-  - Ricerca per pattern nel nome
-  - Paginazione e ordinamento
-  - Faceting con vocabularies
+  - List all tags with dataset count
+  - Search by name pattern
+  - Pagination and sorting
+  - Faceting with vocabularies
 - **Implementation Status**: ✅ Implemented (`ckan_tag_list`)
 
 #### FR-6: Group Management
 - **Priority**: Medium
-- **Description**: Esplorare gruppi tematici nei portali CKAN
+- **Description**: Explore thematic groups in CKAN portals
 - **Acceptance Criteria**:
-  - Lista tutti i gruppi
-  - Ricerca per pattern
-  - Dettagli gruppo con dataset inclusi
-  - Ordinamento e paginazione
+  - List all groups
+  - Search by pattern
+  - Group details with included datasets
+  - Sorting and pagination
 - **Implementation Status**: ✅ Implemented (`ckan_group_list`, `ckan_group_show`, `ckan_group_search`)
 
 #### FR-7: AI-Powered Dataset Discovery
 - **Priority**: High
-- **Description**: Ricerca dataset con ranking per rilevanza AI-based
+- **Description**: Search datasets with AI-based relevance ranking
 - **Acceptance Criteria**:
-  - Query in linguaggio naturale
-  - Scoring basato su match title/description/tags
-  - Ranking automatico per rilevanza
-  - Output con score visibility
+  - Natural language queries
+  - Scoring based on title/description/tags match
+  - Automatic relevance ranking
+  - Output with score visibility
 - **Implementation Status**: ✅ Implemented (`ckan_find_relevant_datasets`)
 
 #### FR-8: Server Status Check
 - **Priority**: Low
-- **Description**: Verificare disponibilità e versione di un server CKAN
+- **Description**: Check availability and version of a CKAN server
 - **Acceptance Criteria**:
-  - Verifica connessione server
-  - Informazioni versione CKAN
-  - Site title e URL
+  - Server connection verification
+  - CKAN version information
+  - Site title and URL
 - **Implementation Status**: ✅ Implemented (`ckan_status_show`)
 
 ### 3.2 Non-Functional Requirements
 
 #### NFR-1: Performance
-- **Response Time**: Timeout HTTP a 30 secondi
-- **Throughput**: Limitato dalle API CKAN del server remoto
+- **Response Time**: HTTP timeout at 30 seconds
+- **Throughput**: Limited by remote CKAN server APIs
 - **Scalability**: 
-  - Stateless, può gestire richieste multiple in parallelo
-  - Cloudflare Workers: global edge deployment con cold start < 60ms
+  - Stateless, can handle multiple parallel requests
+  - Cloudflare Workers: global edge deployment with cold start < 60ms
   - Workers free tier: 100,000 requests/day
 - **Bundle Size**: ~420KB (135KB gzipped)
 
 #### NFR-2: Reliability
 - **Error Handling**: 
-  - Gestione errori HTTP (404, 500, timeout)
-  - Validazione input con Zod strict schemas
-  - Messaggi errore descrittivi
-- **Availability**: Dipende dalla disponibilità dei server CKAN remoti
+  - HTTP error management (404, 500, timeout)
+  - Input validation with Zod strict schemas
+  - Descriptive error messages
+- **Availability**: Depends on remote CKAN server availability
 
 #### NFR-3: Usability
 - **Output Format**: 
-  - Markdown per leggibilità umana (default)
-  - JSON per elaborazione programmatica
-- **Character Limit**: Troncamento automatico a 50.000 caratteri
+  - Markdown for human readability (default)
+  - JSON for programmatic processing
+- **Character Limit**: Automatic truncation at 50,000 characters
 - **Documentation**: 
-  - README completo con esempi
-  - EXAMPLES.md con casi d'uso avanzati
-  - HTML readme su worker root endpoint
-  - Deployment guide completa
+  - Complete README with examples
+  - EXAMPLES.md with advanced use cases
+  - HTML readme on worker root endpoint
+  - Complete deployment guide
 
 #### NFR-4: Compatibility
-- **CKAN Versions**: API v3 (compatibile con CKAN 2.x e 3.x)
-- **Node.js**: >= 18.0.0 (per installazione locale)
+- **CKAN Versions**: API v3 (compatible with CKAN 2.x and 3.x)
+- **Node.js**: >= 18.0.0 (for local installation)
 - **Transport Modes**: 
-  - stdio (default) per integrazione locale
-  - HTTP per accesso remoto
-  - Cloudflare Workers per deployment edge globale
+  - stdio (default) for local integration
+  - HTTP for remote access
+  - Cloudflare Workers for global edge deployment
 - **Runtimes**:
-  - Node.js (locale/self-hosted)
+  - Node.js (local/self-hosted)
   - Cloudflare Workers (browser runtime, Web Standards API)
 
 #### NFR-5: Security
-- **Authentication**: Non supportata (solo endpoint pubblici)
-- **Read-Only**: Tutti i tool sono read-only, nessuna modifica ai dati
-- **Input Validation**: Strict schema validation con Zod
+- **Authentication**: Not supported (public endpoints only)
+- **Read-Only**: All tools are read-only, no data modification
+- **Input Validation**: Strict schema validation with Zod
 
 ---
 
@@ -206,11 +206,11 @@ Un server MCP che espone tool per interagire con le API CKAN v3, permettendo agl
 - `@modelcontextprotocol/sdk@^1.0.4` - MCP protocol implementation
 - `axios@^1.7.2` - HTTP client
 - `zod@^3.23.8` - Schema validation
-- `express@^4.19.2` - HTTP server (modalità HTTP, opzionale)
+- `express@^4.19.2` - HTTP server (HTTP mode, optional)
 
 **Build Tools**:
-- `esbuild@^0.27.2` - Bundler ultra-veloce (~50ms)
-- `typescript@^5.4.5` - Type checking e editor support
+- `esbuild@^0.27.2` - Ultra-fast bundler (~50ms)
+- `typescript@^5.4.5` - Type checking and editor support
 - `wrangler@^4.58.0` - Cloudflare Workers CLI
 
 **Test Framework**:
@@ -259,29 +259,29 @@ Un server MCP che espone tool per interagire con le API CKAN v3, permettendo agl
 │  - open.canada.ca (CA)                               │
 │  - data.gov.uk (UK)                                  │
 │  - data.europa.eu (EU)                               │
-│  - 500+ altri portali CKAN                           │
+│  - 500+ other CKAN portals                           │
 └──────────────────────────────────────────────────────┘
 ```
 
 ### 4.3 Component Description
 
 #### MCP Tool Registry
-Registra i tool MCP disponibili con:
+Registers available MCP tools with:
 - Input schema (Zod validation)
 - Output format (Markdown/JSON)
 - MCP annotations (readonly, idempotent, etc.)
 - Handler function
 
 #### HTTP Client Layer
-- Normalizza URL server (rimuove trailing slash)
-- Costruisce endpoint API: `{server_url}/api/3/action/{action}`
-- Gestisce timeout e errori
-- Valida response (`success: true`)
+- Normalizes server URL (removes trailing slash)
+- Builds API endpoint: `{server_url}/api/3/action/{action}`
+- Handles timeout and errors
+- Validates response (`success: true`)
 
 #### Output Formatter
-- Markdown: Tabelle, sezioni, formatting per leggibilità
-- JSON: Structured output con `structuredContent`
-- Truncation: Limita output a CHARACTER_LIMIT (50000)
+- Markdown: Tables, sections, formatting for readability
+- JSON: Structured output with `structuredContent`
+- Truncation: Limits output to CHARACTER_LIMIT (50000)
 
 ---
 
@@ -289,29 +289,29 @@ Registra i tool MCP disponibili con:
 
 ### 5.1 ckan_package_search
 
-**Purpose**: Ricerca dataset con query Solr avanzate
+**Purpose**: Search datasets with advanced Solr queries
 
 **Input Parameters**:
 ```typescript
 {
-  server_url: string (required)      // Base URL server CKAN
-  q: string (default: "*:*")         // Query Solr
+  server_url: string (required)      // CKAN server base URL
+  q: string (default: "*:*")         // Solr query
   fq?: string                         // Filter query
-  rows: number (default: 10)          // Risultati per pagina (max 1000)
-  start: number (default: 0)          // Offset paginazione
-  sort?: string                       // Es: "metadata_modified desc"
-  facet_field?: string[]              // Campi per faceting
-  facet_limit: number (default: 50)   // Max valori per facet
+  rows: number (default: 10)          // Results per page (max 1000)
+  start: number (default: 0)          // Pagination offset
+  sort?: string                       // E.g.: "metadata_modified desc"
+  facet_field?: string[]              // Fields for faceting
+  facet_limit: number (default: 50)   // Max values per facet
   include_drafts: boolean (default: false)
   response_format: "markdown" | "json" (default: "markdown")
 }
 ```
 
 **Output**:
-- Conteggio totale risultati
-- Array di dataset con metadati base
-- Facets (se richiesti)
-- Link paginazione
+- Total results count
+- Array of datasets with basic metadata
+- Facets (if requested)
+- Pagination links
 
 **Solr Query Examples**:
 - `q: "popolazione"` - Full-text search
@@ -322,28 +322,28 @@ Registra i tool MCP disponibili con:
 
 ### 5.2 ckan_package_show
 
-**Purpose**: Dettagli completi di un dataset
+**Purpose**: Complete details of a dataset
 
 **Input Parameters**:
 ```typescript
 {
   server_url: string (required)
-  id: string (required)               // Dataset ID o name
+  id: string (required)               // Dataset ID or name
   include_tracking: boolean (default: false)
   response_format: "markdown" | "json"
 }
 ```
 
 **Output**:
-- Metadati completi (title, description, author, license)
-- Organizzazione
-- Tags e gruppi
-- Lista risorse con dettagli (format, size, URL, DataStore status)
-- Extra fields custom
+- Complete metadata (title, description, author, license)
+- Organization
+- Tags and groups
+- Resource list with details (format, size, URL, DataStore status)
+- Custom extra fields
 
 ### 5.3 ckan_organization_list
 
-**Purpose**: Lista organizzazioni
+**Purpose**: List organizations
 
 **Input Parameters**:
 ```typescript
@@ -351,25 +351,25 @@ Registra i tool MCP disponibili con:
   server_url: string (required)
   all_fields: boolean (default: false)
   sort: string (default: "name asc")
-  limit: number (default: 100)        // 0 per solo count
+  limit: number (default: 100)        // 0 for count only
   offset: number (default: 0)
   response_format: "markdown" | "json"
 }
 ```
 
 **Output**:
-- Array di organizzazioni (nomi o oggetti completi)
-- Se `limit=0`: conteggio organizzazioni con dataset
+- Array of organizations (names or complete objects)
+- If `limit=0`: count of organizations with datasets
 
 ### 5.4 ckan_organization_show
 
-**Purpose**: Dettagli organizzazione specifica
+**Purpose**: Specific organization details
 
 **Input Parameters**:
 ```typescript
 {
   server_url: string (required)
-  id: string (required)               // Organization ID o name
+  id: string (required)               // Organization ID or name
   include_datasets: boolean (default: true)
   include_users: boolean (default: false)
   response_format: "markdown" | "json"
@@ -377,33 +377,33 @@ Registra i tool MCP disponibili con:
 ```
 
 **Output**:
-- Dettagli organizzazione
-- Lista dataset (opzionale)
-- Lista utenti con ruoli (opzionale)
+- Organization details
+- Dataset list (optional)
+- User list with roles (optional)
 
 ### 5.5 ckan_organization_search
 
-**Purpose**: Ricerca organizzazioni per pattern
+**Purpose**: Search organizations by pattern
 
 **Input Parameters**:
 ```typescript
 {
   server_url: string (required)
-  pattern: string (required)          // Pattern (wildcards automatici)
+  pattern: string (required)          // Pattern (automatic wildcards)
   response_format: "markdown" | "json"
 }
 ```
 
 **Output**:
-- Lista organizzazioni matchanti
-- Conteggio dataset per organizzazione
-- Totale dataset
+- List of matching organizations
+- Dataset count per organization
+- Total datasets
 
-**Implementation**: Usa `package_search` con `organization:*{pattern}*` e faceting
+**Implementation**: Uses `package_search` with `organization:*{pattern}*` and faceting
 
 ### 5.6 ckan_datastore_search
 
-**Purpose**: Query dati tabulari nel DataStore
+**Purpose**: Query tabular data in DataStore
 
 **Input Parameters**:
 ```typescript
@@ -411,11 +411,11 @@ Registra i tool MCP disponibili con:
   server_url: string (required)
   resource_id: string (required)
   q?: string                          // Full-text search
-  filters?: Record<string, any>       // Filtri chiave-valore
+  filters?: Record<string, any>       // Key-value filters
   limit: number (default: 100)        // Max 32000
   offset: number (default: 0)
-  fields?: string[]                   // Campi da restituire
-  sort?: string                       // Es: "anno desc"
+  fields?: string[]                   // Fields to return
+  sort?: string                       // E.g.: "anno desc"
   distinct: boolean (default: false)
   response_format: "markdown" | "json"
 }
@@ -424,16 +424,16 @@ Registra i tool MCP disponibili con:
 **Output**:
 - Total records count
 - Fields metadata (type, id)
-- Records (max 50 in markdown per leggibilità)
-- Paginazione info
+- Records (max 50 in markdown for readability)
+- Pagination info
 
 **Limitations**:
-- Non tutte le risorse hanno DataStore attivo
-- Max 32000 record per query
+- Not all resources have active DataStore
+- Max 32000 records per query
 
 ### 5.7 ckan_status_show
 
-**Purpose**: Verifica stato server CKAN
+**Purpose**: Check CKAN server status
 
 **Input Parameters**:
 ```typescript
@@ -452,7 +452,7 @@ Registra i tool MCP disponibili con:
 
 ## 6. Supported CKAN Portals
 
-Il server può connettersi a **qualsiasi server CKAN pubblico**. Principali portali:
+The server can connect to **any public CKAN server**. Main portals:
 
 | Country | Portal | URL |
 |---------|--------|-----|
@@ -463,9 +463,9 @@ Il server può connettersi a **qualsiasi server CKAN pubblico**. Principali port
 | 🇪🇺 EU | European Data Portal | https://data.europa.eu |
 | 🌍 Demo | CKAN Official Demo | https://demo.ckan.org |
 
-**Compatibilità**:
-- CKAN API v3 (CKAN 2.x e 3.x)
-- Oltre 500 portali nel mondo
+**Compatibility**:
+- CKAN API v3 (CKAN 2.x and 3.x)
+- Over 500 portals worldwide
 
 ---
 
@@ -474,7 +474,7 @@ Il server può connettersi a **qualsiasi server CKAN pubblico**. Principali port
 ### 7.1 Prerequisites
 
 - Node.js >= 18.0.0
-- npm o yarn
+- npm or yarn
 
 ### 7.2 Installation
 
@@ -495,7 +495,7 @@ npm install ckan-mcp-server
 npx ckan-mcp-server
 ```
 
-> **Note**: La pubblicazione su npm registry è pianificata per permettere installazione semplice come PyPI in Python. Attualmente richiede installazione da repository.
+> **Note**: Publishing to npm registry is planned to enable simple installation like PyPI in Python. Currently requires installation from repository.
 
 #### Option 2: From Source (Current)
 
@@ -509,7 +509,7 @@ npm run build
 ### 7.3 Usage Modes
 
 #### stdio Mode (Default)
-Per integrazione con Claude Desktop e altri client MCP locali:
+For integration with Claude Desktop and other local MCP clients:
 
 ```bash
 npm start
@@ -542,13 +542,13 @@ npm start
 ```
 
 #### HTTP Mode
-Per accesso remoto via HTTP:
+For remote access via HTTP:
 
 ```bash
 TRANSPORT=http PORT=3000 npm start
 ```
 
-Server disponibile su: `http://localhost:3000/mcp`
+Server available at: `http://localhost:3000/mcp`
 
 **Test HTTP endpoint**:
 ```bash
@@ -559,10 +559,10 @@ curl -X POST http://localhost:3000/mcp \
 
 ### 7.4 Build System
 
-Il progetto usa **esbuild** (non tsc) per:
-- Build ultra-veloce (~4ms vs minuti con tsc)
-- Minimo utilizzo memoria (importante in WSL)
-- Bundle automatico con tree-shaking
+The project uses **esbuild** (not tsc) for:
+- Ultra-fast build (~4ms vs minutes with tsc)
+- Minimal memory usage (important in WSL)
+- Automatic bundling with tree-shaking
 
 ```bash
 npm run build        # Build con esbuild
@@ -576,7 +576,7 @@ npm run dev          # Build + run
 
 ### 8.1 Use Case 1: Dataset Discovery
 
-**Scenario**: Un data scientist cerca dataset su popolazione italiana
+**Scenario**: A data scientist searches for datasets on Italian population
 
 ```typescript
 // Step 1: Cerca dataset
@@ -587,7 +587,7 @@ ckan_package_search({
   sort: "metadata_modified desc"
 })
 
-// Step 2: Ottieni dettagli dataset interessante
+// Step 2: Get details of interesting dataset
 ckan_package_show({
   server_url: "https://www.dati.gov.it/opendata",
   id: "popolazione-residente-2023"
@@ -596,23 +596,23 @@ ckan_package_show({
 
 ### 8.2 Use Case 2: Organization Analysis
 
-**Scenario**: Analizzare la produzione di dati aperti regionali
+**Scenario**: Analyze regional open data production
 
 ```typescript
-// Step 1: Cerca organizzazioni regionali
+// Step 1: Search for regional organizations
 ckan_organization_search({
   server_url: "https://www.dati.gov.it/opendata",
   pattern: "regione"
 })
 
-// Step 2: Analizza dataset di una regione
+// Step 2: Analyze datasets of a region
 ckan_organization_show({
   server_url: "https://www.dati.gov.it/opendata",
   id: "regione-siciliana",
   include_datasets: true
 })
 
-// Step 3: Cerca dataset specifici dell'organizzazione
+// Step 3: Search for organization-specific datasets
 ckan_package_search({
   server_url: "https://www.dati.gov.it/opendata",
   fq: "organization:regione-siciliana",
@@ -623,7 +623,7 @@ ckan_package_search({
 
 ### 8.3 Use Case 3: Data Analysis with DataStore
 
-**Scenario**: Analizzare dati tabulari COVID-19
+**Scenario**: Analyze COVID-19 tabular data
 
 ```typescript
 // Step 1: Cerca dataset COVID
@@ -633,7 +633,7 @@ ckan_package_search({
   fq: "res_format:CSV"
 })
 
-// Step 2: Ottieni dettagli e resource_id
+// Step 2: Get details and resource_id
 ckan_package_show({
   server_url: "https://www.dati.gov.it/opendata",
   id: "covid-19-italia"
@@ -651,18 +651,18 @@ ckan_datastore_search({
 
 ### 8.4 Use Case 4: Statistical Analysis with Faceting
 
-**Scenario**: Analizzare distribuzione dataset per formato e organizzazione
+**Scenario**: Analyze dataset distribution by format and organization
 
 ```typescript
-// Statistiche formati
+// Format statistics
 ckan_package_search({
   server_url: "https://www.dati.gov.it/opendata",
   facet_field: ["res_format"],
   facet_limit: 100,
-  rows: 0  // Solo facets, no results
+  rows: 0  // Only facets, no results
 })
 
-// Statistiche organizzazioni
+// Organization statistics
 ckan_package_search({
   server_url: "https://www.dati.gov.it/opendata",
   facet_field: ["organization"],
@@ -670,7 +670,7 @@ ckan_package_search({
   rows: 0
 })
 
-// Distribuzione tag
+// Tag distribution
 ckan_package_search({
   server_url: "https://www.dati.gov.it/opendata",
   facet_field: ["tags"],
@@ -686,45 +686,45 @@ ckan_package_search({
 ### 9.1 Current Limitations
 
 1. **Read-Only**: 
-   - Non supporta creazione/modifica dataset
-   - Solo endpoint pubblici (no autenticazione)
+   - Does not support dataset creation/modification
+   - Only public endpoints (no authentication)
 
 2. **Character Limit**:
-   - Output troncato a 50.000 caratteri
-   - Hardcoded, non configurabile
+   - Output truncated at 50,000 characters
+   - Hardcoded, not configurable
 
 3. **No Caching**:
-   - Ogni richiesta fa chiamata HTTP fresca
-   - Cloudflare Workers può usare cache edge (opzionale)
+   - Every request makes a fresh HTTP call
+   - Cloudflare Workers can use edge cache (optional)
 
 4. **DataStore Limitations**:
-   - Non tutte le risorse hanno DataStore attivo
-   - Max 32.000 record per query
-   - Dipende dalla configurazione del server CKAN
+   - Not all resources have active DataStore
+   - Max 32,000 records per query
+   - Depends on CKAN server configuration
 
 5. **SQL Support Limitations**:
-   - `ckan_datastore_search_sql` funziona solo se il portale espone l'endpoint SQL
-   - Alcuni portali disabilitano SQL per motivi di sicurezza
-   - Workers runtime supporta SQL queries senza limitazioni
+   - `ckan_datastore_search_sql` works only if the portal exposes the SQL endpoint
+   - Some portals disable SQL for security reasons
+   - Workers runtime supports SQL queries without limitations
 
 6. **Timeout**:
-   - 30 secondi fissi per HTTP request
-   - Cloudflare Workers ha timeout più stringenti (10s per fetch)
+   - Fixed 30 seconds for HTTP request
+   - Cloudflare Workers has stricter timeout (10s per fetch)
 
 7. **Locale**:
-   - Date formattate in ISO `YYYY-MM-DD`
-   - Non parametrizzato
+   - Dates formatted in ISO `YYYY-MM-DD`
+   - Not parameterized
 
 ### 9.2 External Dependencies
 
-- **Network**: Richiede connessione internet
-- **CKAN Server Availability**: Dipende dalla disponibilità dei server remoti
-- **CKAN API Compatibility**: Richiede CKAN API v3
+- **Network**: Requires internet connection
+- **CKAN Server Availability**: Depends on remote server availability
+- **CKAN API Compatibility**: Requires CKAN API v3
 
 ### 9.3 Known Issues
 
-- Cloudflare Workers ha timeout più stringenti (10s) rispetto a Node.js (30s)
-- Alcuni portali CKAN hanno configurazioni non standard che potrebbero richiedere workaround
+- Cloudflare Workers has stricter timeout (10s) compared to Node.js (30s)
+- Some CKAN portals have non-standard configurations that might require workarounds
 
 ---
 
@@ -733,65 +733,65 @@ ckan_package_search({
 ### 10.1 Completed Features
 
 #### ✅ npm Package Publication (v0.3.2+)
-- Pubblicato su npm registry: `@aborruso/ckan-mcp-server`
-- Installazione globale: `npm install -g @aborruso/ckan-mcp-server`
-- CLI eseguibile: `ckan-mcp-server`
-- Versioning semantico (semver)
+- Published on npm registry: `@aborruso/ckan-mcp-server`
+- Global installation: `npm install -g @aborruso/ckan-mcp-server`
+- Executable CLI: `ckan-mcp-server`
+- Semantic versioning (semver)
   
 #### ✅ SQL Query Support (v0.4.4)
-- Implementato `ckan_datastore_search_sql`
-- Supporto completo per SELECT, WHERE, JOIN, GROUP BY
-- Richiede portali con DataStore SQL attivo
+- Implemented `ckan_datastore_search_sql`
+- Full support for SELECT, WHERE, JOIN, GROUP BY
+- Requires portals with active DataStore SQL
 
 #### ✅ AI-Powered Discovery (v0.4.6)
 - Tool `ckan_find_relevant_datasets`
-- Ranking per rilevanza con scoring
-- Query in linguaggio naturale
+- Relevance ranking with scoring
+- Natural language queries
 
 #### ✅ Tags and Groups (v0.4.3)
-- Tool `ckan_tag_list` con faceting
+- Tool `ckan_tag_list` with faceting
 - Tool `ckan_group_list`, `ckan_group_show`, `ckan_group_search`
-- Supporto completo per esplorazione tassonomie
+- Full support for taxonomy exploration
 
 #### ✅ Cloudflare Workers Deployment (v0.4.0)
-- Deploy globale edge: https://ckan-mcp-server.andy-pr.workers.dev
+- Global edge deployment: https://ckan-mcp-server.andy-pr.workers.dev
 - Free tier: 100k requests/day
 - Cold start < 60ms
-- Documentazione completa in DEPLOYMENT.md
+- Complete documentation in DEPLOYMENT.md
 
 #### ✅ Portal Search Parser Configuration (v0.4.7)
-- Override per-portal del query parser
-- Gestione portali con parser restrittivi
-- URL generator per browse/search links
+- Per-portal query parser override
+- Handling portals with restrictive parsers
+- URL generator for browse/search links
 
 ### 10.2 Planned Features
 
 #### High Priority
 
 - [ ] **Authentication Support**
-  - API key per endpoint privati
-  - OAuth per portali che lo supportano
+  - API key for private endpoints
+  - OAuth for portals that support it
   
 - [ ] **Caching Layer**
-  - Cache risultati frequenti in Workers KV
-  - TTL configurabile
+  - Cache frequent results in Workers KV
+  - Configurable TTL
   - Invalidation strategy
 
 #### Medium Priority
 
 - [ ] **Advanced DataStore Features**
   - Support for aggregations
-  - JOIN tra risorse
+  - JOIN between resources
   - Computed fields
 
 - [ ] **Batch Operations**
-  - Query multiple in parallelo
+  - Multiple parallel queries
   - Bulk export
 
 - [ ] **Configuration**
-  - Timeout configurabile
-  - Character limit configurabile
-  - Locale configurabile
+  - Configurable timeout
+  - Configurable character limit
+  - Configurable locale
 
 #### Low Priority
 
@@ -813,13 +813,13 @@ ckan_package_search({
 
 ✅ **Completed**:
 - npm registry publication: `@aborruso/ckan-mcp-server`
-- Installazione globale: `npm install -g @aborruso/ckan-mcp-server`
+- Global installation: `npm install -g @aborruso/ckan-mcp-server`
 - CLI command: `ckan-mcp-server`
-- GitHub Releases con tags semantici
+- GitHub Releases with semantic tags
 - Cloudflare Workers deployment
 
 **Future**:
-- [ ] Docker image (opzionale)
+- [ ] Docker image (optional)
 - [ ] Kubernetes deployment examples
 
 ### 10.3 Testing & Quality
@@ -828,26 +828,26 @@ ckan_package_search({
 - 130 unit and integration tests (100% passing)
 - vitest test runner
 - Coverage for all 13 tools
-- Fixtures per testing offline
+- Fixtures for offline testing
 
 **Future**:
 - [ ] Performance benchmarks
-- [ ] E2E tests con server CKAN live
-- [ ] Load testing su Workers
+- [ ] E2E tests with live CKAN server
+- [ ] Load testing on Workers
 
 ### 10.4 Documentation
 
 ✅ **Current State**:
-- README completo con esempi
-- EXAMPLES.md con casi d'uso avanzati
-- DEPLOYMENT.md con workflow release
-- HTML readme su worker root
-- PRD.md aggiornato
+- Complete README with examples
+- EXAMPLES.md with advanced use cases
+- DEPLOYMENT.md with release workflow
+- HTML readme on worker root
+- Updated PRD.md
 
 **Future**:
-- [ ] OpenAPI/Swagger spec per HTTP mode
+- [ ] OpenAPI/Swagger spec for HTTP mode
 - [ ] Video tutorial
-- [ ] Best practices guide per query optimization
+- [ ] Best practices guide for query optimization
 
 ---
 
@@ -921,13 +921,13 @@ ckan_package_search({
 
 ### 13.1 Glossary
 
-- **CKAN**: Comprehensive Knowledge Archive Network - piattaforma open source per portali dati aperti
-- **MCP**: Model Context Protocol - protocollo per integrare AI agent con strumenti esterni
-- **Solr**: Apache Solr - motore di ricerca full-text usato da CKAN
-- **DataStore**: Feature CKAN per query SQL-like su dati tabulari
-- **Faceting**: Aggregazioni statistiche per analisi distributiva
-- **Package**: Termine CKAN per "dataset"
-- **Resource**: File o API endpoint associato a un dataset
+- **CKAN**: Comprehensive Knowledge Archive Network - open source platform for open data portals
+- **MCP**: Model Context Protocol - protocol for integrating AI agents with external tools
+- **Solr**: Apache Solr - full-text search engine used by CKAN
+- **DataStore**: CKAN feature for SQL-like queries on tabular data
+- **Faceting**: Statistical aggregations for distributive analysis
+- **Package**: CKAN term for "dataset"
+- **Resource**: File or API endpoint associated with a dataset
 
 ### 13.2 Solr Query Syntax Quick Reference
 
