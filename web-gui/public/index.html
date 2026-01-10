@@ -4,86 +4,344 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CKAN Open Data Explorer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        --primary: #06b6d4;
+        --primary-dark: #0891b2;
+        --bg-main: #0f1419;
+        --bg-secondary: #1a1f28;
+        --bg-tertiary: #252d38;
+        --text-primary: #f8fafc;
+        --text-secondary: #cbd5e1;
+        --text-muted: #64748b;
+        --border: #334155;
+        --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'IBM Plex Sans', sans-serif;
+        background: var(--bg-main);
+        color: var(--text-primary);
+        overflow-x: hidden;
+      }
+
+      /* Background grid pattern */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image:
+          linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 32px 32px;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .serif {
+        font-family: 'DM Serif Display', serif;
+      }
+
+      /* Smooth animations */
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      .animate-slide-in {
+        animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .animate-pulse-slow {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-muted);
+      }
+
+      /* Glass morphism effect */
+      .glass {
+        background: rgba(26, 31, 40, 0.6);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      /* Gradient text */
+      .gradient-text {
+        background: var(--accent-gradient);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      /* Message animations */
+      .message-user {
+        animation: slideInUp 0.3s ease-out;
+        margin-left: auto;
+        max-width: 80%;
+      }
+
+      .message-assistant {
+        animation: slideInUp 0.3s ease-out 0.1s both;
+        max-width: 100%;
+      }
+
+      /* Dataset card hover effect */
+      .dataset-card {
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid var(--border);
+      }
+
+      .dataset-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--primary);
+        box-shadow: 0 8px 24px rgba(6, 182, 212, 0.15);
+      }
+
+      /* Button styles */
+      .btn-primary {
+        background: var(--accent-gradient);
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-primary::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      .btn-primary:hover::before {
+        opacity: 1;
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(6, 182, 212, 0.3);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border);
+        transition: all 0.2s ease;
+      }
+
+      .btn-secondary:hover {
+        background: var(--bg-secondary);
+        border-color: var(--text-muted);
+      }
+
+      /* Input focus states */
+      input:focus, textarea:focus {
+        outline: none;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+      }
+
+      /* Status indicator pulse */
+      .status-online {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.4);
+      }
+
+      /* Collapsible settings */
+      .settings-collapsed {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .settings-expanded {
+        max-height: 1000px;
+        transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* Loading shimmer */
+      .shimmer {
+        background: linear-gradient(
+          90deg,
+          var(--bg-tertiary) 0%,
+          rgba(255,255,255,0.05) 50%,
+          var(--bg-tertiary) 100%
+        );
+        background-size: 1000px 100%;
+        animation: shimmer 2s infinite linear;
+      }
+    </style>
   </head>
-  <body class="min-h-screen bg-slate-50 text-slate-900">
-    <main class="mx-auto flex w-full max-w-5xl flex-col gap-8 px-4 py-10">
-      <header class="flex flex-col gap-6 rounded-3xl bg-white p-6 shadow-sm">
-        <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 class="text-3xl font-semibold">CKAN Open Data Explorer</h1>
-            <p class="text-slate-500">
-              Chat semplice che interroga il server MCP e mostra i dataset trovati.
+  <body class="min-h-screen">
+    <main class="relative z-10 mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 md:py-12">
+      <!-- Header -->
+      <header class="glass rounded-2xl p-6 md:p-8 animate-slide-in">
+        <div class="flex items-start justify-between gap-4 mb-6">
+          <div class="flex-1">
+            <h1 class="serif text-4xl md:text-5xl mb-2 gradient-text">
+              CKAN Explorer
+            </h1>
+            <p class="text-base" style="color: var(--text-secondary);">
+              Conversational interface for open data research
             </p>
           </div>
-          <div class="flex items-center gap-2 text-sm">
-            <span id="status-dot" class="h-2.5 w-2.5 rounded-full bg-slate-300"></span>
-            <span id="status-text" class="text-slate-500">Verifica MCP...</span>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-full" style="background: var(--bg-tertiary); border: 1px solid var(--border);">
+            <span id="status-dot" class="h-2.5 w-2.5 rounded-full" style="background: var(--text-muted);"></span>
+            <span id="status-text" class="text-sm" style="color: var(--text-secondary);">Checking...</span>
           </div>
         </div>
-        <div class="grid gap-4 md:grid-cols-3">
-          <label class="flex flex-col gap-2 text-sm font-medium">
-            Endpoint MCP
-            <input
-              id="mcp-endpoint"
-              class="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-              placeholder="https://ckan-mcp-server.andy-pr.workers.dev/mcp"
-            />
-          </label>
-          <label class="flex flex-col gap-2 text-sm font-medium">
-            Server CKAN
-            <input
-              id="ckan-server"
-              class="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-              placeholder="https://www.dati.gov.it/opendata"
-            />
-          </label>
-          <label class="flex flex-col gap-2 text-sm font-medium">
-            API key Gemini
-            <input
-              id="gemini-key"
-              type="password"
-              class="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
-              placeholder="AIza..."
-            />
-          </label>
-        </div>
-        <div class="flex flex-wrap items-center justify-between gap-4 text-sm">
-          <button
-            id="save-settings"
-            class="rounded-full bg-blue-600 px-5 py-2 font-semibold text-white transition hover:bg-blue-700"
-          >
-            Applica impostazioni
-          </button>
-          <p class="text-slate-500">
-            Query in linguaggio naturale via Gemini 2.5 Flash.
-          </p>
+
+        <!-- Settings toggle -->
+        <button
+          id="settings-toggle"
+          class="w-full flex items-center justify-between px-4 py-3 rounded-xl mb-4 btn-secondary text-sm font-medium"
+          style="color: var(--text-secondary);"
+        >
+          <span>⚙️ Configuration</span>
+          <svg id="settings-icon" class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+          </svg>
+        </button>
+
+        <!-- Settings panel -->
+        <div id="settings-panel" class="settings-collapsed">
+          <div class="grid gap-4 md:grid-cols-3 mb-4">
+            <label class="flex flex-col gap-2">
+              <span class="text-xs font-medium uppercase tracking-wider" style="color: var(--text-muted);">MCP Endpoint</span>
+              <input
+                id="mcp-endpoint"
+                class="rounded-lg px-3 py-2.5 text-sm transition-all"
+                style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);"
+                placeholder="https://ckan-mcp-server.andy-pr.workers.dev/mcp"
+              />
+            </label>
+            <label class="flex flex-col gap-2">
+              <span class="text-xs font-medium uppercase tracking-wider" style="color: var(--text-muted);">CKAN Server</span>
+              <input
+                id="ckan-server"
+                class="rounded-lg px-3 py-2.5 text-sm transition-all"
+                style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);"
+                placeholder="https://www.dati.gov.it/opendata"
+              />
+            </label>
+            <label class="flex flex-col gap-2">
+              <span class="text-xs font-medium uppercase tracking-wider" style="color: var(--text-muted);">Gemini API Key</span>
+              <input
+                id="gemini-key"
+                type="password"
+                class="rounded-lg px-3 py-2.5 text-sm transition-all"
+                style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);"
+                placeholder="AIza..."
+              />
+            </label>
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <button
+              id="save-settings"
+              class="btn-primary px-6 py-2.5 rounded-lg font-medium text-sm text-white"
+            >
+              Apply Settings
+            </button>
+            <p class="text-xs" style="color: var(--text-muted);">
+              Powered by Gemini 2.5 Flash • Natural language queries
+            </p>
+          </div>
         </div>
       </header>
 
-      <section class="flex flex-col gap-4 rounded-3xl bg-white p-6 shadow-sm">
-        <div id="tool-status" class="hidden rounded-xl bg-blue-50 px-4 py-2 text-sm text-blue-700"></div>
-        <div id="messages" class="flex flex-col gap-4">
-          <div class="rounded-2xl bg-slate-100 px-4 py-3 text-sm text-slate-700">
-            Ciao! Inserisci una query (es. "energia rinnovabile") per cercare dataset.
+      <!-- Messages area -->
+      <section class="glass rounded-2xl p-6 min-h-[400px] flex flex-col animate-slide-in" style="animation-delay: 0.1s;">
+        <div id="tool-status" class="hidden mb-4 px-4 py-2 rounded-lg shimmer text-sm font-medium" style="color: var(--primary);">
+          ⚡ Processing...
+        </div>
+        <div id="messages" class="flex flex-col gap-4 flex-1">
+          <div class="message-assistant rounded-xl px-4 py-3 text-sm" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);">
+            👋 Welcome! Ask me anything about open datasets (e.g., "renewable energy datasets")
           </div>
         </div>
       </section>
 
-      <section class="rounded-3xl bg-white p-6 shadow-sm">
-        <div class="flex flex-col gap-3 md:flex-row">
+      <!-- Input area -->
+      <section class="glass rounded-2xl p-4 md:p-6 animate-slide-in" style="animation-delay: 0.2s;">
+        <div class="flex flex-col md:flex-row gap-3">
           <textarea
             id="message-input"
             rows="2"
-            class="w-full flex-1 rounded-2xl border border-slate-200 px-4 py-3 text-sm focus:border-blue-500 focus:outline-none"
-            placeholder="Scrivi la tua ricerca"
+            class="flex-1 rounded-xl px-4 py-3 text-sm resize-none transition-all"
+            style="background: var(--bg-tertiary); border: 1px solid var(--border); color: var(--text-primary);"
+            placeholder="Ask about datasets..."
           ></textarea>
-          <button
-            id="send-btn"
-            class="rounded-2xl bg-slate-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-          >
-            Cerca
-          </button>
+          <div class="flex gap-2">
+            <button
+              id="reset-btn"
+              class="btn-secondary px-5 py-3 rounded-xl text-sm font-medium whitespace-nowrap"
+              style="color: var(--text-secondary);"
+              title="Clear conversation"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+              </svg>
+            </button>
+            <button
+              id="send-btn"
+              class="btn-primary px-6 py-3 rounded-xl text-sm font-semibold text-white whitespace-nowrap flex items-center gap-2"
+            >
+              <span>Search</span>
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </section>
     </main>
@@ -103,14 +361,20 @@
         messages: document.getElementById("messages"),
         input: document.getElementById("message-input"),
         send: document.getElementById("send-btn"),
-        toolStatus: document.getElementById("tool-status")
+        reset: document.getElementById("reset-btn"),
+        toolStatus: document.getElementById("tool-status"),
+        settingsToggle: document.getElementById("settings-toggle"),
+        settingsPanel: document.getElementById("settings-panel"),
+        settingsIcon: document.getElementById("settings-icon")
       };
 
       const state = {
         endpoint: localStorage.getItem("mcpEndpoint") || DEFAULT_ENDPOINT,
         ckanServer: localStorage.getItem("ckanServer") || DEFAULT_CKAN,
         geminiKey: localStorage.getItem("geminiApiKey") || "",
-        busy: false
+        busy: false,
+        conversationHistory: [],
+        settingsExpanded: false
       };
 
       elements.endpoint.value = state.endpoint;
@@ -121,11 +385,14 @@
         elements.statusText.textContent = text;
         elements.statusDot.className = "h-2.5 w-2.5 rounded-full";
         if (status === "ok") {
-          elements.statusDot.classList.add("bg-emerald-500");
+          elements.statusDot.style.background = "#06b6d4";
+          elements.statusDot.classList.add("status-online");
         } else if (status === "error") {
-          elements.statusDot.classList.add("bg-rose-500");
+          elements.statusDot.style.background = "#ef4444";
+          elements.statusDot.classList.remove("status-online");
         } else {
-          elements.statusDot.classList.add("bg-slate-300");
+          elements.statusDot.style.background = "#64748b";
+          elements.statusDot.classList.remove("status-online");
         }
       };
 
@@ -140,11 +407,14 @@
 
       const addMessage = (role, content) => {
         const wrapper = document.createElement("div");
-        const baseClass = "rounded-2xl px-4 py-3 text-sm";
-        wrapper.className =
-          role === "user"
-            ? `${baseClass} bg-slate-900 text-white self-end`
-            : `${baseClass} bg-slate-100 text-slate-700`;
+
+        if (role === "user") {
+          wrapper.className = "message-user rounded-xl px-4 py-3 text-sm";
+          wrapper.style.cssText = "background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%); color: white; font-weight: 500;";
+        } else {
+          wrapper.className = "message-assistant rounded-xl px-4 py-3 text-sm";
+          wrapper.style.cssText = "background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);";
+        }
 
         if (typeof content === "string") {
           wrapper.textContent = content;
@@ -153,26 +423,47 @@
         }
 
         elements.messages.appendChild(wrapper);
-        wrapper.scrollIntoView({ behavior: "smooth", block: "end" });
+        setTimeout(() => {
+          wrapper.scrollIntoView({ behavior: "smooth", block: "end" });
+        }, 100);
       };
 
       const createDatasetCard = (dataset) => {
         const card = document.createElement("div");
-        card.className = "rounded-2xl border border-slate-200 bg-white p-4 shadow-sm";
+        card.className = "dataset-card rounded-xl p-5 cursor-pointer";
+        card.style.cssText = "background: var(--bg-secondary);";
 
         const title = document.createElement("h3");
-        title.className = "text-base font-semibold text-slate-900";
+        title.className = "text-base font-semibold mb-2";
+        title.style.color = "var(--text-primary)";
         title.textContent = dataset.title || dataset.name || "Dataset";
 
         const desc = document.createElement("p");
-        desc.className = "mt-2 text-sm text-slate-500";
-        desc.textContent = dataset.notes || "Descrizione non disponibile.";
+        desc.className = "text-sm mb-3 line-clamp-2";
+        desc.style.color = "var(--text-secondary)";
+        desc.textContent = dataset.notes || "No description available.";
 
-        const meta = document.createElement("p");
-        meta.className = "mt-3 text-xs text-slate-400";
-        const orgName = dataset.organization?.title || dataset.organization?.name || "Organizzazione";
+        const meta = document.createElement("div");
+        meta.className = "flex items-center gap-4 text-xs";
+        meta.style.color = "var(--text-muted)";
+
+        const orgName = dataset.organization?.title || dataset.organization?.name || "Unknown";
         const resources = Array.isArray(dataset.resources) ? dataset.resources.length : 0;
-        meta.textContent = `${orgName} · risorse: ${resources}`;
+
+        meta.innerHTML = `
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            ${orgName}
+          </span>
+          <span class="flex items-center gap-1">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+            </svg>
+            ${resources} resource${resources !== 1 ? 's' : ''}
+          </span>
+        `;
 
         card.append(title, desc, meta);
         return card;
@@ -212,7 +503,7 @@
         }
         const data = await response.json();
         if (data.error) {
-          throw new Error(data.error.message || "Errore MCP");
+          throw new Error(data.error.message || "MCP Error");
         }
         return data.result;
       };
@@ -226,51 +517,20 @@
       };
 
       const checkMcp = async () => {
-        setStatus("checking", "Verifica MCP...");
+        setStatus("checking", "Checking...");
         try {
           await callMcp("tools/list", {});
-          setStatus("ok", "MCP online");
+          setStatus("ok", "Online");
         } catch (error) {
-          setStatus("error", "MCP offline");
+          setStatus("error", "Offline");
         }
       };
 
       const stopwords = new Set([
-        "a",
-        "al",
-        "allo",
-        "alla",
-        "alle",
-        "ai",
-        "agli",
-        "da",
-        "dal",
-        "dallo",
-        "dalla",
-        "delle",
-        "dei",
-        "del",
-        "della",
-        "di",
-        "e",
-        "ed",
-        "il",
-        "lo",
-        "la",
-        "le",
-        "i",
-        "gli",
-        "in",
-        "su",
-        "per",
-        "con",
-        "che",
-        "quali",
-        "quale",
-        "quanti",
-        "quanto",
-        "tema",
-        "dataset"
+        "a", "al", "allo", "alla", "alle", "ai", "agli", "da", "dal", "dallo",
+        "dalla", "delle", "dei", "del", "della", "di", "e", "ed", "il", "lo",
+        "la", "le", "i", "gli", "in", "su", "per", "con", "che", "quali",
+        "quale", "quanti", "quanto", "tema", "dataset"
       ]);
 
       const normalizeQuery = (query) => {
@@ -285,12 +545,18 @@
         return tokens.join(" ");
       };
 
-      const callGemini = async (userQuery) => {
+      const callGemini = async (userQuery, history = []) => {
         if (!state.geminiKey) {
-          throw new Error("API key Gemini mancante");
+          throw new Error("Missing Gemini API key");
         }
-        const prompt = `Converti la richiesta in una query Solr per CKAN. Rispondi solo con JSON: {"q":"..."}.
-Richiesta: ${userQuery}`;
+        const systemPrompt = "Convert requests to Solr queries for CKAN. Respond only with JSON: {\"q\":\"...\"}. Use conversation context to refine searches.";
+        const contents = [
+          ...history,
+          {
+            role: "user",
+            parts: [{ text: `${systemPrompt}\nRequest: ${userQuery}` }]
+          }
+        ];
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${state.geminiKey}`,
           {
@@ -300,7 +566,7 @@ Richiesta: ${userQuery}`;
               Accept: "application/json"
             },
             body: JSON.stringify({
-              contents: [{ role: "user", parts: [{ text: prompt }] }],
+              contents: contents,
               generationConfig: { temperature: 0.2, maxOutputTokens: 200 }
             })
           }
@@ -313,19 +579,19 @@ Richiesta: ${userQuery}`;
         const jsonStart = text.indexOf("{");
         const jsonEnd = text.lastIndexOf("}");
         if (jsonStart === -1 || jsonEnd === -1) {
-          throw new Error("Risposta Gemini non valida");
+          throw new Error("Invalid Gemini response");
         }
         const parsed = JSON.parse(text.slice(jsonStart, jsonEnd + 1));
         if (!parsed.q) {
-          throw new Error("Gemini non ha restituito q");
+          throw new Error("Gemini did not return q");
         }
         return parsed.q;
       };
 
       const runSearch = async (query) => {
         const normalizedQuery = normalizeQuery(query);
-        const solrQuery = await callGemini(query).catch(() => normalizedQuery);
-        setToolStatus("Uso tool: ckan_package_search");
+        const solrQuery = await callGemini(query, state.conversationHistory).catch(() => normalizedQuery);
+        setToolStatus("⚡ Searching datasets...");
         const result = await callMcp("tools/call", {
           name: "ckan_package_search",
           arguments: {
@@ -344,15 +610,25 @@ Richiesta: ${userQuery}`;
         if (!query || state.busy) return;
         state.busy = true;
         elements.send.disabled = true;
-        elements.send.classList.add("opacity-60");
+        elements.send.style.opacity = "0.5";
 
         addMessage("user", query);
         elements.input.value = "";
 
+        // Add user message to conversation history
+        state.conversationHistory.push({
+          role: "user",
+          parts: [{ text: query }]
+        });
+
         try {
           const data = await runSearch(query);
           if (!data || !Array.isArray(data.results)) {
-            addMessage("assistant", "Nessun risultato disponibile.");
+            addMessage("assistant", "No results found.");
+            state.conversationHistory.push({
+              role: "model",
+              parts: [{ text: "No results found." }]
+            });
             return;
           }
 
@@ -360,21 +636,50 @@ Richiesta: ${userQuery}`;
           container.className = "flex flex-col gap-3";
 
           const summary = document.createElement("p");
-          summary.className = "text-sm text-slate-600";
-          summary.textContent = `Risultati trovati: ${data.count ?? data.results.length}`;
+          summary.className = "text-sm font-medium mb-1";
+          summary.style.color = "var(--primary)";
+          summary.textContent = `📊 Found ${data.count ?? data.results.length} dataset${(data.count ?? data.results.length) !== 1 ? 's' : ''}`;
           container.appendChild(summary);
 
           data.results.forEach((dataset) => container.appendChild(createDatasetCard(dataset)));
           addMessage("assistant", container);
+
+          state.conversationHistory.push({
+            role: "model",
+            parts: [{ text: `Found ${data.count ?? data.results.length} datasets for "${query}"` }]
+          });
         } catch (error) {
-          addMessage("assistant", `Errore: ${error.message || "Impossibile contattare MCP"}`);
+          addMessage("assistant", `❌ Error: ${error.message || "Could not contact MCP"}`);
+          state.conversationHistory.push({
+            role: "model",
+            parts: [{ text: `Error: ${error.message || "Could not contact MCP"}` }]
+          });
         } finally {
           state.busy = false;
           elements.send.disabled = false;
-          elements.send.classList.remove("opacity-60");
+          elements.send.style.opacity = "1";
           setToolStatus("");
+
+          // Limit history to last 10 messages (5 exchanges)
+          if (state.conversationHistory.length > 10) {
+            state.conversationHistory = state.conversationHistory.slice(-10);
+          }
         }
       };
+
+      // Settings toggle
+      elements.settingsToggle.addEventListener("click", () => {
+        state.settingsExpanded = !state.settingsExpanded;
+        if (state.settingsExpanded) {
+          elements.settingsPanel.classList.remove("settings-collapsed");
+          elements.settingsPanel.classList.add("settings-expanded");
+          elements.settingsIcon.style.transform = "rotate(180deg)";
+        } else {
+          elements.settingsPanel.classList.remove("settings-expanded");
+          elements.settingsPanel.classList.add("settings-collapsed");
+          elements.settingsIcon.style.transform = "rotate(0deg)";
+        }
+      });
 
       elements.save.addEventListener("click", async () => {
         state.endpoint = elements.endpoint.value.trim() || DEFAULT_ENDPOINT;
@@ -392,6 +697,11 @@ Richiesta: ${userQuery}`;
           event.preventDefault();
           handleSend();
         }
+      });
+
+      elements.reset.addEventListener("click", () => {
+        state.conversationHistory = [];
+        elements.messages.innerHTML = '<div class="message-assistant rounded-xl px-4 py-3 text-sm" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border);">🔄 Conversation reset. Ask me anything!</div>';
       });
 
       checkMcp();

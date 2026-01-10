@@ -2,6 +2,23 @@
 
 ## 2026-01-10
 
+### Web GUI redesign + conversation context
+- **UI redesign**: Dark theme with data editorial aesthetic
+  - Typography: DM Serif Display + IBM Plex Sans
+  - Color scheme: Deep charcoal (#0f1419) with cyan accent (#06b6d4)
+  - Glass morphism effects, gradient text, subtle grid background
+  - Smooth animations: slide-in, hover transitions, status pulse
+  - Collapsible settings panel with icon-based controls
+  - Enhanced dataset cards with hover lift and glow
+  - Custom scrollbar, loading shimmer, SVG icons throughout
+- **Conversation context**: Added history management
+  - Gemini receives conversation history for contextual refinement
+  - Users can ask follow-up queries ("only from Tuscany", "last 5 years")
+  - History limited to 10 messages (5 exchanges) to avoid token overflow
+  - Reset button to clear conversation and start fresh
+- **UX improvements**: Better visual hierarchy, spacing, interaction patterns
+- **Responsive**: Mobile-friendly layout maintained
+
 ### Web GUI chat MVP
 - **Web GUI**: Replaced landing with MCP-backed chat UI (vanilla + Tailwind)
 - **MCP**: Added JSON-RPC search flow with dataset cards
