@@ -4,7 +4,6 @@
 
 # CKAN MCP Server
 
-
 MCP (Model Context Protocol) server for interacting with CKAN-based open data portals.
 
 ## Features
@@ -18,6 +17,12 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 - ⚡ Pagination and faceting support
 - 📄 MCP Resource Templates for direct data access
 - 🧪 Test suite with 179 tests (100% passing)
+
+---
+
+👉 If you want to dive deeper, the [**AI-generated DeepWiki**](https://deepwiki.com/aborruso/ckan-mcp-server) is very well done.
+
+---
 
 ## Installation
 
