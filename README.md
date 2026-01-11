@@ -1,6 +1,7 @@
 # CKAN MCP Server
 
 [![npm version](https://img.shields.io/npm/v/@aborruso/ckan-mcp-server)](https://www.npmjs.com/package/@aborruso/ckan-mcp-server)
+[![GitHub](https://img.shields.io/badge/github-aborruso%2Fckan--mcp--server-blue?logo=github)](https://github.com/aborruso/ckan-mcp-server)
 
 MCP (Model Context Protocol) server for interacting with CKAN-based open data portals.
 
