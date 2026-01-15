@@ -21,18 +21,20 @@ Portare nel server CKAN un sottoinsieme di funzionalita "ad alto impatto":
 - aggiornare README con esempi
 **Rischi**: minimi (solo documentazione/UX).
 
-## Proposte prioritarie
-
-### 1) Resource template aggiuntivi (alta priorita, effort: **S/M**)
-**Cosa**: aggiungere risorse MCP per accesso diretto a dataset filtrati da tag/group/format/keyword.
+### Resource template aggiuntivi (completato)
+**Cosa**: aggiunte risorse MCP per accesso diretto a dataset filtrati da tag/group/format/keyword.
 **Valore**: facilita exploration e discovery senza chiamare tool complesse.
-**Riferimento**: `@mcp.resource("theme://{id}")`, `publisher://`, `format://`, `keyword://`.
+**Riferimento**: `ckan://{server}/group/{name}/datasets`, `organization/{name}/datasets`, `tag/{name}/datasets`, `format/{format}/datasets`.
 **Impatto**:
 - nuove risorse in `src/resources/` con mapping alle chiamate CKAN (package_search con filtri)
+- supporto per mappare hostname a base URL CKAN (es. dati.gov.it → /opendata)
+- fallback formato su `res_format` e `distribution_format`
 - aggiornare README e docs con nuovi URI
 **Rischi**: medi (serve definire mappature CKAN coerenti per tag/group/format).
 
-### 2) HTTP resiliente: retry + rate limiting + pool (alta priorita, effort: **M**)
+## Proposte prioritarie
+
+### 1) HTTP resiliente: retry + rate limiting + pool (alta priorita, effort: **M**)
 **Cosa**: introdurre client HTTP con retry/backoff, rate limiting per host e pool riusabile.
 **Valore**: stabilita su portali CKAN lenti o con limiti.
 **Riferimento**: `datos-gob-es-mcp/core/http.py`, `core/ratelimit.py`, `core/config.py`.
@@ -42,7 +44,7 @@ Portare nel server CKAN un sottoinsieme di funzionalita "ad alto impatto":
 - config via env (max retries, delay, RPS)
 **Rischi**: medi (potenziali cambiamenti comportamentali in caso di errori).
 
-### 3) Fetch parallelo per paginazione (media priorita, effort: **M**)
+### 2) Fetch parallelo per paginazione (media priorita, effort: **M**)
 **Cosa**: opzione `fetch_all=true` per scaricare piu pagine in parallelo fino a un max.
 **Valore**: velocizza il recupero di grandi cataloghi.
 **Riferimento**: `_fetch_all_pages` in `datos-gob-es-mcp/server.py`.
@@ -51,7 +53,7 @@ Portare nel server CKAN un sottoinsieme di funzionalita "ad alto impatto":
 - limite max risultati e numero di pagine
 **Rischi**: moderati (carico sui portali, da limitare con rate limit).
 
-### 4) Data preview + statistiche colonne (media priorita, effort: **M/L**)
+### 3) Data preview + statistiche colonne (media priorita, effort: **M/L**)
 **Cosa**: preview dati per risorse CSV/JSON/TSV con righe campione e statistiche (null rate, unique, min/max).
 **Valore**: aiuta l'utente a capire la struttura senza scaricare tutto.
 **Riferimento**: `_parse_csv_preview`, `_calculate_column_stats` in `datos-gob-es-mcp/server.py`.
@@ -62,21 +64,20 @@ Portare nel server CKAN un sottoinsieme di funzionalita "ad alto impatto":
 
 ## Proposte secondarie
 
-### 5) Cache metadati (bassa priorita, effort: **M**)
+### 4) Cache metadati (bassa priorita, effort: **M**)
 **Cosa**: cache TTL su lista org/group/tag per ridurre chiamate ripetute.
 **Valore**: performance e minor load sui portali.
 **Riferimento**: `MetadataCache` in `datos-gob-es-mcp/server.py`.
 
-### 6) Metriche d'uso locali (bassa priorita, effort: **S/M**)
+### 5) Metriche d'uso locali (bassa priorita, effort: **S/M**)
 **Cosa**: contatori di tool, dataset piu accessi, query recenti.
 **Valore**: telemetria minimale per capire pattern di uso (locale).
 **Riferimento**: `UsageMetrics` in `datos-gob-es-mcp/server.py`.
 
 ## Raccomandazione di roadmap
-1. Resource template (1-2 giorni)
-2. Retry/rate limiting/pool HTTP (2-3 giorni)
-3. Fetch parallelo (1-2 giorni, con limiti)
-4. Preview dati (3-5 giorni, con analisi e parsing robusto)
+1. Retry/rate limiting/pool HTTP (2-3 giorni)
+2. Fetch parallelo (1-2 giorni, con limiti)
+3. Preview dati (3-5 giorni, con analisi e parsing robusto)
 
 ## Note di implementazione
 - Tutte le nuove opzioni dovrebbero essere opzionali e disabilitabili via env.

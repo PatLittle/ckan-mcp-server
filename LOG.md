@@ -7,6 +7,7 @@
 - **Fix**: Map `ckan://` hostnames to portal API base URLs (e.g., dati.gov.it → /opendata)
 - **Fix**: Format filtering now matches `res_format` and `distribution_format` (with case variants)
 - **Docs**: Updated README and future ideas with new URI templates
+- **Docs**: Updated `docs/proposta-spunti-datos-gob-es-mcp.md` marking resource templates as completed
 - **Tests**: Added unit tests for dataset filter resource templates
 - **Files**: New `src/resources/dataset-filters.ts`, updates in `src/resources/index.ts`, `src/worker.ts`
 
