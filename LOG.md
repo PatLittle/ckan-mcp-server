@@ -1,5 +1,13 @@
 # LOG
 
+## 2026-01-15
+
+### Version 0.4.10 - Guided MCP prompts
+- **Feature**: Added 5 guided MCP prompts (theme, organization, format, recent datasets, dataset analysis)
+- **Docs**: README and new `docs/prompts.md` updated with usage examples
+- **Tests**: Added prompt unit tests; total now 184 tests (all passing)
+- **Files**: New `src/prompts/*`, updates in `src/server.ts`, `src/worker.ts`, README.md
+
 ## 2026-01-11
 
 ### Version 0.4.9 - Security, Testing & Documentation

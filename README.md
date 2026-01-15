@@ -16,7 +16,8 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 - 🎨 Output in Markdown or JSON format
 - ⚡ Pagination and faceting support
 - 📄 MCP Resource Templates for direct data access
-- 🧪 Test suite with 179 tests (100% passing)
+- 🧭 Guided MCP prompts for common workflows
+- 🧪 Test suite with 184 tests (100% passing)
 
 ---
 
@@ -44,7 +45,7 @@ npm install
 # Build with esbuild (fast, ~4ms)
 npm run build
 
-# Run tests (179 tests)
+# Run tests (184 tests)
 npm test
 ```
 
@@ -208,6 +209,29 @@ Examples:
 ckan://dati.gov.it/dataset/vaccini-covid
 ckan://demo.ckan.org/resource/abc-123
 ckan://data.gov/organization/sample-org
+```
+
+## Guided Prompts
+
+Prompt templates that guide users through common CKAN workflows:
+
+- **ckan-search-by-theme**: Find a theme/group and list datasets under it
+- **ckan-search-by-organization**: Discover an organization and list its datasets
+- **ckan-search-by-format**: Find datasets by resource format (CSV/JSON/etc.)
+- **ckan-recent-datasets**: List recently updated datasets
+- **ckan-analyze-dataset**: Inspect dataset metadata and explore DataStore resources
+
+Example (retrieve a prompt by name with args):
+
+```json
+{
+  "name": "ckan-search-by-theme",
+  "arguments": {
+    "server_url": "https://www.dati.gov.it/opendata",
+    "theme": "ambiente",
+    "rows": 10
+  }
+}
 ```
 
 ## Usage Examples
@@ -505,10 +529,17 @@ ckan-mcp-server/
 │   │   ├── dataset.ts
 │   │   ├── resource.ts
 │   │   └── organization.ts
+│   ├── prompts/            # MCP Guided Prompts
+│   │   ├── index.ts
+│   │   ├── theme.ts
+│   │   ├── organization.ts
+│   │   ├── format.ts
+│   │   ├── recent.ts
+│   │   └── dataset-analysis.ts
 │   └── transport/
 │       ├── stdio.ts        # Stdio transport
 │       └── http.ts         # HTTP transport
-├── tests/                  # Test suite (179 tests)
+├── tests/                  # Test suite (184 tests)
 ├── dist/                   # Compiled files (generated)
 ├── package.json
 └── README.md
