@@ -650,7 +650,7 @@ Contributions are welcome! Please:
 
 MIT License - See [LICENSE.txt](LICENSE.txt) for complete details.
 
-Third-party attributions: See [NOTICE](NOTICE) for third-party software notices and information.
+Third-party attributions: See [NOTICE.md](NOTICE.md) for third-party software notices and information.
 
 ## Useful Links
 
