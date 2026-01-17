@@ -44,3 +44,7 @@ testo.md
 # Docs proposals
 docs/proposte.md
 docs/esempi.md
+
+.gemini/
+gha-creds-*.json
+docs/video/
