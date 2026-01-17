@@ -2,6 +2,13 @@
 
 ## 2026-01-17
 
+### Documentation Alignment
+- **Test counts updated**: README.md (184→190), PRD.md (130→190)
+- **Version updated**: PRD.md version 0.4.7→0.4.12
+- **Date updated**: PRD.md last updated 2026-01-10→2026-01-17
+- **Verification**: All 13 tools, 7 resources, 5 prompts implemented and documented
+- **Files**: `README.md`, `PRD.md`
+
 ### GitHub Templates
 - **Issue templates**: Added bug report and feature request YAML forms
   - Bug report: CKAN portal URL, steps, expected/actual, error, Node version

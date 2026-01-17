@@ -2,9 +2,9 @@
 
 ## CKAN MCP Server
 
-**Version**: 0.4.7  
-**Last Updated**: 2026-01-10  
-**Author**: onData  
+**Version**: 0.4.12
+**Last Updated**: 2026-01-17
+**Author**: onData
 **Status**: Production
 
 ---
@@ -214,7 +214,7 @@ An MCP server that exposes tools to interact with CKAN API v3, enabling AI agent
 - `wrangler@^4.58.0` - Cloudflare Workers CLI
 
 **Test Framework**:
-- `vitest@^4.0.16` - Test runner (130 tests, 100% passing)
+- `vitest@^4.0.16` - Test runner (190 tests, 100% passing)
 
 ### 4.2 Architecture Diagram
 
@@ -825,7 +825,7 @@ ckan_package_search({
 ### 10.3 Testing & Quality
 
 ✅ **Current State**:
-- 130 unit and integration tests (100% passing)
+- 190 unit and integration tests (100% passing)
 - vitest test runner
 - Coverage for all 13 tools
 - Fixtures for offline testing
@@ -860,7 +860,7 @@ ckan_package_search({
 - **Memory Usage**: < 50MB runtime (Node.js), Workers limits apply
 - **Response Time**: < 30s (CKAN API timeout), < 10s (Workers)
 - **Cold Start**: < 60ms (Cloudflare Workers)
-- **Test Coverage**: 130 tests (100% passing)
+- **Test Coverage**: 190 tests (100% passing)
 
 ### 11.2 Distribution Metrics
 
