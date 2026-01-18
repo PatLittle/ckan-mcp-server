@@ -58,3 +58,17 @@ If Claude needs a follow-up tool call, approve it the same way.
 Claude will return the answer after running the tool(s).
 
 ![Result](images/claude_web_09.png)
+
+---
+
+## Guided prompts
+
+Claude includes **Guided prompts** for the CKAN MCP Server, which provide ready-made examples to get started quickly.
+
+Open the **+** menu, choose **Add from CKAN MCP server**, and pick a guided prompt from the list.
+
+![Guided prompts list](images/claude_web_10.png)
+
+Fill in the required fields (for example, the CKAN server URL and organization), then add the prompt.
+
+![Guided prompt inputs](images/claude_web_11.png)
