@@ -89,10 +89,6 @@ Want your own deployment? See [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Guides
 
-- [ChatGPT web](docs/guide/chatgpt/chatgpt_web.md)
-- [Claude web](docs/guide/claude/claude_web.md)
-- [Claude Code](https://github.com/aborruso/ckan-mcp-server/discussions/4#discussion-9359684)
-
 ### Claude Desktop Configuration
 
 Configuration file location:
@@ -153,6 +149,8 @@ If you cloned the repository:
 }
 ```
 
+[A detailed guide](https://github.com/aborruso/ckan-mcp-server/discussions/4#discussion-9359684)
+
 #### Option 4: Cloudflare Workers (HTTP transport)
 
 Use the public Cloudflare Workers deployment (no local installation required):
@@ -170,6 +168,11 @@ Use the public Cloudflare Workers deployment (no local installation required):
 **NOTE**: This service uses the Cloudflare Workers free tier which has a limit of 100,000 requests per month.
 
 **Note**: This uses the public endpoint. You can also deploy your own Workers instance and use that URL instead.
+
+### Web Tools Configuration
+
+- [ChatGPT web](docs/guide/chatgpt/chatgpt_web.md)
+- [Claude web](docs/guide/claude/claude_web.md)
 
 ## Available Tools
 
