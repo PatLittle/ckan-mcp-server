@@ -566,6 +566,8 @@ ckan-mcp-server/
 
 ## Development
 
+This project uses [OpenSpec](https://github.com/Fission-AI/OpenSpec) to manage change proposals and keep specifications aligned with implementation.
+
 ### Testing
 
 The project uses **Vitest** for automated testing:
