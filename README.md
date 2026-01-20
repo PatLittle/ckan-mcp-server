@@ -117,22 +117,29 @@ Then add to `claude_desktop_config.json`:
 }
 ```
 
-#### Option 2: Local Installation (Optional)
+#### Option 2: Local Project Installation (Optional)
 
-If you installed locally (see Installation), use this config:
+If you want to install the server in a specific project:
+
+```bash
+cd your-project
+npm install @aborruso/ckan-mcp-server
+```
+
+Then add to `claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "ckan": {
-      "command": "node",
-      "args": ["/absolute/path/to/project/node_modules/@username/ckan-mcp-server/dist/index.js"]
+      "command": "npx",
+      "args": ["@aborruso/ckan-mcp-server"]
     }
   }
 }
 ```
 
-Replace `/absolute/path/to/project` with your actual project path.
+**Note**: `npx` will use the locally installed package in `node_modules`. Make sure to install the package first.
 
 #### Option 3: From Source
 
