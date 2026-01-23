@@ -2,6 +2,11 @@
 
 ## 2026-01-23
 
+### Release v0.4.16
+
+- Published to npm: `@aborruso/ckan-mcp-server@0.4.16`
+- Aligned with GitHub tag `v0.4.16`
+
 ### MQA Quality Metrics - Fix identifier format
 
 - **Bug fix**: Identifier transformation for data.europa.eu API compatibility
