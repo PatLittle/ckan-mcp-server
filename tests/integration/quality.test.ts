@@ -52,11 +52,11 @@ describe('ckan_get_mqa_quality integration', () => {
         '332be8b7-89b9-4dfe-a252-7fccd3efda76'
       );
 
-      expect(result).toHaveProperty('info.score', 385);
-      expect(result).toHaveProperty('accessibility');
-      expect(result).toHaveProperty('reusability');
-      expect(result).toHaveProperty('interoperability');
-      expect(result).toHaveProperty('findability');
+      expect(result).toHaveProperty('result.results.0.info.score', 395);
+      expect(result).toHaveProperty('result.results.0.accessibility');
+      expect(result).toHaveProperty('result.results.0.reusability');
+      expect(result).toHaveProperty('result.results.0.interoperability');
+      expect(result).toHaveProperty('result.results.0.findability');
 
       // Verify MQA API was called with identifier
       expect(axios.get).toHaveBeenNthCalledWith(
@@ -86,6 +86,74 @@ describe('ckan_get_mqa_quality integration', () => {
       expect(axios.get).toHaveBeenNthCalledWith(
         2,
         'https://data.europa.eu/api/mqa/cache/datasets/example-dataset-no-identifier',
+        expect.any(Object)
+      );
+    });
+
+    it('normalizes identifier for MQA lookups', async () => {
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: {
+          success: true,
+          result: {
+            id: 'dummy',
+            name: 'dummy-name',
+            identifier: 'cmna:A064'
+          }
+        }
+      });
+
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaQualitySuccess
+      });
+
+      await getMqaQuality(
+        'https://www.dati.gov.it/opendata',
+        'dummy-id'
+      );
+
+      expect(axios.get).toHaveBeenNthCalledWith(
+        2,
+        'https://data.europa.eu/api/mqa/cache/datasets/cmna-a064',
+        expect.any(Object)
+      );
+    });
+
+    it('tries disambiguation suffix when base identifier is missing', async () => {
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: {
+          success: true,
+          result: {
+            id: 'dummy',
+            name: 'dummy-name',
+            identifier: 'c_a734:elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023'
+          }
+        }
+      });
+
+      vi.mocked(axios.get).mockRejectedValueOnce({
+        isAxiosError: true,
+        response: { status: 404 },
+        message: 'Request failed with status code 404'
+      });
+
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaQualitySuccess
+      });
+
+      await getMqaQuality(
+        'https://www.dati.gov.it/opendata',
+        'dummy-id'
+      );
+
+      expect(axios.get).toHaveBeenNthCalledWith(
+        2,
+        'https://data.europa.eu/api/mqa/cache/datasets/c_a734-elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023',
+        expect.any(Object)
+      );
+
+      expect(axios.get).toHaveBeenNthCalledWith(
+        3,
+        'https://data.europa.eu/api/mqa/cache/datasets/c_a734-elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023~~1',
         expect.any(Object)
       );
     });
@@ -152,7 +220,7 @@ describe('ckan_get_mqa_quality integration', () => {
 
       expect(result).toContain('# Quality Metrics');
       expect(result).toContain('test-dataset');
-      expect(result).toContain('**Overall Score**: 385/405');
+      expect(result).toContain('**Overall Score**: 395/405');
       expect(result).toContain('## Accessibility');
       expect(result).toContain('## Reusability');
       expect(result).toContain('## Interoperability');

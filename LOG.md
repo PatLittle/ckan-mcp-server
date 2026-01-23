@@ -2,6 +2,20 @@
 
 ## 2026-01-23
 
+### Release v0.4.17
+
+- Published to npm: `@aborruso/ckan-mcp-server@0.4.17`
+- Aligned with GitHub tag `v0.4.17`
+
+### MQA Quality Metrics - Identifier normalization and disambiguation
+
+- **Fix**: Normalize identifiers for data.europa.eu lookups (lowercase, collapse hyphens)
+- **Fix**: Retry with disambiguation suffixes (`~~1`, `~~2`) when base identifier 404s
+- **Result**: MQA quality now matches portal IDs for datasets like Beinasco (with `~~1`)
+- **Improved errors**: clearer message when identifier is not aligned
+- **Files modified**: `src/tools/quality.ts`, `tests/integration/quality.test.ts`
+- **Deployed**: Cloudflare Workers v0.4.17
+
 ### Release v0.4.16
 
 - Published to npm: `@aborruso/ckan-mcp-server@0.4.16`
