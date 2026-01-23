@@ -189,10 +189,24 @@ describe('ckan_get_mqa_quality integration', () => {
         },
         message: 'Request failed with status code 404'
       });
+      vi.mocked(axios.get).mockRejectedValueOnce({
+        isAxiosError: true,
+        response: {
+          status: 404
+        },
+        message: 'Request failed with status code 404'
+      });
+      vi.mocked(axios.get).mockRejectedValueOnce({
+        isAxiosError: true,
+        response: {
+          status: 404
+        },
+        message: 'Request failed with status code 404'
+      });
 
       await expect(
         getMqaQuality('https://www.dati.gov.it/opendata', '332be8b7-89b9-4dfe-a252-7fccd3efda76')
-      ).rejects.toThrow('Quality metrics not found');
+      ).rejects.toThrow('Quality metrics not found or identifier not aligned');
     });
 
     it('throws error when MQA API is unavailable', async () => {
