@@ -87,9 +87,87 @@ Use the public Workers endpoint (no local install required):
 
 Want your own deployment? See [DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
-## Guides
+## MCP Client Configuration
 
-### Claude Desktop Configuration
+This server works with any MCP-compatible client. Below are configuration examples for popular clients, organized by category. Using `@aborruso/ckan-mcp-server@latest` ensures you always get the latest version.
+
+### CLI Tools
+
+#### Codex
+
+```json
+{
+  "mcpServers": {
+    "ckan": {
+      "command": "npx",
+      "args": ["@aborruso/ckan-mcp-server@latest"]
+    }
+  }
+}
+```
+
+#### Copilot CLI
+
+```bash
+copilot mcp add ckan npx @aborruso/ckan-mcp-server@latest
+```
+
+#### Gemini CLI
+
+```bash
+gemini mcp add ckan npx @aborruso/ckan-mcp-server@latest
+```
+
+### IDEs & Code Editors
+
+#### Copilot / VS Code
+
+Add to VS Code settings (`.vscode/settings.json` or User Settings):
+
+```json
+{
+  "mcpServers": {
+    "ckan": {
+      "command": "npx",
+      "args": ["@aborruso/ckan-mcp-server@latest"]
+    }
+  }
+}
+```
+
+#### Cursor
+
+Add to Cursor MCP settings:
+
+```json
+{
+  "mcpServers": {
+    "ckan": {
+      "command": "npx",
+      "args": ["@aborruso/ckan-mcp-server@latest"]
+    }
+  }
+}
+```
+
+#### OpenCode
+
+Add to OpenCode configuration:
+
+```json
+{
+  "mcpServers": {
+    "ckan": {
+      "command": "npx",
+      "args": ["@aborruso/ckan-mcp-server@latest"]
+    }
+  }
+}
+```
+
+### Desktop Applications
+
+#### Claude Desktop
 
 Configuration file location:
 
@@ -97,15 +175,24 @@ Configuration file location:
 - **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 - **Linux**: `~/.config/Claude/claude_desktop_config.json`
 
-#### Option 1: Global Installation (Recommended)
+**Using npx (recommended)**:
 
-Install globally to use across all projects:
+```json
+{
+  "mcpServers": {
+    "ckan": {
+      "command": "npx",
+      "args": ["@aborruso/ckan-mcp-server@latest"]
+    }
+  }
+}
+```
+
+**Using global installation**:
 
 ```bash
 npm install -g @aborruso/ckan-mcp-server
 ```
-
-Then add to `claude_desktop_config.json`:
 
 ```json
 {
@@ -117,50 +204,7 @@ Then add to `claude_desktop_config.json`:
 }
 ```
 
-#### Option 2: Local Project Installation (Optional)
-
-If you want to install the server in a specific project:
-
-```bash
-cd your-project
-npm install @aborruso/ckan-mcp-server
-```
-
-Then add to `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "ckan": {
-      "command": "npx",
-      "args": ["@aborruso/ckan-mcp-server"]
-    }
-  }
-}
-```
-
-**Note**: `npx` will use the locally installed package in `node_modules`. Make sure to install the package first.
-
-#### Option 3: From Source
-
-If you cloned the repository:
-
-```json
-{
-  "mcpServers": {
-    "ckan": {
-      "command": "node",
-      "args": ["/absolute/path/to/ckan-mcp-server/dist/index.js"]
-    }
-  }
-}
-```
-
-[A detailed guide](https://github.com/ondata/ckan-mcp-server/discussions/4#discussion-9359684)
-
-#### Option 4: Cloudflare Workers (HTTP transport)
-
-Use the public Cloudflare Workers deployment (no local installation required):
+**Using Cloudflare Workers (HTTP)**:
 
 ```json
 {
@@ -172,16 +216,21 @@ Use the public Cloudflare Workers deployment (no local installation required):
 }
 ```
 
-**NOTE**: This service uses the Cloudflare Workers free tier which has a limit of 100,000 requests per month.
+**NOTE**: The Cloudflare Workers endpoint uses the free tier (100,000 requests/month limit).
 
-**Note**: This uses the public endpoint. You can also deploy your own Workers instance and use that URL instead.
+[Detailed guide](https://github.com/ondata/ckan-mcp-server/discussions/4#discussion-9359684)
 
-### Web Tools Configuration
+### Web Tools
 
-- [ChatGPT web](docs/guide/chatgpt/chatgpt_web.md)
-- [Claude web](docs/guide/claude/claude_web.md)
+#### ChatGPT
 
-These guides are based on a public demo server, which has a limit of 100,000 calls per month. For reliable usage, it is recommended to install the CKAN MCP Server on your own machine.
+See [ChatGPT web guide](docs/guide/chatgpt/chatgpt_web.md)
+
+#### Claude
+
+See [Claude web guide](docs/guide/claude/claude_web.md)
+
+**Note**: Web tools use a public demo server with 100,000 calls/month limit. For reliable usage, install the server locally.
 
 ## Available Tools
 
