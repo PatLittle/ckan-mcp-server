@@ -88,16 +88,40 @@ function parseScoreValue(value: unknown): number | undefined {
   return undefined;
 }
 
-function extractMetricsScores(metricsData: unknown): MqaScores {
-  const scores: MqaScores = {};
-  let parsed = metricsData;
-  if (typeof metricsData === "string") {
+function decodeMetricsPayload(payload: unknown): unknown {
+  if (payload && typeof payload === "object" && "@graph" in payload) {
+    return payload;
+  }
+  if (typeof payload === "string") {
     try {
-      parsed = JSON.parse(metricsData);
+      return JSON.parse(payload);
     } catch {
-      return scores;
+      return undefined;
     }
   }
+  if (payload instanceof ArrayBuffer) {
+    try {
+      const text = new TextDecoder().decode(new Uint8Array(payload));
+      return JSON.parse(text);
+    } catch {
+      return undefined;
+    }
+  }
+  if (ArrayBuffer.isView(payload)) {
+    try {
+      const view = payload as ArrayBufferView;
+      const text = new TextDecoder().decode(new Uint8Array(view.buffer, view.byteOffset, view.byteLength));
+      return JSON.parse(text);
+    } catch {
+      return undefined;
+    }
+  }
+  return payload;
+}
+
+function extractMetricsScores(metricsData: unknown): MqaScores {
+  const scores: MqaScores = {};
+  const parsed = decodeMetricsPayload(metricsData);
   if (!parsed || typeof parsed !== "object") {
     return scores;
   }
@@ -205,7 +229,21 @@ export async function getMqaQuality(serverUrl: string, datasetId: string): Promi
         throw metricsError;
       }
 
-      const scores = extractMetricsScores(metricsResponse.data);
+      let scores = extractMetricsScores(metricsResponse.data);
+      if (Object.keys(scores).length === 0) {
+        try {
+          const fallbackResponse = await fetch(metricsUrl);
+          if (fallbackResponse.ok) {
+            const fallbackText = await fallbackResponse.text();
+            const fallbackScores = extractMetricsScores(fallbackText);
+            if (Object.keys(fallbackScores).length > 0) {
+              scores = fallbackScores;
+            }
+          }
+        } catch {
+          // Keep empty scores; markdown will still render other sections.
+        }
+      }
       const resultEntry = (response.data as any)?.result?.results?.[0];
       const portalId = resultEntry?.info?.["dataset-id"] || europeanId;
       const breakdown: MqaBreakdown = {

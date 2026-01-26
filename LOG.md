@@ -2,6 +2,10 @@
 
 ## 2026-01-26
 
+### Release v0.4.20
+
+- Fix Worker metrics parsing fallback to ensure dimension scores are populated
+
 ### Release v0.4.19
 
 - Fix metrics JSON-LD parsing in Workers to restore dimension score breakdown
