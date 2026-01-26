@@ -170,6 +170,33 @@ Current Version ID: <version-id>
 
 ---
 
+## **Important: Test Before Release**
+
+To avoid premature releases, always follow this order:
+
+1. **Apply code changes**
+2. **Run tests locally**
+   ```bash
+   npm test
+   ```
+3. **Deploy to Workers for validation**
+   ```bash
+   npm run deploy
+   ```
+4. **Run live smoke tests**
+   - `/health`
+   - `tools/list`
+   - At least one real tool call (e.g. `ckan_get_mqa_quality`)
+5. **Only after everything passes**:
+   - bump version
+   - commit + tag
+   - GitHub release
+   - npm publish
+
+**Rule of thumb**: *release only when the live deployment is confirmed working.*
+
+---
+
 ### Step 7: Test Production Deployment
 
 Test your live Workers endpoint:
