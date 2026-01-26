@@ -4,6 +4,7 @@ import { getMqaQuality, isValidMqaServer, formatQualityMarkdown } from '../../sr
 import packageShowWithIdentifier from '../fixtures/responses/package-show-with-identifier.json';
 import packageShowWithoutIdentifier from '../fixtures/responses/package-show-without-identifier.json';
 import mqaQualitySuccess from '../fixtures/responses/mqa-quality-success.json';
+import mqaMetricsSuccess from '../fixtures/responses/mqa-metrics-success.json';
 
 vi.mock('axios');
 
@@ -46,22 +47,33 @@ describe('ckan_get_mqa_quality integration', () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
       });
+      // Mock metrics endpoint response
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaMetricsSuccess
+      });
 
       const result = await getMqaQuality(
         'https://www.dati.gov.it/opendata',
         '332be8b7-89b9-4dfe-a252-7fccd3efda76'
       );
 
-      expect(result).toHaveProperty('result.results.0.info.score', 395);
-      expect(result).toHaveProperty('result.results.0.accessibility');
-      expect(result).toHaveProperty('result.results.0.reusability');
-      expect(result).toHaveProperty('result.results.0.interoperability');
-      expect(result).toHaveProperty('result.results.0.findability');
+      expect(result).toHaveProperty('mqa.result.results.0.info.score', 395);
+      expect(result).toHaveProperty('mqa.result.results.0.accessibility');
+      expect(result).toHaveProperty('mqa.result.results.0.reusability');
+      expect(result).toHaveProperty('mqa.result.results.0.interoperability');
+      expect(result).toHaveProperty('mqa.result.results.0.findability');
+      expect(result).toHaveProperty('breakdown.scores.accessibility', 90);
+      expect(result).toHaveProperty('breakdown.nonMaxDimensions');
 
       // Verify MQA API was called with identifier
       expect(axios.get).toHaveBeenNthCalledWith(
         2,
         'https://data.europa.eu/api/mqa/cache/datasets/332be8b7-89b9-4dfe-a252-7fccd3efda76',
+        expect.any(Object)
+      );
+      expect(axios.get).toHaveBeenNthCalledWith(
+        3,
+        'https://data.europa.eu/api/hub/repo/datasets/332be8b7-89b9-4dfe-a252-7fccd3efda76/metrics',
         expect.any(Object)
       );
     });
@@ -75,6 +87,9 @@ describe('ckan_get_mqa_quality integration', () => {
       // Mock MQA API response
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
+      });
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaMetricsSuccess
       });
 
       await getMqaQuality(
@@ -104,6 +119,9 @@ describe('ckan_get_mqa_quality integration', () => {
 
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
+      });
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaMetricsSuccess
       });
 
       await getMqaQuality(
@@ -139,6 +157,9 @@ describe('ckan_get_mqa_quality integration', () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
       });
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaMetricsSuccess
+      });
 
       await getMqaQuality(
         'https://www.dati.gov.it/opendata',
@@ -154,6 +175,11 @@ describe('ckan_get_mqa_quality integration', () => {
       expect(axios.get).toHaveBeenNthCalledWith(
         3,
         'https://data.europa.eu/api/mqa/cache/datasets/c_a734-elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023~~1',
+        expect.any(Object)
+      );
+      expect(axios.get).toHaveBeenNthCalledWith(
+        4,
+        'https://data.europa.eu/api/hub/repo/datasets/c_a734-elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023~~1/metrics',
         expect.any(Object)
       );
     });
@@ -230,15 +256,35 @@ describe('ckan_get_mqa_quality integration', () => {
 
   describe('formatQualityMarkdown', () => {
     it('formats complete quality data as markdown', () => {
-      const result = formatQualityMarkdown(mqaQualitySuccess, 'test-dataset');
+      const result = formatQualityMarkdown({
+        mqa: mqaQualitySuccess,
+        breakdown: {
+          scores: {
+            accessibility: 90,
+            findability: 100,
+            interoperability: 110,
+            reusability: 75,
+            contextuality: 20
+          },
+          nonMaxDimensions: ['accessibility'],
+          metricsUrl: 'https://data.europa.eu/api/hub/repo/datasets/r_liguri-ds-664/metrics',
+          mqaUrl: 'https://data.europa.eu/api/mqa/cache/datasets/r_liguri-ds-664',
+          portalId: 'r_liguri-ds-664'
+        }
+      }, 'test-dataset');
 
       expect(result).toContain('# Quality Metrics');
       expect(result).toContain('test-dataset');
-      expect(result).toContain('**Overall Score**: 395/405');
+      expect(result).toContain('**Overall Score**: 395/450');
+      expect(result).toContain('## Dimension Scores');
+      expect(result).toContain('Accessibility: 90/100 ⚠️ (max 100)');
+      expect(result).toContain('Findability: 100/100 ✅');
+      expect(result).toContain('Non-max dimension(s): accessibility');
       expect(result).toContain('## Accessibility');
       expect(result).toContain('## Reusability');
       expect(result).toContain('## Interoperability');
       expect(result).toContain('## Findability');
+      expect(result).toContain('## Contextuality');
       expect(result).toContain('✓ Available');
     });
 
@@ -252,7 +298,7 @@ describe('ckan_get_mqa_quality integration', () => {
 
       const result = formatQualityMarkdown(partialData, 'partial-dataset');
 
-      expect(result).toContain('**Overall Score**: 200/405');
+      expect(result).toContain('**Overall Score**: 200/450');
       expect(result).toContain('## Accessibility');
       expect(result).not.toContain('## Reusability');
     });

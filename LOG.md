@@ -2,6 +2,12 @@
 
 ## 2026-01-26
 
+### MQA Quality Metrics - Readable dimension scores
+- **Feature**: Add dimension score breakdown with ✅/⚠️ indicators and non-max dimensions
+- **Source**: Fetch metrics JSON-LD from data.europa.eu for scoring details
+- **Output**: Markdown and JSON include metrics endpoint link and derived scores
+- **Files**: `src/tools/quality.ts`, `tests/integration/quality.test.ts`, `tests/fixtures/responses/mqa-metrics-success.json`
+
 ### Website - Fix color contrast issues
 - **Fix**: Added custom color definitions to `tailwind.config.mjs`
 - **Colors**: navy (#0A1628), data-blue (#0066CC), teal (#0D9488), coral (#F97316), amber (#F59E0B), cream (#FFFEF9)
