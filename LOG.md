@@ -2,6 +2,10 @@
 
 ## 2026-01-26
 
+### Release v0.4.21
+
+- Fix metrics parsing in Workers by switching to fetch and mocking fetch in tests
+
 ### Release v0.4.20
 
 - Fix Worker metrics parsing fallback to ensure dimension scores are populated

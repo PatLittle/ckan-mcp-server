@@ -16,7 +16,19 @@ vi.mocked(axios.isAxiosError).mockImplementation((error: any) => {
 describe('ckan_get_mqa_quality integration', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(axios.get).mockReset();
+    vi.stubGlobal('fetch', vi.fn());
   });
+
+  const mockFetchJson = (payload: unknown) => {
+    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      json: async () => payload,
+      text: async () => JSON.stringify(payload)
+    });
+  };
 
   describe('isValidMqaServer', () => {
     it('accepts dati.gov.it URLs with www', () => {
@@ -47,10 +59,7 @@ describe('ckan_get_mqa_quality integration', () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
       });
-      // Mock metrics endpoint response
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: mqaMetricsSuccess
-      });
+      mockFetchJson(mqaMetricsSuccess);
 
       const result = await getMqaQuality(
         'https://www.dati.gov.it/opendata',
@@ -71,8 +80,7 @@ describe('ckan_get_mqa_quality integration', () => {
         'https://data.europa.eu/api/mqa/cache/datasets/332be8b7-89b9-4dfe-a252-7fccd3efda76',
         expect.any(Object)
       );
-      expect(axios.get).toHaveBeenNthCalledWith(
-        3,
+      expect(fetch).toHaveBeenCalledWith(
         'https://data.europa.eu/api/hub/repo/datasets/332be8b7-89b9-4dfe-a252-7fccd3efda76/metrics',
         expect.any(Object)
       );
@@ -88,9 +96,7 @@ describe('ckan_get_mqa_quality integration', () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
       });
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: mqaMetricsSuccess
-      });
+      mockFetchJson(mqaMetricsSuccess);
 
       await getMqaQuality(
         'https://dati.gov.it/opendata',
@@ -120,9 +126,7 @@ describe('ckan_get_mqa_quality integration', () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
       });
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: mqaMetricsSuccess
-      });
+      mockFetchJson(mqaMetricsSuccess);
 
       await getMqaQuality(
         'https://www.dati.gov.it/opendata',
@@ -157,9 +161,7 @@ describe('ckan_get_mqa_quality integration', () => {
       vi.mocked(axios.get).mockResolvedValueOnce({
         data: mqaQualitySuccess
       });
-      vi.mocked(axios.get).mockResolvedValueOnce({
-        data: mqaMetricsSuccess
-      });
+      mockFetchJson(mqaMetricsSuccess);
 
       await getMqaQuality(
         'https://www.dati.gov.it/opendata',
@@ -177,8 +179,7 @@ describe('ckan_get_mqa_quality integration', () => {
         'https://data.europa.eu/api/mqa/cache/datasets/c_a734-elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023~~1',
         expect.any(Object)
       );
-      expect(axios.get).toHaveBeenNthCalledWith(
-        4,
+      expect(fetch).toHaveBeenCalledWith(
         'https://data.europa.eu/api/hub/repo/datasets/c_a734-elenco-posteggi-autorizzati-per-il-commercio-su-aree-pubbliche-2022-2023~~1/metrics',
         expect.any(Object)
       );
