@@ -24,7 +24,20 @@ describe('makeCkanRequest', () => {
         params: {},
         timeout: 30000,
         headers: {
-          'User-Agent': 'CKAN-MCP-Server/1.0'
+          Accept: 'application/json, text/plain, */*',
+          'Accept-Language': 'en-US,en;q=0.9,it;q=0.8',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Connection: 'keep-alive',
+          Referer: 'http://demo.ckan.org/',
+          'Sec-Fetch-Site': 'same-origin',
+          'Sec-Fetch-Mode': 'navigate',
+          'Sec-Fetch-Dest': 'document',
+          'Upgrade-Insecure-Requests': '1',
+          'Sec-CH-UA': '"Chromium";v="120", "Not?A_Brand";v="24", "Google Chrome";v="120"',
+          'Sec-CH-UA-Mobile': '?0',
+          'Sec-CH-UA-Platform': '"Linux"',
+          'User-Agent':
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
       })
     );
@@ -69,7 +82,9 @@ describe('makeCkanRequest', () => {
     await makeCkanRequest('http://demo.ckan.org', 'ckan_status_show');
 
     const axiosCall = vi.mocked(axios.get).mock.calls[0];
-    expect(axiosCall[1].headers['User-Agent']).toBe('CKAN-MCP-Server/1.0');
+    expect(axiosCall[1].headers['User-Agent']).toBe(
+      'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    );
   });
 
   it('throws error when success=false in response', async () => {

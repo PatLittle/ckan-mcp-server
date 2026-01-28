@@ -17,7 +17,8 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 - ⚡ Pagination and faceting support
 - 📄 MCP Resource Templates for direct data access
 - 🧭 Guided MCP prompts for common workflows
-- 🧪 Test suite with 212 tests (100% passing)
+- 🛡️ Browser-like headers to avoid WAF blocks
+- 🧪 Test suite with 214 tests (100% passing)
 
 ---
 

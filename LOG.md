@@ -1,5 +1,30 @@
 # LOG
 
+## 2026-01-28
+
+### Release v0.4.24
+
+- Use browser-like headers (UA + Sec-* + Referer) to avoid WAF blocks on some portals
+- Deps: npm audit fix (hono transitive)
+- Files: `src/utils/http.ts`, `tests/unit/http.test.ts`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`, `README.md`
+
+## 2026-01-27
+
+### MCP Best Practices Evaluation
+
+- **Source**: https://www.philschmid.de/mcp-best-practices
+- **Score**: 4/6 (B+ grade)
+- **Doc**: `docs/mcp-best-practices-evaluation.md`
+- **Key findings**:
+  - ✅ Excellent: Tool naming, flat arguments
+  - ✅ Good: Instructions as context
+  - ⚠️ Partial: Outcomes focus, curation, pagination metadata
+- **Top recommendations**:
+  1. Add structured pagination metadata to all responses
+  2. Create outcome-focused tools (discover_datasets, find_organization)
+  3. Improve tool categorization (beginner/advanced/expert)
+- **Extracted with**: `agent-browser get text 'article'` (readability-like)
+
 ## 2026-01-26
 
 ### Release v0.4.23
