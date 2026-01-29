@@ -1,5 +1,12 @@
 # LOG
 
+## 2026-01-29
+
+### Release v0.4.25
+
+- Add ANAC open data portal entry and aliases
+- Files: `src/portals.json`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`
+
 ## 2026-01-28
 
 ### Release v0.4.24
