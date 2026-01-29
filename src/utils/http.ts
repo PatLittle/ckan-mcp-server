@@ -3,6 +3,7 @@
  */
 
 import axios, { AxiosError } from "axios";
+import { getPortalApiUrlForHostname } from "./portal-config.js";
 
 /**
  * Make HTTP request to CKAN API
@@ -12,8 +13,19 @@ export async function makeCkanRequest<T>(
   action: string,
   params: Record<string, any> = {}
 ): Promise<T> {
+  let resolvedServerUrl = serverUrl;
+  try {
+    const hostname = new URL(serverUrl).hostname;
+    const portalApiUrl = getPortalApiUrlForHostname(hostname);
+    if (portalApiUrl) {
+      resolvedServerUrl = portalApiUrl;
+    }
+  } catch {
+    // Keep provided URL if parsing fails
+  }
+
   // Normalize server URL
-  const baseUrl = serverUrl.replace(/\/$/, '');
+  const baseUrl = resolvedServerUrl.replace(/\/$/, '');
   const url = `${baseUrl}/api/3/action/${action}`;
 
   try {

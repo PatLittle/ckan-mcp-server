@@ -2,6 +2,12 @@
 
 ## 2026-01-29
 
+### Release v0.4.26
+
+- Resolve portal hostname to API URL in CKAN requests
+- Tests: add unit coverage for URL resolution
+- Files: `src/utils/http.ts`, `tests/unit/http.test.ts`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`
+
 ### Release v0.4.25
 
 - Add ANAC open data portal entry and aliases

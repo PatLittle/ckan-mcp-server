@@ -76,6 +76,20 @@ describe('makeCkanRequest', () => {
     );
   });
 
+  it('resolves portal hostname to api url', async () => {
+    vi.mocked(axios.get).mockResolvedValue({ data: successResponse });
+
+    await makeCkanRequest(
+      'https://dati.anticorruzione.it',
+      'ckan_status_show'
+    );
+
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://dati.anticorruzione.it/opendata/api/3/action/ckan_status_show',
+      expect.any(Object)
+    );
+  });
+
   it('includes User-Agent header', async () => {
     vi.mocked(axios.get).mockResolvedValue({ data: successResponse });
 
