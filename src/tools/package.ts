@@ -125,6 +125,152 @@ export const scoreDatasetRelevance = (
   return { total: breakdown.total, breakdown, terms };
 };
 
+export const parseAccessServices = (resource: any): Array<Record<string, any>> => {
+  if (!resource || resource.access_services == null) return [];
+  const raw = resource.access_services;
+  if (Array.isArray(raw)) return raw;
+  if (typeof raw === "string" && raw.trim().length > 0) {
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return [];
+};
+
+export const extractServiceEndpoints = (services: Array<Record<string, any>>): string[] => {
+  const endpoints: string[] = [];
+  for (const service of services) {
+    const urls = service.endpoint_url;
+    if (Array.isArray(urls)) {
+      for (const url of urls) {
+        if (typeof url === "string" && url.trim().length > 0) endpoints.push(url.trim());
+      }
+    } else if (typeof urls === "string" && urls.trim().length > 0) {
+      endpoints.push(urls.trim());
+    }
+  }
+  return Array.from(new Set(endpoints));
+};
+
+export const resolveDownloadUrl = (resource: any): string | null => {
+  if (!resource) return null;
+  const downloadUrl = typeof resource.download_url === "string" ? resource.download_url.trim() : "";
+  const accessUrl = typeof resource.access_url === "string" ? resource.access_url.trim() : "";
+  const url = typeof resource.url === "string" ? resource.url.trim() : "";
+  return downloadUrl || accessUrl || url || null;
+};
+
+export const enrichPackageShowResult = (result: any): any => ({
+  ...result,
+  metadata_harvested_at: result.metadata_modified ?? null,
+  resources: Array.isArray(result.resources)
+    ? result.resources.map((resource: any) => {
+      const accessServices = parseAccessServices(resource);
+      const accessEndpoints = extractServiceEndpoints(accessServices);
+      const effectiveDownloadUrl = resolveDownloadUrl(resource);
+      if (accessEndpoints.length === 0 && !effectiveDownloadUrl) return resource;
+      return {
+        ...resource,
+        ...(accessEndpoints.length > 0 ? { access_service_endpoints: accessEndpoints } : {}),
+        ...(effectiveDownloadUrl ? { effective_download_url: effectiveDownloadUrl } : {})
+      };
+    })
+    : result.resources
+});
+
+export const formatPackageShowMarkdown = (result: any, serverUrl: string): string => {
+  let markdown = `# Dataset: ${result.title || result.name}\n\n`;
+  markdown += `**Server**: ${serverUrl}\n`;
+  markdown += `**Link**: ${getDatasetViewUrl(serverUrl, result)}\n\n`;
+
+  markdown += `## Basic Information\n\n`;
+  markdown += `- **ID**: \`${result.id}\`\n`;
+  markdown += `- **Name**: \`${result.name}\`\n`;
+  if (result.author) markdown += `- **Author**: ${result.author}\n`;
+  if (result.author_email) markdown += `- **Author Email**: ${result.author_email}\n`;
+  if (result.maintainer) markdown += `- **Maintainer**: ${result.maintainer}\n`;
+  if (result.maintainer_email) markdown += `- **Maintainer Email**: ${result.maintainer_email}\n`;
+  markdown += `- **License**: ${result.license_title || result.license_id || 'Not specified'}\n`;
+  markdown += `- **State**: ${result.state}\n`;
+  markdown += `- **Created**: ${formatDate(result.metadata_created)}\n`;
+  if (result.issued) markdown += `- **Issued**: ${formatDate(result.issued)}\n`;
+  if (result.modified) markdown += `- **Modified (Content)**: ${formatDate(result.modified)}\n`;
+  markdown += `- **Metadata Modified (Harvest)**: ${formatDate(result.metadata_modified)}\n\n`;
+
+  if (result.organization) {
+    markdown += `## Organization\n\n`;
+    markdown += `- **Name**: ${result.organization.title || result.organization.name}\n`;
+    markdown += `- **ID**: \`${result.organization.id}\`\n\n`;
+  }
+
+  if (result.notes) {
+    markdown += `## Description\n\n${result.notes}\n\n`;
+  }
+
+  if (result.tags && result.tags.length > 0) {
+    markdown += `## Tags\n\n`;
+    markdown += result.tags.map((t: any) => `- ${t.name}`).join('\n') + '\n\n';
+  }
+
+  if (result.groups && result.groups.length > 0) {
+    markdown += `## Groups\n\n`;
+    for (const group of result.groups) {
+      markdown += `- **${group.title || group.name}** (\`${group.name}\`)\n`;
+    }
+    markdown += '\n';
+  }
+
+  if (result.resources && result.resources.length > 0) {
+    markdown += `## Resources (${result.resources.length})\n\n`;
+    for (const resource of result.resources) {
+      markdown += `### ${resource.name || 'Unnamed Resource'}\n\n`;
+      markdown += `- **ID**: \`${resource.id}\`\n`;
+      markdown += `- **Format**: ${resource.format || 'Unknown'}\n`;
+      if (resource.description) markdown += `- **Description**: ${resource.description}\n`;
+      markdown += `- **URL**: ${resource.url}\n`;
+      const accessServices = parseAccessServices(resource);
+      const accessEndpoints = extractServiceEndpoints(accessServices);
+      if (accessEndpoints.length > 0) {
+        markdown += `- **Access Service Endpoints**: ${accessEndpoints.join(', ')}\n`;
+      }
+      const effectiveDownloadUrl = resolveDownloadUrl(resource);
+      if (effectiveDownloadUrl) {
+        markdown += `- **Effective Download URL**: ${effectiveDownloadUrl}\n`;
+      }
+      if (resource.size) {
+        const formatBytes = (bytes: number) => {
+          if (!bytes || bytes === 0) return '0 B';
+          const k = 1024;
+          const sizes = ['B', 'KB', 'MB', 'GB'];
+          const i = Math.floor(Math.log(bytes) / Math.log(k));
+          return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        };
+        markdown += `- **Size**: ${formatBytes(resource.size)}\n`;
+      }
+      if (resource.mimetype) markdown += `- **MIME Type**: ${resource.mimetype}\n`;
+      markdown += `- **Created**: ${formatDate(resource.created)}\n`;
+      if (resource.last_modified) markdown += `- **Modified**: ${formatDate(resource.last_modified)}\n`;
+      if (resource.datastore_active !== undefined) {
+        markdown += `- **DataStore**: ${resource.datastore_active ? '✅ Available' : '❌ Not available'}\n`;
+      }
+      markdown += '\n';
+    }
+  }
+
+  if (result.extras && result.extras.length > 0) {
+    markdown += `## Extra Fields\n\n`;
+    for (const extra of result.extras) {
+      markdown += `- **${extra.key}**: ${extra.value}\n`;
+    }
+    markdown += '\n';
+  }
+
+  return markdown;
+};
+
 export function registerPackageTools(server: McpServer) {
   /**
    * Search for datasets on a CKAN server
@@ -572,6 +718,11 @@ Examples:
 
 Returns full details including resources, organization, tags, and all metadata fields.
 
+Notes:
+  - metadata_modified is the CKAN record timestamp (harvest/update), not the content date.
+  - issued/modified are content dates when provided by the publisher.
+  - JSON output adds metadata_harvested_at (same as metadata_modified).
+
 Args:
   - server_url (string): Base URL of CKAN server
   - id (string): Dataset ID or name (machine-readable slug)
@@ -616,88 +767,14 @@ Examples:
         );
 
         if (params.response_format === ResponseFormat.JSON) {
+          const enriched = enrichPackageShowResult(result);
           return {
-            content: [{ type: "text", text: truncateText(JSON.stringify(result, null, 2)) }],
-            structuredContent: result
+            content: [{ type: "text", text: truncateText(JSON.stringify(enriched, null, 2)) }],
+            structuredContent: enriched
           };
         }
 
-        // Markdown format
-        let markdown = `# Dataset: ${result.title || result.name}\n\n`;
-        markdown += `**Server**: ${params.server_url}\n`;
-        markdown += `**Link**: ${getDatasetViewUrl(params.server_url, result)}\n\n`;
-
-        markdown += `## Basic Information\n\n`;
-        markdown += `- **ID**: \`${result.id}\`\n`;
-        markdown += `- **Name**: \`${result.name}\`\n`;
-        if (result.author) markdown += `- **Author**: ${result.author}\n`;
-        if (result.author_email) markdown += `- **Author Email**: ${result.author_email}\n`;
-        if (result.maintainer) markdown += `- **Maintainer**: ${result.maintainer}\n`;
-        if (result.maintainer_email) markdown += `- **Maintainer Email**: ${result.maintainer_email}\n`;
-        markdown += `- **License**: ${result.license_title || result.license_id || 'Not specified'}\n`;
-        markdown += `- **State**: ${result.state}\n`;
-        markdown += `- **Created**: ${formatDate(result.metadata_created)}\n`;
-        markdown += `- **Modified**: ${formatDate(result.metadata_modified)}\n\n`;
-
-        if (result.organization) {
-          markdown += `## Organization\n\n`;
-          markdown += `- **Name**: ${result.organization.title || result.organization.name}\n`;
-          markdown += `- **ID**: \`${result.organization.id}\`\n\n`;
-        }
-
-        if (result.notes) {
-          markdown += `## Description\n\n${result.notes}\n\n`;
-        }
-
-        if (result.tags && result.tags.length > 0) {
-          markdown += `## Tags\n\n`;
-          markdown += result.tags.map((t: any) => `- ${t.name}`).join('\n') + '\n\n';
-        }
-
-        if (result.groups && result.groups.length > 0) {
-          markdown += `## Groups\n\n`;
-          for (const group of result.groups) {
-            markdown += `- **${group.title || group.name}** (\`${group.name}\`)\n`;
-          }
-          markdown += '\n';
-        }
-
-        if (result.resources && result.resources.length > 0) {
-          markdown += `## Resources (${result.resources.length})\n\n`;
-          for (const resource of result.resources) {
-            markdown += `### ${resource.name || 'Unnamed Resource'}\n\n`;
-            markdown += `- **ID**: \`${resource.id}\`\n`;
-            markdown += `- **Format**: ${resource.format || 'Unknown'}\n`;
-            if (resource.description) markdown += `- **Description**: ${resource.description}\n`;
-            markdown += `- **URL**: ${resource.url}\n`;
-            if (resource.size) {
-              const formatBytes = (bytes: number) => {
-                if (!bytes || bytes === 0) return '0 B';
-                const k = 1024;
-                const sizes = ['B', 'KB', 'MB', 'GB'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-              };
-              markdown += `- **Size**: ${formatBytes(resource.size)}\n`;
-            }
-            if (resource.mimetype) markdown += `- **MIME Type**: ${resource.mimetype}\n`;
-            markdown += `- **Created**: ${formatDate(resource.created)}\n`;
-            if (resource.last_modified) markdown += `- **Modified**: ${formatDate(resource.last_modified)}\n`;
-            if (resource.datastore_active !== undefined) {
-              markdown += `- **DataStore**: ${resource.datastore_active ? '✅ Available' : '❌ Not available'}\n`;
-            }
-            markdown += '\n';
-          }
-        }
-
-        if (result.extras && result.extras.length > 0) {
-          markdown += `## Extra Fields\n\n`;
-          for (const extra of result.extras) {
-            markdown += `- **${extra.key}**: ${extra.value}\n`;
-          }
-          markdown += '\n';
-        }
-
+        const markdown = formatPackageShowMarkdown(result, params.server_url);
         return {
           content: [{ type: "text", text: truncateText(markdown) }]
         };

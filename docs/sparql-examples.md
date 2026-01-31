@@ -1,0 +1,181 @@
+# SPARQL Examples (dati.gov.it)
+
+Endpoint: `https://lod.dati.gov.it/sparql/`
+
+Notes:
+
+- Use POST only.
+- Encode the query string (URL-encoded).
+- Use a real browser User-Agent.
+- GET often returns 403.
+
+## Helper for encoding
+
+```bash
+python3 -c "import urllib.parse,sys; print(urllib.parse.quote(sys.stdin.read()))"
+```
+
+## Minimal working query
+
+Human-readable query:
+
+```sparql
+SELECT ?s
+WHERE {
+  ?s a <http://dati.gov.it/onto/dcatapit#Dataset> .
+}
+LIMIT 5
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=SELECT%20?s%20WHERE%20%7B%20?s%20a%20%3Chttp%3A%2F%2Fdati.gov.it%2Fonto%2Fdcatapit%23Dataset%3E%20%7D%20LIMIT%205"
+```
+
+## Messina by title
+
+Human-readable query:
+
+```sparql
+PREFIX dcatapit: <http://dati.gov.it/onto/dcatapit#>
+PREFIX dct: <http://purl.org/dc/terms/>
+
+SELECT ?dataset ?title
+WHERE {
+  ?dataset a dcatapit:Dataset ;
+           dct:title ?title .
+  FILTER(CONTAINS(LCASE(STR(?title)), "messina"))
+}
+LIMIT 5
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20dcatapit%3A%20%3Chttp%3A%2F%2Fdati.gov.it%2Fonto%2Fdcatapit%23%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20SELECT%20?dataset%20?title%20WHERE%20%7B%20?dataset%20a%20dcatapit%3ADataset%20%3B%20dct%3Atitle%20?title%20.%20FILTER%28CONTAINS%28LCASE%28STR%28?title%29%29%2C%20%22messina%22%29%29%20%7D%20LIMIT%205"
+```
+
+## Messina by publisher name
+
+Human-readable query:
+
+```sparql
+PREFIX dcatapit: <http://dati.gov.it/onto/dcatapit#>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+
+SELECT DISTINCT ?dataset ?title ?publisherName
+WHERE {
+  ?dataset a dcatapit:Dataset ;
+           dct:title ?title ;
+           dct:publisher ?publisher .
+  ?publisher foaf:name ?publisherName .
+  FILTER(CONTAINS(LCASE(STR(?publisherName)), "comune di messina"))
+}
+LIMIT 5
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20dcatapit%3A%20%3Chttp%3A%2F%2Fdati.gov.it%2Fonto%2Fdcatapit%23%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20PREFIX%20foaf%3A%20%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E%20SELECT%20DISTINCT%20?dataset%20?title%20?publisherName%20WHERE%20%7B%20?dataset%20a%20dcatapit%3ADataset%20%3B%20dct%3Atitle%20?title%20%3B%20dct%3Apublisher%20?publisher%20.%20?publisher%20foaf%3Aname%20?publisherName%20.%20FILTER%28CONTAINS%28LCASE%28STR%28?publisherName%29%29%2C%20%22comune%20di%20messina%22%29%29%20%7D%20LIMIT%205"
+```
+
+## Count datasets by catalog
+
+Human-readable query:
+
+```sparql
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX type: <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>
+PREFIX dct: <http://purl.org/dc/terms/>
+PREFIX dcatapit: <http://dati.gov.it/onto/dcatapit#>
+
+SELECT ?catalog (COUNT(?s) AS ?count)
+WHERE {
+  ?catalog <http://www.w3.org/ns/dcat#dataset> ?s .
+}
+GROUP BY ?catalog
+ORDER BY DESC(?count)
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20rdf%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%20PREFIX%20type%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23type%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20PREFIX%20dcatapit%3A%20%3Chttp%3A%2F%2Fdati.gov.it%2Fonto%2Fdcatapit%23%3E%20SELECT%20?catalog%20(COUNT(?s)%20AS%20?count)%20WHERE%20%7B%20?catalog%20<http%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23dataset>%20?s%20.%20%7D%20GROUP%20BY%20?catalog%20ORDER%20BY%20DESC(?count)"
+```
+
+## Example: distributions for a dataset
+
+Human-readable query:
+
+```sparql
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct: <http://purl.org/dc/terms/>
+
+SELECT DISTINCT ?distributionTitle ?distributionURI
+WHERE {
+  <http://www.opendataipres.it/dataset/900aae7e-d38d-4181-aaf9-6c332c7fae77>
+    a dcat:Dataset ;
+    dcat:distribution ?distributionURI .
+  OPTIONAL { ?distributionURI dct:title ?distributionTitle . }
+}
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20dcat%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20SELECT%20DISTINCT%20?distributionTitle%20?distributionURI%20WHERE%20%7B%20<http%3A%2F%2Fwww.opendataipres.it%2Fdataset%2F900aae7e-d38d-4181-aaf9-6c332c7fae77>%20a%20dcat%3ADataset%3B%20dcat%3Adistribution%20?distributionURI%20.%20OPTIONAL%20%7B%20?distributionURI%20dct%3Atitle%20?distributionTitle%20.%20%7D%20%7D"
+```
+
+## Comparison: CKAN vs SPARQL
+
+This section validates notes from the audio against real datasets.
+
+### Case 1: DGA / restricted dataset
+
+CKAN dataset:
+
+- Name: `piattaforma-di-simbiosi-industriale`
+- CKAN access_rights: `http://publications.europa.eu/resource/authority/access-right/RESTRICTED`
+- Source URI: `https://dati.enea.it/dataset/44102bf9-d86f-4afa-826f-d42e83365189`
+
+SPARQL result:
+
+- Dataset URI not found in `lod.dati.gov.it` (no triples returned)
+
+Conclusion:
+
+- CKAN exposes the DGA dataset, SPARQL does not (at least via `lod.dati.gov.it`).
+- This contradicts the note that DGA datasets are visible in SPARQL but not in CKAN.
+
+### Case 2: DataService / API endpoints
+
+Dataset with DataService in SPARQL:
+
+- URI: `https://opendata.marche.camcom.it/data/dcat-opendata-catalog.rdf#Cancellazioni-Imprese-Italia`
+
+CKAN dataset:
+
+- Name: `cancellazioni-imprese-in-italia-per-territorio-settore-ateco-e-tempo-flussi-mensili`
+
+Findings:
+
+- SPARQL exposes `dcat:DataService` with `endpointURL`.
+- CKAN contains the same endpoints inside `resources[*].access_services` (nested JSON string).
+
+Conclusion:
+
+- SPARQL makes DataService endpoints easier to query.
+- CKAN has the info but it is not first-class and is harder to extract.

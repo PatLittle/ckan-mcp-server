@@ -1,5 +1,15 @@
 # LOG
 
+## 2026-01-31
+
+### Release v0.4.27
+
+- ckan_package_show: clarify dates (Issued/Modified vs harvest) and add metadata_harvested_at
+- Resources: surface Access Service endpoints and effective download URL fallback
+- Docs: add SPARQL examples + CKAN vs SPARQL comparison
+- Tests: add package_show formatting/unit coverage
+- Files: `src/tools/package.ts`, `tests/fixtures/responses/package-show-success.json`, `tests/unit/package-show-formatting.test.ts`, `docs/sparql-examples.md`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`
+
 ## 2026-01-29
 
 ### Release v0.4.26
