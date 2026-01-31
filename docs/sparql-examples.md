@@ -139,6 +139,82 @@ curl -s -X POST https://lod.dati.gov.it/sparql/ \
   --data "query=PREFIX%20dcat%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20SELECT%20DISTINCT%20?distributionTitle%20?distributionURI%20WHERE%20%7B%20<http%3A%2F%2Fwww.opendataipres.it%2Fdataset%2F900aae7e-d38d-4181-aaf9-6c332c7fae77>%20a%20dcat%3ADataset%3B%20dcat%3Adistribution%20?distributionURI%20.%20OPTIONAL%20%7B%20?distributionURI%20dct%3Atitle%20?distributionTitle%20.%20%7D%20%7D"
 ```
 
+## Count distributions with/without license
+
+Notes:
+
+- Use `COUNT(DISTINCT ?dist)` to avoid double-counting if a distribution has multiple `dct:license` values.
+
+### Total distributions
+
+Human-readable query:
+
+```sparql
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+
+SELECT (COUNT(DISTINCT ?dist) AS ?count)
+WHERE {
+  ?dataset a dcat:Dataset ;
+           dcat:distribution ?dist .
+}
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20dcat%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23%3E%20SELECT%20%28COUNT%28DISTINCT%20%3Fdist%29%20AS%20%3Fcount%29%20WHERE%20%7B%20%3Fdataset%20a%20dcat%3ADataset%20%3B%20dcat%3Adistribution%20%3Fdist%20.%20%7D"
+```
+
+### Distributions with license
+
+Human-readable query:
+
+```sparql
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct:  <http://purl.org/dc/terms/>
+
+SELECT (COUNT(DISTINCT ?dist) AS ?count)
+WHERE {
+  ?dataset a dcat:Dataset ;
+           dcat:distribution ?dist .
+  ?dist dct:license ?lic .
+}
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20dcat%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20SELECT%20%28COUNT%28DISTINCT%20%3Fdist%29%20AS%20%3Fcount%29%20WHERE%20%7B%20%3Fdataset%20a%20dcat%3ADataset%20%3B%20dcat%3Adistribution%20%3Fdist%20.%20%3Fdist%20dct%3Alicense%20%3Flic%20.%20%7D"
+```
+
+### Distributions without license
+
+Human-readable query:
+
+```sparql
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dct:  <http://purl.org/dc/terms/>
+
+SELECT (COUNT(DISTINCT ?dist) AS ?count)
+WHERE {
+  ?dataset a dcat:Dataset ;
+           dcat:distribution ?dist .
+  FILTER NOT EXISTS { ?dist dct:license ?lic . }
+}
+```
+
+```bash
+curl -s -X POST https://lod.dati.gov.it/sparql/ \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -H "Accept: application/sparql-results+json" \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36" \
+  --data "query=PREFIX%20dcat%3A%20%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fdcat%23%3E%20PREFIX%20dct%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E%20SELECT%20%28COUNT%28DISTINCT%20%3Fdist%29%20AS%20%3Fcount%29%20WHERE%20%7B%20%3Fdataset%20a%20dcat%3ADataset%20%3B%20dcat%3Adistribution%20%3Fdist%20.%20FILTER%20NOT%20EXISTS%20%7B%20%3Fdist%20dct%3Alicense%20%3Flic%20.%20%7D%20%7D"
+```
+
 ## Comparison: CKAN vs SPARQL
 
 This section validates notes from the audio against real datasets.
