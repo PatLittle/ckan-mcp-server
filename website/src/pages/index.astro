@@ -128,16 +128,6 @@ const baseUrl = '/ckan-mcp-server';
         0 0 0 1px rgba(0, 102, 204, 0.1);
     }
 
-    /* Install section visual separator */
-    .install-number {
-      font-family: 'Fraunces', Georgia, serif;
-      font-size: 3rem;
-      font-weight: 700;
-      color: var(--data-blue);
-      opacity: 0.15;
-      line-height: 1;
-    }
-
     /* Connecting lines decoration */
     .connection-line {
       position: relative;
@@ -288,17 +278,14 @@ const baseUrl = '/ckan-mcp-server';
           <div class="relative bg-white border border-gray-200 overflow-hidden">
             <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-data-blue to-teal"></div>
             <div class="p-8">
-              <div class="flex items-start gap-6">
-                <div class="install-number">1</div>
-                <div class="flex-1">
-                  <h3 class="display-font text-2xl font-semibold text-navy mb-2">
-                    Claude Desktop
-                  </h3>
-                  <p class="text-gray-600 mb-4">
-                    Add to your Claude Desktop configuration file:
-                  </p>
-                  <div class="code-block rounded-none p-5 overflow-x-auto">
-                    <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
+              <h3 class="display-font text-2xl font-semibold text-navy mb-2">
+                Claude Desktop
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Add to your Claude Desktop configuration file:
+              </p>
+              <div class="code-block rounded-none p-5 overflow-x-auto">
+                <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
   "mcpServers": {
     "ckan": {
       "command": "npx",
@@ -306,12 +293,10 @@ const baseUrl = '/ckan-mcp-server';
     }
   }
 }`}</code></pre>
-                  </div>
-                  <p class="mono text-xs text-gray-500 mt-4">
-                    Config: <code class="bg-gray-100 px-2 py-1">~/Library/Application Support/Claude/claude_desktop_config.json</code>
-                  </p>
-                </div>
               </div>
+              <p class="mono text-xs text-gray-500 mt-4">
+                Config: <code class="bg-gray-100 px-2 py-1">~/Library/Application Support/Claude/claude_desktop_config.json</code>
+              </p>
             </div>
           </div>
 
@@ -319,17 +304,14 @@ const baseUrl = '/ckan-mcp-server';
           <div class="relative bg-white border border-gray-200 overflow-hidden">
             <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-teal to-coral"></div>
             <div class="p-8">
-              <div class="flex items-start gap-6">
-                <div class="install-number">2</div>
-                <div class="flex-1">
-                  <h3 class="display-font text-2xl font-semibold text-navy mb-2">
-                    VS Code / Cursor
-                  </h3>
-                  <p class="text-gray-600 mb-4">
-                    Add to your MCP settings:
-                  </p>
-                  <div class="code-block rounded-none p-5 overflow-x-auto">
-                    <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
+              <h3 class="display-font text-2xl font-semibold text-navy mb-2">
+                VS Code / Cursor
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Add to your MCP settings:
+              </p>
+              <div class="code-block rounded-none p-5 overflow-x-auto">
+                <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
   "mcpServers": {
     "ckan": {
       "command": "npx",
@@ -337,8 +319,6 @@ const baseUrl = '/ckan-mcp-server';
     }
   }
 }`}</code></pre>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -347,30 +327,25 @@ const baseUrl = '/ckan-mcp-server';
           <div class="relative bg-white border border-gray-200 overflow-hidden">
             <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-coral to-amber"></div>
             <div class="p-8">
-              <div class="flex items-start gap-6">
-                <div class="install-number">3</div>
-                <div class="flex-1">
-                  <h3 class="display-font text-2xl font-semibold text-navy mb-2">
-                    Cloudflare Workers
-                  </h3>
-                  <p class="text-gray-600 mb-4">
-                    Use the public endpoint (no installation required):
-                  </p>
-                  <div class="code-block rounded-none p-5 overflow-x-auto">
-                    <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
+              <h3 class="display-font text-2xl font-semibold text-navy mb-2">
+                Cloudflare Workers
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Use the public endpoint (no installation required):
+              </p>
+              <div class="code-block rounded-none p-5 overflow-x-auto">
+                <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
   "mcpServers": {
     "ckan": {
       "url": "https://ckan-mcp-server.andy-pr.workers.dev/mcp"
     }
   }
 }`}</code></pre>
-                  </div>
-                  <div class="mt-4 p-4 bg-amber bg-opacity-10 border border-amber border-opacity-30">
-                    <p class="mono text-sm text-amber-900">
-                      ⚠️ Free tier: 100,000 requests/month. For production use, install locally.
-                    </p>
-                  </div>
-                </div>
+              </div>
+              <div class="mt-4 p-4 bg-amber bg-opacity-10 border border-amber border-opacity-30">
+                <p class="mono text-sm text-amber-900">
+                  ⚠️ Free tier: 100,000 requests/month. For production use, install locally.
+                </p>
               </div>
             </div>
           </div>
@@ -379,31 +354,26 @@ const baseUrl = '/ckan-mcp-server';
           <div class="relative bg-white border border-gray-200 overflow-hidden">
             <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-amber to-data-blue"></div>
             <div class="p-8">
-              <div class="flex items-start gap-6">
-                <div class="install-number">4</div>
-                <div class="flex-1">
-                  <h3 class="display-font text-2xl font-semibold text-navy mb-2">
-                    Global Installation
-                  </h3>
-                  <p class="text-gray-600 mb-4">
-                    Install globally via npm:
-                  </p>
-                  <div class="code-block rounded-none p-5 overflow-x-auto">
-                    <pre class="mono text-sm text-gray-100 leading-relaxed"><code>npm install -g @aborruso/ckan-mcp-server</code></pre>
-                  </div>
-                  <p class="text-gray-600 mt-6 mb-4">
-                    Then use in your MCP config:
-                  </p>
-                  <div class="code-block rounded-none p-5 overflow-x-auto">
-                    <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
+              <h3 class="display-font text-2xl font-semibold text-navy mb-2">
+                Global Installation
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Install globally via npm:
+              </p>
+              <div class="code-block rounded-none p-5 overflow-x-auto">
+                <pre class="mono text-sm text-gray-100 leading-relaxed"><code>npm install -g @aborruso/ckan-mcp-server</code></pre>
+              </div>
+              <p class="text-gray-600 mt-6 mb-4">
+                Then use in your MCP config:
+              </p>
+              <div class="code-block rounded-none p-5 overflow-x-auto">
+                <pre class="mono text-sm text-gray-100 leading-relaxed"><code>{`{
   "mcpServers": {
     "ckan": {
       "command": "ckan-mcp-server"
     }
   }
 }`}</code></pre>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -497,6 +467,9 @@ const baseUrl = '/ckan-mcp-server';
           <p class="text-lg text-gray-600">
             Connect to any CKAN-based open data portal worldwide
           </p>
+          <p class="text-sm text-gray-500 mt-2">
+            Verified portals with public API access
+          </p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -521,7 +494,7 @@ const baseUrl = '/ckan-mcp-server';
           >
             <div class="flex items-center gap-3 mb-3">
               <span class="text-3xl emoji-flag">🇺🇸</span>
-              <h3 class="display-font text-xl font-semibold text-navy">data.gov</h3>
+              <h3 class="display-font text-xl font-semibold text-navy">catalog.data.gov</h3>
             </div>
             <p class="text-sm text-gray-600">United States Open Data</p>
           </a>
@@ -540,6 +513,19 @@ const baseUrl = '/ckan-mcp-server';
           </a>
 
           <a
+            href="https://data.gov.au"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="portal-card bg-white p-6 border border-gray-200"
+          >
+            <div class="flex items-center gap-3 mb-3">
+              <span class="text-3xl emoji-flag">🇦🇺</span>
+              <h3 class="display-font text-xl font-semibold text-navy">data.gov.au</h3>
+            </div>
+            <p class="text-sm text-gray-600">Australian Government Open Data</p>
+          </a>
+
+          <a
             href="https://data.gov.uk"
             target="_blank"
             rel="noopener noreferrer"
@@ -550,32 +536,6 @@ const baseUrl = '/ckan-mcp-server';
               <h3 class="display-font text-xl font-semibold text-navy">data.gov.uk</h3>
             </div>
             <p class="text-sm text-gray-600">United Kingdom Open Data</p>
-          </a>
-
-          <a
-            href="https://data.europa.eu"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="portal-card bg-white p-6 border border-gray-200"
-          >
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-3xl emoji-flag">🇪🇺</span>
-              <h3 class="display-font text-xl font-semibold text-navy">data.europa.eu</h3>
-            </div>
-            <p class="text-sm text-gray-600">European Union Open Data Portal</p>
-          </a>
-
-          <a
-            href="https://demo.ckan.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="portal-card bg-white p-6 border border-gray-200"
-          >
-            <div class="flex items-center gap-3 mb-3">
-              <span class="text-3xl emoji-flag">🌍</span>
-              <h3 class="display-font text-xl font-semibold text-navy">demo.ckan.org</h3>
-            </div>
-            <p class="text-sm text-gray-600">Official CKAN Demo Portal</p>
           </a>
         </div>
 
