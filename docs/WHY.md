@@ -4,7 +4,7 @@ Hai mai provato a cercare dati aperti e ti sei perso tra interfacce web complica
 
 **C'è un modo migliore**: chiedere quello che vuoi, in linguaggio naturale, e ottenere risposte precise. Come una conversazione con un amico che conosce perfettamente tutti i cataloghi dati aperti.
 
-## Come Funziona (in Breve)
+## Come funziona (in breve)
 
 Questo strumento si integra con **la tua AI preferita** e ti permette di interrogare **qualsiasi portale CKAN** (dati.gov.it, data.gov.uk, data.gov, ecc.) usando domande normali.
 
@@ -12,9 +12,9 @@ Impari una volta, usi ovunque. 🌍
 
 ---
 
-## Esempi Pratici (Dal Più Semplice al Più Potente)
+## Esempi pratici (dal più semplice al più potente)
 
-### 🎯 Livello 1: La Ricerca Semplice
+### 🎯 Livello 1: la ricerca semplice
 
 **Tu chiedi**: "Ci sono dataset sulla mobilità su dati.gov.it?"
 
@@ -28,7 +28,7 @@ Invece di navigare pagine e pagine del catalogo, ottieni tutto in un colpo. Faci
 
 ---
 
-### 🔍 Livello 2: Affina la Ricerca
+### 🔍 Livello 2: affina la ricerca
 
 **Tu chiedi**: "Voglio solo dataset che hanno 'bike' o 'bici' nel titolo"
 
@@ -57,7 +57,7 @@ Ottieni:
 
 ---
 
-### 📊 Livello 3: Analisi Esplorativa
+### 📊 Livello 3: analisi esplorativa
 
 **Tu chiedi**: "Quali organizzazioni hanno creato più dataset negli ultimi 6 mesi su dati.gov.it?"
 
@@ -86,7 +86,7 @@ Perfetto per capire chi è più attivo nell'open data, senza scaricare nulla!
 
 ---
 
-### 🎯 Livello 4: Query Mirate (Filtri Multipli)
+### 🎯 Livello 4: query mirate (filtri multipli)
 
 **Tu chiedi**: "Dataset su appalti o contratti pubblicati negli ultimi 3 mesi"
 
@@ -114,7 +114,7 @@ Ottieni tutti i dataset pubblicati da quell'organizzazione, con statistiche comp
 
 ---
 
-### 🌍 Livello 5: Stesso Approccio, Portale Diverso
+### 🌍 Livello 5: stesso approccio, portale diverso
 
 **Tu chiedi**: "Stessa ricerca su bike, ma sul portale del Regno Unito (data.gov.uk)"
 
@@ -132,15 +132,35 @@ title:bike OR title:cycling
 
 ---
 
-### 💎 Livello 6: Interrogare Direttamente i Dati (DataStore)
+### 💎 Livello 6: interrogare direttamente i dati (datastore)
 
 Finora abbiamo visto solo **metadati** (titoli, descrizioni, organizzazioni). Ma alcuni portali CKAN hanno il **DataStore** attivo, che ti permette di interrogare direttamente i dati dentro i CSV!
 
-#### Esempio Reale: Ordinanze Viabili del Comune di Messina
+#### Esempio reale: ordinanze viabili del Comune di Messina (flusso a step)
 
 **Server**: `dati.comune.messina.it`
-**Dataset**: "Ordinanze viabili"
-**Totale record**: 2.041 ordinanze (as of 1 febbraio 2026)
+
+**Step 1 - Trova il dataset giusto**
+
+**Tu chiedi**: "Cerca le ordinanze su dati.comune.messina.it"
+
+**Risultato**: dataset "Ordinanze viabili" (as of 1 febbraio 2026), con una risorsa CSV e **DataStore attivo**.
+
+**Tool usato**: `ckan_package_search`
+
+---
+
+**Step 2 - Verifica struttura e campi**
+
+**Tu chiedi**: "Fammi vedere le prime 5 righe"
+
+**Risultato**: confermi che esistono campi come `tipo`, `data_pubblicazione`, `numero`, `aree`, `sintesi`.
+
+**Tool usato**: `ckan_datastore_search`
+
+---
+
+**Step 3 - Filtra solo le ordinanze di tipo specifico**
 
 **Tu chiedi**: "Dammi solo le ordinanze di tipo 'divieto_transito'"
 
@@ -152,45 +172,27 @@ filters: { "tipo": "divieto_transito" }
 
 **Risultato**: 259 ordinanze (su 2.041 totali) (as of 1 febbraio 2026)!
 
-**Campi disponibili**:
-- `numero`: numero ordinanza
-- `data_pubblicazione`: quando è stata pubblicata
-- `inizio_validita`, `fine_validita`: periodo di validità
-- `aree`: zone interessate
-- `tipo`: tipo di ordinanza
-- `sintesi`: descrizione breve
-
 **Esempio di risultato**:
 
 | numero | data_pubblicazione | tipo | sintesi |
 |--------|-------------------|------|---------|
 | 153 | 2026-01-30 | divieto_transito | Viale S. Martino, limitazione 30 km/h |
 
-**Nota importante**: il DataStore è disponibile principalmente sui **portali locali** (comuni, regioni), mentre il portale nazionale `dati.gov.it` raccoglie i metadati ma non attiva il DataStore. Se vuoi interrogare direttamente i dati, cerca dataset sui portali locali!
-
-**Tool usato**: `ckan_datastore_search` (interroga dati tabellari)
+**Tool usato**: `ckan_datastore_search`
 
 ---
 
-## 🦸 Altri Super Poteri
+**Nota importante**: il DataStore è disponibile principalmente sui **portali locali** (comuni, regioni), mentre il portale nazionale `dati.gov.it` raccoglie i metadati ma non attiva il DataStore. Se vuoi interrogare direttamente i dati, cerca dataset sui portali locali!
+
+---
+
+## 🦸 Altri super poteri
 
 Hai visto i tool principali in azione. Ma ce ne sono altri che ti danno poteri extra!
 
-### 🎯 Trova i Dataset Più Rilevanti
+### 🏢 Cerca organizzazioni
 
-**Tu chiedi**: "Quali sono i dataset più rilevanti sulla sanità e ospedali?"
-
-Il sistema usa un **algoritmo di ranking** che considera titolo, descrizione, tag e organizzazione per darti i risultati **più pertinenti** in cima.
-
-**Risultato**: 38 dataset ordinati per rilevanza (as of 1 febbraio 2026)!
-
-**Tool usato**: `ckan_find_relevant_datasets`
-
----
-
-### 🏢 Cerca Organizzazioni
-
-**Tu chiedi**: "Quali organizzazioni hanno 'salute' nel nome?"
+**Tu chiedi**: "Quali organizzazioni hanno 'salute' nel nome in dati.gov.it?"
 
 Ricerca tra tutte le organizzazioni registrate sul portale.
 
@@ -203,7 +205,7 @@ Ricerca tra tutte le organizzazioni registrate sul portale.
 
 ---
 
-### 🏷️ Scopri i Tag Più Popolari
+### 🏷️ Scopri i tag più popolari
 
 **Tu chiedi**: "Quali sono i 10 tag più usati su dati.gov.it?"
 
@@ -218,13 +220,24 @@ Ottieni la classifica dei tag più popolari, perfetto per capire quali temi sono
 
 ---
 
-### 📁 Esplora Gruppi Tematici
+### 📁 Esplora gruppi tematici
 
-**Tu chiedi**: "Quanti dataset ci sono nel gruppo 'Ambiente' su dati.gov.it?"
+**Parte 1 - Elenco dei gruppi**
 
-Vedi tutti i dataset di quel gruppo tematico.
+**Tu chiedi**: "Quali gruppi tematici ci sono in dati.gov.it?"
 
-**Risultato**: 8.947 dataset sul tema Ambiente (as of 1 febbraio 2026)!
+**Risultato** (as of 1 febbraio 2026):
+Agricoltura, Ambiente, Cultura, Economia, Energia, Giustizia, Governo, Internazionali, Regioni, Salute, Scienza, Società, Trasporti.
+
+**Tool usato**: `ckan_group_list`
+
+---
+
+**Parte 2 - Dettaglio di un gruppo**
+
+**Tu chiedi**: "Quanti dataset ci sono nel gruppo 'Scienza'?"
+
+**Risultato**: 2.651 dataset nel gruppo Scienza (as of 1 febbraio 2026).
 
 I gruppi sono raccolte curate di dataset su temi specifici (Ambiente, Salute, Economia, ecc.).
 
@@ -232,9 +245,9 @@ I gruppi sono raccolte curate di dataset su temi specifici (Ambiente, Salute, Ec
 
 ---
 
-### ✅ Verifica la Qualità di un Dataset
+### ✅ Verifica la qualità di un dataset
 
-**Tu chiedi**: "Qual è il punteggio di qualità del dataset sugli appalti ANAC 2018?" (solo su dati.gov.it)
+**Tu chiedi**: "Qual è il punteggio di qualità del dataset sugli appalti ANAC 2018 su dati.gov.it?"
 
 Il sistema interroga le **metriche MQA** (Metadata Quality Assessment) di data.europa.eu:
 
@@ -255,7 +268,7 @@ Perfetto per valutare se un dataset è ben documentato e utilizzabile!
 
 ---
 
-### 🔍 Query SQL Avanzate (DataStore)
+### 🔍 Query SQL avanzate (datastore)
 
 **Tu chiedi**: "Conta quante ordinanze per tipo ci sono nel dataset di Messina"
 
@@ -282,12 +295,12 @@ Per analisi complesse, quando i filtri semplici non bastano!
 
 ---
 
-### 🌐 Verifica se un Portale è Online
+### 🌐 Verifica se un portale è online
 
 **Tu chiedi**: "Il portale dati.gov.it è raggiungibile? Che versione usa?"
 
 Verifica lo stato del server (as of 1 febbraio 2026):
-- ✅ Online
+- ✅ online
 - Versione CKAN: 2.10.3
 - Titolo: "Dati Gov IT"
 - Descrizione: "Portale Nazionale Dati Aperti - AGID"
@@ -298,7 +311,7 @@ Utile prima di lanciare query su portali che non conosci!
 
 ---
 
-## 📊 Comparazione: Web vs MCP Server
+## 📊 Comparazione: web vs MCP server
 
 | Metodo | Steps | Tempo | Precisione |
 |--------|-------|-------|-----------|
@@ -309,9 +322,9 @@ Vedi la differenza? 😎
 
 ---
 
-## 🎯 Casi d'Uso Reali
+## 🎯 Casi d'uso reali
 
-### Giornalista Data-Driven 📰
+### Giornalista data-driven 📰
 
 **Scenario**: Stai scrivendo un articolo su appalti pubblici e vuoi dati freschi.
 
@@ -321,7 +334,7 @@ Vedi la differenza? 😎
 
 ---
 
-### Ricercatore Open Data 🔬
+### Ricercatore open data 🔬
 
 **Scenario**: Vuoi studiare quali enti pubblicano più dati aperti.
 
@@ -331,7 +344,7 @@ Vedi la differenza? 😎
 
 ---
 
-### Civic Hacker 💻
+### Civic hacker 💻
 
 **Scenario**: Vuoi monitorare nuovi dataset su mobilità urbana per creare una app.
 
@@ -341,7 +354,7 @@ Vedi la differenza? 😎
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Getting started
 
 Vuoi provare? La configurazione richiede **2 minuti**:
 
@@ -353,7 +366,7 @@ La tua AI fa il resto. Nessun codice da scrivere, solo domande da fare.
 
 ---
 
-## 🌟 Cosa Rende Speciale Questo Strumento?
+## 🌟 Cosa rende speciale questo strumento?
 
 - ✅ **Impari una volta, usi ovunque**: stesso metodo per tutti i portali CKAN
 - ✅ **Veloce**: secondi invece di minuti
@@ -365,7 +378,7 @@ La tua AI fa il resto. Nessun codice da scrivere, solo domande da fare.
 
 ---
 
-## 🤔 Domande Frequenti
+## 🤔 Domande frequenti
 
 **Q: Devo imparare a programmare?**
 A: No! Chiedi in linguaggio naturale, la tua AI traduce per te.
@@ -387,7 +400,7 @@ A: Assolutamente! Questo è un progetto open source: [GitHub repo](https://githu
 
 ---
 
-## 💡 Prossimi Passi
+## 💡 Prossimi passi
 
 Pronto a provare? Vai al [README.md](../README.md) per l'installazione!
 
