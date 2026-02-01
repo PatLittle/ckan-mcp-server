@@ -2,6 +2,11 @@
 
 ## 2026-02-01
 
+### Release v0.4.32
+
+- Workers: align browser-like headers for fetch path to avoid 403 on dati.gov.it
+- Files: `src/utils/http.ts`, `package.json`, `package-lock.json`
+
 ### Release v0.4.31
 
 - Workers: decode compressed responses via DecompressionStream when available
