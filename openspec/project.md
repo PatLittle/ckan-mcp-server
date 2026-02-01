@@ -30,7 +30,7 @@ Exposes MCP tools for:
 
 ### Architecture Patterns
 - **Modular MCP server** - registration in `src/server.ts`
-- **Tool-based architecture** - 13 registered MCP tools for CKAN operations
+  - **Tool-based architecture** - 15 registered MCP tools for CKAN operations (including MQA quality tools for dati.gov.it)
 - **Multiple transport modes**:
   - stdio (default) - for local MCP client integration
   - HTTP - for remote access via POST /mcp endpoint
