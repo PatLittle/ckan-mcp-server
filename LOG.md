@@ -2,6 +2,11 @@
 
 ## 2026-02-01
 
+### Release v0.4.33
+
+- Docs: clarify natural language date-field mapping for package search and document `content_recent` usage with example
+- Files: `src/tools/package.ts`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`
+
 ### Release v0.4.32
 
 - Workers: align browser-like headers for fetch path to avoid 403 on dati.gov.it

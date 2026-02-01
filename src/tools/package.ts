@@ -301,6 +301,11 @@ Important - Date field semantics:
   - metadata_modified: CKAN record update timestamp (publish time on source portals,
     harvest time on aggregators; use for "updated/modified in last X")
 
+Natural language mapping (important for tool callers):
+  - "created"/"published" -> prefer issued; fallback to metadata_created
+  - "updated"/"modified" -> prefer modified; fallback to metadata_modified
+  - For "recent in last X", consider using content_recent (issued with metadata_created fallback)
+
 Content-recent helper:
   - content_recent: if true, rewrites the query to use issued with a fallback to
     metadata_created when issued is missing.
@@ -376,6 +381,7 @@ Examples:
   - Date range: { q: "metadata_modified:[2024-01-01T00:00:00Z TO 2024-12-31T23:59:59Z]" }
   - Date math: { q: "metadata_modified:[NOW-6MONTHS TO *]" }
   - Date math (auto-converted): { q: "modified:[NOW-30DAYS TO NOW]" }
+  - Recent content (issued w/ fallback): { q: "*:*", content_recent: true, content_recent_days: 180 }
   - Field exists: { q: "organization:* AND num_resources:[1 TO *]" }
   - Boosting: { q: "title:climate^2 OR notes:climate" }
   - Filter org: { fq: "organization:regione-siciliana" }
