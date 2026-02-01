@@ -255,3 +255,32 @@ Conclusion:
 
 - SPARQL makes DataService endpoints easier to query.
 - CKAN has the info but it is not first-class and is harder to extract.
+
+### Case 3: `issued` defaulted in RDF when missing in CKAN
+
+CKAN dataset:
+
+- Name: `ambiti-territoriali-organizzativi-ottimali-di-protezione-civile`
+- CKAN `issued`: missing/empty
+- CKAN `metadata_created`: `2025-02-23T20:03:34.427664`
+- CKAN URI: `https://geodati.gov.it/resource/id/arlst:2023-12-19T091807`
+
+SPARQL query:
+
+```sparql
+SELECT ?issued
+WHERE {
+  <https://geodati.gov.it/resource/id/arlst:2023-12-19T091807>
+    <http://purl.org/dc/terms/issued> ?issued .
+}
+LIMIT 1
+```
+
+SPARQL result:
+
+- `dct:issued` = `2025-02-23T20:03:34.427664`
+
+Conclusion:
+
+- When `issued` is missing in CKAN, the CKAN→RDF transformation appears to default
+  `dct:issued` to CKAN `metadata_created` (harvest/record timestamp).
