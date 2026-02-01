@@ -247,15 +247,45 @@ I gruppi sono raccolte curate di dataset su temi specifici (Ambiente, Salute, Ec
 
 ### ✅ Verifica la qualità di un dataset
 
-**Tu chiedi**: "Qual è il punteggio di qualità del dataset sugli appalti ANAC 2018 su dati.gov.it?"
+**Step 1 - Verifica che ANAC esista su dati.gov.it**
+
+**Tu chiedi**: "C'è ANAC tra le organizzazioni in dati.gov.it?"
+
+**Risultato**: sì, organizzazione "ANAC - Autorità Nazionale Anticorruzione" trovata (69 dataset) (as of 1 febbraio 2026).
+
+**Tool usato**: `ckan_organization_search`
+
+---
+
+**Step 2 - Cerca 'appalti' nei titoli dei dataset ANAC**
+
+**Tu chiedi**: "Cerca 'appalti' nei nomi dei dati di ANAC"
+
+**Query usata**:
+
+```
+q: title:appalti*
+fq: organization:anac
+```
+
+**Risultato**: 8 dataset trovati, tra cui "OCDS appalti ordinari anno 2018" (as of 1 febbraio 2026).
+
+**Tool usato**: `ckan_package_search`
+
+---
+
+**Step 3 - Valuta la qualità del dataset**
+
+**Tu chiedi**: "Dimmi la qualità di 'OCDS appalti ordinari 2018'"
 
 Il sistema interroga le **metriche MQA** (Metadata Quality Assessment) di data.europa.eu:
 
 **Dataset**: "ocds-appalti-ordinari-anno-2018" (ANAC)
-**Punteggio complessivo**: 395/405 (quasi perfetto!) (as of 1 febbraio 2026)
+**Punteggio complessivo**: 395/405 (as of 1 febbraio 2026)
 Nota: su data.europa.eu l'id risulta "ocds-appalti-ordinari-2018" (senza "anno").
 
 **Dettaglio dimensioni**:
+
 - ✅ Accessibilità: 100/100
 - ⚠️ Riusabilità: 65/75
 - ✅ Interoperabilità: 110/110
