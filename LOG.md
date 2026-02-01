@@ -7,6 +7,16 @@
 - Docs: clarify natural language date-field mapping for package search and document `content_recent` usage with example
 - Files: `src/tools/package.ts`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`
 
+### Unreleased
+
+- MQA: add guidance note to use metrics endpoint for score deductions
+- Tests: cover guidance note in quality markdown output
+- Files: `src/tools/quality.ts`, `tests/integration/quality.test.ts`
+- MQA: add detailed quality reasons tool and metrics flag parsing
+- Docs: list `ckan_get_mqa_quality_details` tool
+- Tests: cover detailed MQA reasons output
+- Files: `src/tools/quality.ts`, `tests/integration/quality.test.ts`, `tests/fixtures/responses/mqa-metrics-details.json`, `README.md`, `docs/architecture-flow.md`
+
 ### Release v0.4.32
 
 - Workers: align browser-like headers for fetch path to avoid 403 on dati.gov.it
