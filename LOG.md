@@ -2,20 +2,22 @@
 
 ## 2026-02-01
 
+### Release v0.4.34
+
+- MQA: add detailed quality reasons tool with metrics flag parsing
+- MQA: add guidance note to use metrics endpoint for score deductions
+- Tests: cover detailed MQA reasons output and guidance note
+- Docs: list `ckan_get_mqa_quality_details` tool
+- Files: `src/tools/quality.ts`, `tests/integration/quality.test.ts`, `README.md`, `docs/architecture-flow.md`
+
+### Unreleased
+
+- None
+
 ### Release v0.4.33
 
 - Docs: clarify natural language date-field mapping for package search and document `content_recent` usage with example
 - Files: `src/tools/package.ts`, `src/server.ts`, `src/worker.ts`, `package.json`, `package-lock.json`
-
-### Unreleased
-
-- MQA: add guidance note to use metrics endpoint for score deductions
-- Tests: cover guidance note in quality markdown output
-- Files: `src/tools/quality.ts`, `tests/integration/quality.test.ts`
-- MQA: add detailed quality reasons tool and metrics flag parsing
-- Docs: list `ckan_get_mqa_quality_details` tool
-- Tests: cover detailed MQA reasons output
-- Files: `src/tools/quality.ts`, `tests/integration/quality.test.ts`, `tests/fixtures/responses/mqa-metrics-details.json`, `README.md`, `docs/architecture-flow.md`
 
 ### Release v0.4.32
 

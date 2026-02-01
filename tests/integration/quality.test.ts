@@ -1,6 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import axios from 'axios';
-import { getMqaQuality, isValidMqaServer, formatQualityMarkdown } from '../../src/tools/quality';
+import {
+  getMqaQuality,
+  getMqaQualityDetails,
+  isValidMqaServer,
+  formatQualityMarkdown,
+  formatQualityDetailsMarkdown
+} from '../../src/tools/quality';
 import packageShowWithIdentifier from '../fixtures/responses/package-show-with-identifier.json';
 import packageShowWithoutIdentifier from '../fixtures/responses/package-show-without-identifier.json';
 import mqaQualitySuccess from '../fixtures/responses/mqa-quality-success.json';
@@ -28,6 +34,19 @@ describe('ckan_get_mqa_quality integration', () => {
       json: async () => payload,
       text: async () => JSON.stringify(payload)
     });
+  };
+
+  const mqaMetricsDetails = {
+    '@graph': [
+      {
+        'dqv:isMeasurementOf': {
+          '@id': 'https://piveau.eu/ns/voc#knownLicence'
+        },
+        'dqv:value': {
+          '@value': 'false'
+        }
+      }
+    ]
   };
 
   describe('isValidMqaServer', () => {
@@ -287,6 +306,7 @@ describe('ckan_get_mqa_quality integration', () => {
       expect(result).toContain('## Findability');
       expect(result).toContain('## Contextuality');
       expect(result).toContain('✓ Available');
+      expect(result).toContain('Use the metrics endpoint to explain score deductions');
     });
 
     it('handles partial quality data', () => {
@@ -317,6 +337,68 @@ describe('ckan_get_mqa_quality integration', () => {
 
       expect(result).toContain('✗ Available');
       expect(result).toContain('✓ Available');
+    });
+  });
+
+  describe('ckan_get_mqa_quality_details integration', () => {
+    it('returns non-max reasons from metrics payload', async () => {
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: packageShowWithIdentifier
+      });
+
+      vi.mocked(axios.get).mockResolvedValueOnce({
+        data: mqaQualitySuccess
+      });
+      mockFetchJson(mqaMetricsDetails);
+
+      const result = await getMqaQualityDetails(
+        'https://www.dati.gov.it/opendata',
+        '332be8b7-89b9-4dfe-a252-7fccd3efda76'
+      );
+
+      expect(result).toHaveProperty('breakdown.nonMaxDimensions');
+      expect(result.breakdown.nonMaxDimensions).toContain('reusability');
+      expect(result.details.reasons.reusability).toContain(
+        'knownLicence=false (licence not aligned to controlled vocabulary)'
+      );
+      expect(result.details.flags.some(flag => flag.metricKey === 'knownLicence')).toBe(true);
+    });
+
+    it('formats quality details as markdown with reasons', () => {
+      const markdown = formatQualityDetailsMarkdown({
+        breakdown: {
+          scores: {
+            accessibility: 90,
+            findability: 100,
+            interoperability: 110,
+            reusability: 65,
+            contextuality: 20,
+            total: 385
+          },
+          nonMaxDimensions: ['reusability'],
+          metricsUrl: 'https://data.europa.eu/api/hub/repo/datasets/r_liguri-ds-664/metrics',
+          mqaUrl: 'https://data.europa.eu/api/mqa/cache/datasets/r_liguri-ds-664',
+          portalId: 'r_liguri-ds-664'
+        },
+        details: {
+          flags: [
+            {
+              metricId: 'https://piveau.eu/ns/voc#knownLicence',
+              metricKey: 'knownLicence',
+              dimension: 'reusability',
+              values: [false]
+            }
+          ],
+          reasons: {
+            reusability: ['knownLicence=false (licence not aligned to controlled vocabulary)']
+          }
+        }
+      }, 'test-dataset');
+
+      expect(markdown).toContain('# Quality Details');
+      expect(markdown).toContain('**Overall Score**: 385/405');
+      expect(markdown).toContain('## Non-max Reasons');
+      expect(markdown).toContain('Reusability: knownLicence=false');
     });
   });
 });

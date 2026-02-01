@@ -66,12 +66,78 @@ type MqaQualityResult = {
   breakdown: MqaBreakdown;
 };
 
+type MetricValue = boolean | number | string;
+
+type MqaMetricFlag = {
+  metricId: string;
+  metricKey: string;
+  dimension: MqaDimension;
+  values: MetricValue[];
+};
+
+type MqaMetricDetails = {
+  flags: MqaMetricFlag[];
+  reasons: Partial<Record<MqaDimension, string[]>>;
+};
+
+type MqaQualityDetailsResult = {
+  breakdown: MqaBreakdown;
+  details: MqaMetricDetails;
+};
+
 const DIMENSION_MAX: Record<MqaDimension, number> = {
   accessibility: 100,
   findability: 100,
   interoperability: 110,
   reusability: 75,
   contextuality: 20
+};
+
+const DIMENSION_LABELS: Record<MqaDimension, string> = {
+  accessibility: "Accessibility",
+  findability: "Findability",
+  interoperability: "Interoperability",
+  reusability: "Reusability",
+  contextuality: "Contextuality"
+};
+
+const METRIC_DEFINITIONS: Record<string, {
+  dimension: MqaDimension;
+  reason?: string;
+  expectsStatusCode?: boolean;
+}> = {
+  accessUrlAvailability: { dimension: "accessibility", reason: "accessUrlAvailability=false" },
+  downloadUrlAvailability: { dimension: "accessibility", reason: "downloadUrlAvailability=false" },
+  accessUrlStatusCode: { dimension: "accessibility", expectsStatusCode: true },
+  downloadUrlStatusCode: { dimension: "accessibility", expectsStatusCode: true },
+  keywordAvailability: { dimension: "findability", reason: "keywordAvailability=false" },
+  categoryAvailability: { dimension: "findability", reason: "categoryAvailability=false" },
+  spatialAvailability: { dimension: "findability", reason: "spatialAvailability=false" },
+  temporalAvailability: { dimension: "findability", reason: "temporalAvailability=false" },
+  dcatApCompliance: { dimension: "interoperability", reason: "dcatApCompliance=false" },
+  formatAvailability: { dimension: "interoperability", reason: "formatAvailability=false" },
+  mediaTypeAvailability: { dimension: "interoperability", reason: "mediaTypeAvailability=false" },
+  formatMediaTypeVocabularyAlignment: { dimension: "interoperability", reason: "formatMediaTypeVocabularyAlignment=false" },
+  formatMediaTypeMachineInterpretable: {
+    dimension: "interoperability",
+    reason: "formatMediaTypeMachineInterpretable=false"
+  },
+  accessRightsAvailability: { dimension: "reusability", reason: "accessRightsAvailability=false" },
+  accessRightsVocabularyAlignment: {
+    dimension: "reusability",
+    reason: "accessRightsVocabularyAlignment=false"
+  },
+  licenceAvailability: { dimension: "reusability", reason: "licenceAvailability=false" },
+  knownLicence: {
+    dimension: "reusability",
+    reason: "knownLicence=false (licence not aligned to controlled vocabulary)"
+  },
+  contactPointAvailability: { dimension: "reusability", reason: "contactPointAvailability=false" },
+  publisherAvailability: { dimension: "reusability", reason: "publisherAvailability=false" },
+  byteSizeAvailability: { dimension: "contextuality", reason: "byteSizeAvailability=false" },
+  rightsAvailability: { dimension: "contextuality", reason: "rightsAvailability=false" },
+  dateModifiedAvailability: { dimension: "contextuality", reason: "dateModifiedAvailability=false" },
+  dateIssuedAvailability: { dimension: "contextuality", reason: "dateIssuedAvailability=false" }
 };
 
 function parseScoreValue(value: unknown): number | undefined {
@@ -87,6 +153,48 @@ function parseScoreValue(value: unknown): number | undefined {
     return Number.isFinite(parsed) ? parsed : undefined;
   }
   return undefined;
+}
+
+function parseMetricValue(value: unknown): MetricValue | undefined {
+  if (!value || typeof value !== "object") {
+    if (typeof value === "boolean" || typeof value === "number" || typeof value === "string") {
+      return value;
+    }
+    return undefined;
+  }
+
+  const raw = (value as Record<string, unknown>)["@value"];
+  if (typeof raw === "boolean") {
+    return raw;
+  }
+  if (typeof raw === "number") {
+    return raw;
+  }
+  if (typeof raw === "string") {
+    const lower = raw.toLowerCase();
+    if (lower === "true" || lower === "false") {
+      return lower === "true";
+    }
+    const numeric = Number(raw);
+    if (Number.isFinite(numeric)) {
+      return numeric;
+    }
+    return raw;
+  }
+
+  return undefined;
+}
+
+function metricKeyFromId(metricId: string): string {
+  const hashIndex = metricId.lastIndexOf("#");
+  if (hashIndex >= 0 && hashIndex < metricId.length - 1) {
+    return metricId.slice(hashIndex + 1);
+  }
+  const slashIndex = metricId.lastIndexOf("/");
+  if (slashIndex >= 0 && slashIndex < metricId.length - 1) {
+    return metricId.slice(slashIndex + 1);
+  }
+  return metricId;
 }
 
 function decodeMetricsPayload(payload: unknown): unknown {
@@ -169,6 +277,106 @@ function extractMetricsScores(metricsData: unknown): MqaScores {
   return scores;
 }
 
+function extractMetricDetails(metricsData: unknown, nonMaxDimensions: MqaDimension[]): MqaMetricDetails {
+  const parsed = decodeMetricsPayload(metricsData);
+  if (!parsed || typeof parsed !== "object") {
+    return { flags: [], reasons: {} };
+  }
+
+  const graph = (parsed as Record<string, unknown>)["@graph"];
+  if (!Array.isArray(graph)) {
+    return { flags: [], reasons: {} };
+  }
+
+  const flagsMap = new Map<string, {
+    metricId: string;
+    metricKey: string;
+    dimension: MqaDimension;
+    values: Set<MetricValue>;
+  }>();
+
+  for (const node of graph) {
+    if (!node || typeof node !== "object") {
+      continue;
+    }
+    const metricRef = (node as Record<string, unknown>)["dqv:isMeasurementOf"];
+    if (!metricRef) {
+      continue;
+    }
+    const metricId = typeof metricRef === "string"
+      ? metricRef
+      : (metricRef as Record<string, unknown>)["@id"];
+    if (typeof metricId !== "string") {
+      continue;
+    }
+
+    const metricKey = metricKeyFromId(metricId);
+    const definition = METRIC_DEFINITIONS[metricKey];
+    if (!definition) {
+      continue;
+    }
+
+    const value = parseMetricValue((node as Record<string, unknown>)["dqv:value"]);
+    if (value === undefined) {
+      continue;
+    }
+
+    const entry = flagsMap.get(metricKey);
+    if (entry) {
+      entry.values.add(value);
+      continue;
+    }
+    flagsMap.set(metricKey, {
+      metricId,
+      metricKey,
+      dimension: definition.dimension,
+      values: new Set([value])
+    });
+  }
+
+  const reasons: Partial<Record<MqaDimension, string[]>> = {};
+  const reasonSets = new Map<MqaDimension, Set<string>>();
+  for (const dimension of nonMaxDimensions) {
+    reasonSets.set(dimension, new Set());
+  }
+
+  for (const entry of flagsMap.values()) {
+    const definition = METRIC_DEFINITIONS[entry.metricKey];
+    if (!definition) {
+      continue;
+    }
+    const reasonSet = reasonSets.get(entry.dimension);
+    if (!reasonSet) {
+      continue;
+    }
+
+    for (const value of entry.values) {
+      if (typeof value === "boolean" && value === false) {
+        reasonSet.add(definition.reason || `${entry.metricKey}=false`);
+        continue;
+      }
+      if (definition.expectsStatusCode && typeof value === "number" && value !== 200) {
+        reasonSet.add(`${entry.metricKey}=${value}`);
+      }
+    }
+  }
+
+  for (const [dimension, set] of reasonSets.entries()) {
+    if (set.size > 0) {
+      reasons[dimension] = Array.from(set.values());
+    }
+  }
+
+  const flags: MqaMetricFlag[] = Array.from(flagsMap.values()).map((entry) => ({
+    metricId: entry.metricId,
+    metricKey: entry.metricKey,
+    dimension: entry.dimension,
+    values: Array.from(entry.values)
+  }));
+
+  return { flags, reasons };
+}
+
 function findNonMaxDimensions(scores: MqaScores): MqaDimension[] {
   const nonMax: MqaDimension[] = [];
   (Object.keys(DIMENSION_MAX) as MqaDimension[]).forEach((dimension) => {
@@ -180,7 +388,13 @@ function findNonMaxDimensions(scores: MqaScores): MqaDimension[] {
   return nonMax;
 }
 
-export async function getMqaQuality(serverUrl: string, datasetId: string): Promise<MqaQualityResult> {
+type MqaFetchResult = {
+  mqa: unknown;
+  metrics: unknown;
+  breakdown: MqaBreakdown;
+};
+
+async function fetchMqaQuality(serverUrl: string, datasetId: string): Promise<MqaFetchResult> {
   // Step 1: Get dataset metadata from CKAN to extract identifier
   interface PackageShowResult {
     identifier?: string;
@@ -249,6 +463,7 @@ export async function getMqaQuality(serverUrl: string, datasetId: string): Promi
 
       return {
         mqa: response.data,
+        metrics: metricsPayload,
         breakdown
       };
     } catch (error) {
@@ -268,6 +483,23 @@ export async function getMqaQuality(serverUrl: string, datasetId: string): Promi
     `Check the dataset quality page on data.europa.eu to confirm the identifier (it may include a '~~1' suffix) ` +
     `or verify alignment on dati.gov.it (quality may be marked as 'Non disponibile o identificativo non allineato').`
   );
+}
+
+export async function getMqaQuality(serverUrl: string, datasetId: string): Promise<MqaQualityResult> {
+  const result = await fetchMqaQuality(serverUrl, datasetId);
+  return {
+    mqa: result.mqa,
+    breakdown: result.breakdown
+  };
+}
+
+export async function getMqaQualityDetails(serverUrl: string, datasetId: string): Promise<MqaQualityDetailsResult> {
+  const result = await fetchMqaQuality(serverUrl, datasetId);
+  const details = extractMetricDetails(result.metrics, result.breakdown.nonMaxDimensions);
+  return {
+    breakdown: result.breakdown,
+    details
+  };
 }
 
 /**
@@ -541,7 +773,64 @@ export function formatQualityMarkdown(data: any, datasetId: string): string {
   const portalId = normalized.breakdown?.portalId || normalized.id || datasetId;
   lines.push(`Portal: https://data.europa.eu/data/datasets/${portalId}/quality?locale=it`);
   lines.push(`MQA source: ${MQA_API_BASE}/${portalId}`);
-  lines.push(`Metrics endpoint: ${normalized.breakdown?.metricsUrl || `${MQA_METRICS_BASE}/${portalId}/metrics`}`);
+  const metricsEndpoint = normalized.breakdown?.metricsUrl || `${MQA_METRICS_BASE}/${portalId}/metrics`;
+  lines.push(`Metrics endpoint: ${metricsEndpoint}`);
+  lines.push(`Tip: Use the metrics endpoint to explain score deductions (e.g., failing measurements such as knownLicence = false).`);
+
+  return lines.join("\n");
+}
+
+export function formatQualityDetailsMarkdown(data: MqaQualityDetailsResult, datasetId: string): string {
+  const lines: string[] = [];
+  const breakdown = data.breakdown;
+
+  lines.push(`# Quality Details for Dataset: ${datasetId}`);
+  lines.push("");
+
+  if (typeof breakdown.scores.total === "number") {
+    lines.push(`**Overall Score**: ${breakdown.scores.total}/405`);
+    lines.push("");
+  }
+
+  if (breakdown.scores) {
+    lines.push("## Dimension Scores");
+    const order: Array<[MqaDimension, number]> = [
+      ["accessibility", DIMENSION_MAX.accessibility],
+      ["findability", DIMENSION_MAX.findability],
+      ["interoperability", DIMENSION_MAX.interoperability],
+      ["reusability", DIMENSION_MAX.reusability],
+      ["contextuality", DIMENSION_MAX.contextuality]
+    ];
+    for (const [key, max] of order) {
+      const value = breakdown.scores[key];
+      if (typeof value === "number") {
+        const status = value >= max ? "✅" : "⚠️";
+        lines.push(`- ${DIMENSION_LABELS[key]}: ${value}/${max} ${status}${value >= max ? "" : ` (max ${max})`}`);
+      }
+    }
+    lines.push("");
+  }
+
+  lines.push("## Non-max Reasons");
+  if (breakdown.nonMaxDimensions.length === 0) {
+    lines.push("- All dimensions are at max score.");
+  } else {
+    for (const dimension of breakdown.nonMaxDimensions) {
+      const reasons = data.details.reasons[dimension] || [];
+      if (reasons.length === 0) {
+        lines.push(`- ${DIMENSION_LABELS[dimension]}: no failing flags detected in metrics payload`);
+      } else {
+        lines.push(`- ${DIMENSION_LABELS[dimension]}: ${reasons.join("; ")}`);
+      }
+    }
+  }
+  lines.push("");
+
+  lines.push("---");
+  const portalId = breakdown.portalId || datasetId;
+  lines.push(`Portal: https://data.europa.eu/data/datasets/${portalId}/quality?locale=it`);
+  lines.push(`MQA source: ${MQA_API_BASE}/${portalId}`);
+  lines.push(`Metrics endpoint: ${breakdown.metricsUrl || `${MQA_METRICS_BASE}/${portalId}/metrics`}`);
 
   return lines.join("\n");
 }
@@ -594,6 +883,54 @@ export function registerQualityTools(server: McpServer): void {
           content: [{
             type: "text" as const,
             text: `Error retrieving quality metrics: ${errorMessage}`
+          }]
+        };
+      }
+    }
+  );
+
+  server.tool(
+    "ckan_get_mqa_quality_details",
+    "Get detailed MQA (Metadata Quality Assurance) quality reasons for a dataset on dati.gov.it. " +
+    "Returns dimension scores, non-max reasons, and raw MQA flags from data.europa.eu. " +
+    "Only works with dati.gov.it server.",
+    {
+      server_url: z.string().url().describe("Base URL of dati.gov.it (e.g., https://www.dati.gov.it/opendata)"),
+      dataset_id: z.string().describe("Dataset ID or name"),
+      response_format: ResponseFormatSchema.optional()
+    },
+    async ({ server_url, dataset_id, response_format }) => {
+      if (!isValidMqaServer(server_url)) {
+        return {
+          content: [{
+            type: "text" as const,
+            text: `Error: MQA quality details are only available for dati.gov.it datasets. ` +
+                  `Provided server: ${server_url}\n\n` +
+                  `The MQA (Metadata Quality Assurance) system is operated by data.europa.eu ` +
+                  `and only evaluates datasets from Italian open data portal.`
+          }]
+        };
+      }
+
+      try {
+        const details = await getMqaQualityDetails(server_url, dataset_id);
+        const format = response_format || ResponseFormat.MARKDOWN;
+        const output = format === ResponseFormat.JSON
+          ? JSON.stringify(details, null, 2)
+          : formatQualityDetailsMarkdown(details, dataset_id);
+
+        return {
+          content: [{
+            type: "text" as const,
+            text: output
+          }]
+        };
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return {
+          content: [{
+            type: "text" as const,
+            text: `Error retrieving quality details: ${errorMessage}`
           }]
         };
       }
