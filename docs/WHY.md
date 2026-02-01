@@ -88,7 +88,7 @@ facet_field: ["organization"]
 
 ### 🎯 Livello 4: query mirate (filtri multipli)
 
-**Tu chiedi**: "Dataset su appalti o contratti pubblicati negli ultimi 3 mesi su dati.gov.it"
+**Tu chiedi**: "Dati su appalti o contratti pubblicati negli ultimi 3 mesi su dati.gov.it"
 
 **Filtri combinati**:
 - Ricerca nel titolo: `title:appalti OR title:contratti`
