@@ -68,6 +68,18 @@ npm run dev:worker        # Test locally with Wrangler
 npm run deploy            # Deploy to Cloudflare Workers
 ```
 
+### GitHub CLI Notes
+
+When creating issues with multi-line bodies, avoid literal `\n` in `--body`. Use a here-doc
+or `-F -` / `--body-file -` to preserve newlines:
+
+```bash
+cat <<'EOF' | gh issue create --title "Title" --body-file - --repo ondata/ckan-mcp-server
+Line 1
+Line 2
+EOF
+```
+
 ### Build System
 
 The project uses **esbuild** for compilation and **vitest** for testing:

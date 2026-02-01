@@ -45,6 +45,18 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 **Single test**: `npm test -- tests/unit/http.test.ts` | `npm test -- -t "testName"`
 
+## GitHub CLI Notes
+
+When creating issues with multi-line bodies, avoid literal `\n` in `--body`. Use a here-doc
+or `-F -` to preserve newlines:
+
+```bash
+cat <<'EOF' | gh issue create --title "Title" --body-file - --repo ondata/ckan-mcp-server
+Line 1
+Line 2
+EOF
+```
+
 ## TypeScript Style
 
 Use strict typing, avoid `any` unless from CKAN payloads. Prefer explicit return types, `type` aliases, ESM imports with `.js` extensions. Keep `noUnusedLocals` and `noUnusedParameters` clean.
