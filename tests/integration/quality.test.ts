@@ -40,6 +40,22 @@ describe('ckan_get_mqa_quality integration', () => {
     '@graph': [
       {
         'dqv:isMeasurementOf': {
+          '@id': 'https://piveau.eu/ns/voc#reusabilityScoring'
+        },
+        'dqv:value': {
+          '@value': 65
+        }
+      },
+      {
+        'dqv:isMeasurementOf': {
+          '@id': 'https://piveau.eu/ns/voc#scoring'
+        },
+        'dqv:value': {
+          '@value': 385
+        }
+      },
+      {
+        'dqv:isMeasurementOf': {
           '@id': 'https://piveau.eu/ns/voc#knownLicence'
         },
         'dqv:value': {

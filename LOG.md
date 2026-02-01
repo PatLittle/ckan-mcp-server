@@ -2,6 +2,15 @@
 
 ## 2026-02-01
 
+### Release v0.4.35
+
+- Tests: adjust MQA metrics details fixture to include scoring entries
+- Files: `tests/integration/quality.test.ts`
+
+### Unreleased
+
+- None
+
 ### Release v0.4.34
 
 - MQA: add detailed quality reasons tool with metrics flag parsing
