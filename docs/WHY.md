@@ -240,6 +240,7 @@ Il sistema interroga le **metriche MQA** (Metadata Quality Assessment) di data.e
 
 **Dataset**: "ocds-appalti-ordinari-anno-2018" (ANAC)
 **Punteggio complessivo**: 395/405 (quasi perfetto!) (as of 1 febbraio 2026)
+Nota: su data.europa.eu l'id risulta "ocds-appalti-ordinari-2018" (senza "anno").
 
 **Dettaglio dimensioni**:
 - ✅ Accessibilità: 100/100
@@ -336,7 +337,7 @@ Vedi la differenza? 😎
 
 **Domanda**: "Cerca dataset su mobilità urbana pubblicati nell'ultimo mese"
 
-**Risultato**: Feed di novità, sempre aggiornato.
+**Risultato**: 5 dataset (as of 1 febbraio 2026). Feed di novità, sempre aggiornato.
 
 ---
 
