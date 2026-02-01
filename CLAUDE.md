@@ -118,6 +118,8 @@ tests/
 When making changes:
 1. Run tests before committing: `npm test`
 2. Ensure all tests pass
+
+**Test target rule**: Never use `demo.ckan.org` for tests. Always use `https://www.dati.gov.it/opendata`.
 3. Add tests for new features or bug fixes
 4. Follow existing test patterns in `tests/` directory
 

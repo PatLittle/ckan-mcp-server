@@ -2,6 +2,12 @@
 
 ## 2026-02-01
 
+### Release v0.4.31
+
+- Workers: decode compressed responses via DecompressionStream when available
+- Docs: avoid demo.ckan.org in tests (use https://www.dati.gov.it/opendata)
+- Files: `src/utils/http.ts`, `AGENTS.md`, `CLAUDE.md`, `package.json`, `package-lock.json`
+
 ### Release v0.4.30
 
 - Fix Workers build by avoiding static node:zlib import while keeping decompression in Node

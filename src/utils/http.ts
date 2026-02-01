@@ -63,6 +63,43 @@ function asBuffer(data: unknown): Buffer | undefined {
   return undefined;
 }
 
+function asArrayBuffer(data: unknown): ArrayBuffer | undefined {
+  if (!data) {
+    return undefined;
+  }
+  if (data instanceof ArrayBuffer) {
+    return data;
+  }
+  if (ArrayBuffer.isView(data)) {
+    return data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+  }
+  return undefined;
+}
+
+async function decodeArrayBufferText(
+  buffer: ArrayBuffer,
+  encoding?: string
+): Promise<string> {
+  if (encoding && typeof DecompressionStream !== "undefined") {
+    try {
+      const stream = new DecompressionStream(
+        encoding.includes("br")
+          ? "br"
+          : encoding.includes("deflate")
+          ? "deflate"
+          : "gzip"
+      );
+      const decompressed = await new Response(
+        new Blob([buffer]).stream().pipeThrough(stream)
+      ).arrayBuffer();
+      return new TextDecoder("utf-8").decode(decompressed).trim();
+    } catch {
+      // Fall back to plain text decoding.
+    }
+  }
+  return new TextDecoder("utf-8").decode(buffer).trim();
+}
+
 async function decodePossiblyCompressed(
   data: unknown,
   headers?: Record<string, unknown>
@@ -71,8 +108,18 @@ async function decodePossiblyCompressed(
     return data;
   }
 
-  if (typeof data === "object" && !asBuffer(data)) {
-    return data;
+  const arrayBuffer = asArrayBuffer(data);
+  if (arrayBuffer && typeof Buffer === "undefined") {
+    const encoding = getHeaderValue(headers, "content-encoding");
+    const text = await decodeArrayBufferText(arrayBuffer, encoding);
+    if (!text) {
+      return text;
+    }
+    try {
+      return JSON.parse(text);
+    } catch {
+      return text;
+    }
   }
 
   if (typeof data === "string") {
@@ -85,6 +132,9 @@ async function decodePossiblyCompressed(
 
   const buffer = asBuffer(data);
   if (!buffer) {
+    if (typeof data === "object") {
+      return data;
+    }
     return data;
   }
 
@@ -131,6 +181,10 @@ export async function makeCkanRequest<T>(
   action: string,
   params: Record<string, any> = {}
 ): Promise<T> {
+  const isNode =
+    typeof process !== "undefined" &&
+    !!(process as { versions?: { node?: string } }).versions?.node;
+
   let resolvedServerUrl = serverUrl;
   try {
     const hostname = new URL(serverUrl).hostname;
@@ -147,32 +201,66 @@ export async function makeCkanRequest<T>(
   const url = `${baseUrl}/api/3/action/${action}`;
 
   try {
-    const response = await axios.get(url, {
-      params,
-      timeout: 30000,
-      responseType: "arraybuffer",
-      headers: {
-        Accept: 'application/json, text/plain, */*',
-        'Accept-Language': 'en-US,en;q=0.9,it;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        Connection: 'keep-alive',
-        Referer: `${baseUrl}/`,
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Dest': 'document',
-        'Upgrade-Insecure-Requests': '1',
-        'Sec-CH-UA': '"Chromium";v="120", "Not?A_Brand";v="24", "Google Chrome";v="120"',
-        'Sec-CH-UA-Mobile': '?0',
-        'Sec-CH-UA-Platform': '"Linux"',
-        'User-Agent':
-          'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-      }
-    });
+    let decodedData: unknown;
 
-    const decodedData = await decodePossiblyCompressed(
-      response.data,
-      response.headers
-    );
+    if (isNode) {
+      const response = await axios.get(url, {
+        params,
+        timeout: 30000,
+        responseType: "arraybuffer",
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          'Accept-Language': 'en-US,en;q=0.9,it;q=0.8',
+          'Accept-Encoding': 'gzip, deflate, br',
+          Connection: 'keep-alive',
+          Referer: `${baseUrl}/`,
+          'Sec-Fetch-Site': 'same-origin',
+          'Sec-Fetch-Mode': 'navigate',
+          'Sec-Fetch-Dest': 'document',
+          'Upgrade-Insecure-Requests': '1',
+          'Sec-CH-UA': '"Chromium";v="120", "Not?A_Brand";v="24", "Google Chrome";v="120"',
+          'Sec-CH-UA-Mobile': '?0',
+          'Sec-CH-UA-Platform': '"Linux"',
+          'User-Agent':
+            'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        }
+      });
+
+      decodedData = await decodePossiblyCompressed(
+        response.data,
+        response.headers
+      );
+    } else {
+      const searchParams = new URLSearchParams();
+      for (const [key, value] of Object.entries(params)) {
+        if (value === undefined || value === null) {
+          continue;
+        }
+        searchParams.set(key, String(value));
+      }
+      const fetchUrl = searchParams.toString()
+        ? `${url}?${searchParams.toString()}`
+        : url;
+      const response = await fetch(fetchUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Accept-Language": "en-US,en;q=0.9,it;q=0.8"
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`CKAN API error (${response.status}): ${response.statusText}`);
+      }
+
+      const buffer = await response.arrayBuffer();
+      const headers: Record<string, string> = {};
+      response.headers.forEach((headerValue, headerKey) => {
+        headers[headerKey] = headerValue;
+      });
+      decodedData = await decodePossiblyCompressed(buffer, headers);
+    }
+
     if (decodedData && (decodedData as { success?: boolean }).success === true) {
       return (decodedData as { result: T }).result;
     } else {

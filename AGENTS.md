@@ -81,6 +81,10 @@ Use `ResponseFormat` for markdown vs JSON. `truncateText` for large payloads. Pr
 
 Vitest with `globals: true`. Place tests in `tests/unit` or `tests/integration`. AAA pattern, mock via fixtures in `tests/fixtures`, descriptive names.
 
+## Test Targets
+
+Never use `demo.ckan.org` for tests. Always use `https://www.dati.gov.it/opendata`.
+
 ## Configuration
 
 Node `>=18`. Worker build in `wrangler.toml`. Vitest coverage thresholds enforced.
