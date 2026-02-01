@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { brotliCompressSync, deflateSync, gzipSync } from 'node:zlib';
 import axios from 'axios';
 import { makeCkanRequest } from '../../src/utils/http';
 import successResponse from '../fixtures/responses/status-success.json';
@@ -112,6 +113,58 @@ describe('makeCkanRequest', () => {
     await expect(
       makeCkanRequest('http://demo.ckan.org', 'ckan_status_show')
     ).rejects.toThrow('CKAN API returned success=false');
+  });
+
+  it('decodes gzip-compressed buffer payload', async () => {
+    const payload = gzipSync(Buffer.from(JSON.stringify(successResponse), 'utf-8'));
+
+    vi.mocked(axios.get).mockResolvedValue({
+      data: payload,
+      headers: {}
+    });
+
+    const result = await makeCkanRequest(
+      'http://demo.ckan.org',
+      'ckan_status_show'
+    );
+
+    expect(result).toEqual(successResponse.result);
+  });
+
+  it('decodes brotli-compressed buffer payload', async () => {
+    const payload = brotliCompressSync(
+      Buffer.from(JSON.stringify(successResponse), 'utf-8')
+    );
+
+    vi.mocked(axios.get).mockResolvedValue({
+      data: payload,
+      headers: { 'content-encoding': 'br' }
+    });
+
+    const result = await makeCkanRequest(
+      'http://demo.ckan.org',
+      'ckan_status_show'
+    );
+
+    expect(result).toEqual(successResponse.result);
+  });
+
+  it('decodes deflate-compressed buffer payload', async () => {
+    const payload = deflateSync(
+      Buffer.from(JSON.stringify(successResponse), 'utf-8')
+    );
+
+    vi.mocked(axios.get).mockResolvedValue({
+      data: payload,
+      headers: { 'content-encoding': 'deflate' }
+    });
+
+    const result = await makeCkanRequest(
+      'http://demo.ckan.org',
+      'ckan_status_show'
+    );
+
+    expect(result).toEqual(successResponse.result);
   });
 
   it('throws CKAN API error with status and message from response', async () => {

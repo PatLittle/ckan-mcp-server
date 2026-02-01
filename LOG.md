@@ -1,5 +1,13 @@
 # LOG
 
+## 2026-02-01
+
+### Release v0.4.29
+
+- Decode compressed/binary CKAN responses (gzip/br/deflate) to fix DataStore calls on Messina portal
+- Tests: cover gzip, brotli, deflate payloads for HTTP client
+- Files: `src/utils/http.ts`, `tests/unit/http.test.ts`, `package.json`, `package-lock.json`
+
 ## 2026-01-31
 
 ### Release v0.4.27

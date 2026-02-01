@@ -3,7 +3,93 @@
  */
 
 import axios, { AxiosError } from "axios";
+import { brotliDecompressSync, gunzipSync, inflateSync } from "node:zlib";
 import { getPortalApiUrlForHostname } from "./portal-config.js";
+
+function getHeaderValue(
+  headers: Record<string, unknown> | undefined,
+  name: string
+): string | undefined {
+  if (!headers) {
+    return undefined;
+  }
+  const target = name.toLowerCase();
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === target) {
+      return Array.isArray(value) ? value.join(",") : String(value);
+    }
+  }
+  return undefined;
+}
+
+function asBuffer(data: unknown): Buffer | undefined {
+  if (!data) {
+    return undefined;
+  }
+  if (Buffer.isBuffer(data)) {
+    return data;
+  }
+  if (data instanceof ArrayBuffer) {
+    return Buffer.from(data);
+  }
+  if (ArrayBuffer.isView(data)) {
+    return Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+  }
+  return undefined;
+}
+
+function decodePossiblyCompressed(
+  data: unknown,
+  headers?: Record<string, unknown>
+): unknown {
+  if (data === null || data === undefined) {
+    return data;
+  }
+
+  if (typeof data === "object" && !asBuffer(data)) {
+    return data;
+  }
+
+  if (typeof data === "string") {
+    try {
+      return JSON.parse(data);
+    } catch {
+      return data;
+    }
+  }
+
+  const buffer = asBuffer(data);
+  if (!buffer) {
+    return data;
+  }
+
+  const encoding = getHeaderValue(headers, "content-encoding");
+  let decodedBuffer = buffer;
+
+  try {
+    if (encoding?.includes("gzip")) {
+      decodedBuffer = gunzipSync(buffer);
+    } else if (encoding?.includes("br")) {
+      decodedBuffer = brotliDecompressSync(buffer);
+    } else if (encoding?.includes("deflate")) {
+      decodedBuffer = inflateSync(buffer);
+    } else if (buffer.length >= 2 && buffer[0] === 0x1f && buffer[1] === 0x8b) {
+      decodedBuffer = gunzipSync(buffer);
+    }
+  } catch {
+    decodedBuffer = buffer;
+  }
+
+  const text = decodedBuffer.toString("utf-8").trim();
+  if (!text) {
+    return text;
+  }
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text;
+  }
+}
 
 /**
  * Make HTTP request to CKAN API
@@ -32,6 +118,7 @@ export async function makeCkanRequest<T>(
     const response = await axios.get(url, {
       params,
       timeout: 30000,
+      responseType: "arraybuffer",
       headers: {
         Accept: 'application/json, text/plain, */*',
         'Accept-Language': 'en-US,en;q=0.9,it;q=0.8',
@@ -50,10 +137,13 @@ export async function makeCkanRequest<T>(
       }
     });
 
-    if (response.data && response.data.success === true) {
-      return response.data.result as T;
+    const decodedData = decodePossiblyCompressed(response.data, response.headers);
+    if (decodedData && (decodedData as { success?: boolean }).success === true) {
+      return (decodedData as { result: T }).result;
     } else {
-      throw new Error(`CKAN API returned success=false: ${JSON.stringify(response.data)}`);
+      throw new Error(
+        `CKAN API returned success=false: ${JSON.stringify(decodedData)}`
+      );
     }
   } catch (error) {
     if (axios.isAxiosError(error)) {
