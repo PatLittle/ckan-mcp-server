@@ -29,6 +29,12 @@ Each entry in `portals` array supports:
   - Used for matching when users provide different URL variants
   - Example: `["https://dati.gov.it/opendata", "http://www.dati.gov.it/opendata"]`
 
+- **`api_path`** (string): Custom API endpoint path
+  - Default: `"/api/3/action"` (standard CKAN v3 API)
+  - Use this for portals with non-standard API paths
+  - Example: `"/api/action"` (for portals like data.gov.uk that omit the version number)
+  - **Added in v0.4.37** to support portals with custom API structures
+
 - **`dataset_view_url`** (string): Custom URL template for viewing datasets
   - Placeholders: `{id}`, `{name}`, `{server_url}`
   - Default if omitted: `"{server_url}/dataset/{name}"`
@@ -64,10 +70,22 @@ The `defaults` object provides fallback values when a portal is not found in the
 1. Add entry to `portals` array
 2. Set `id`, `name`, and `api_url` (required)
 3. Add `api_url_aliases` if the portal has multiple URL variants
-4. Customize `dataset_view_url` and/or `organization_view_url` only if non-standard
-5. Set `search.force_text_field: true` if the portal has query parser issues
+4. Set `api_path` if the portal uses non-standard API path (e.g., `/api/action/` instead of `/api/3/action/`)
+5. Customize `dataset_view_url` and/or `organization_view_url` only if non-standard
+6. Set `search.force_text_field: true` if the portal has query parser issues
 
-### Example
+**Note**: To determine the correct `api_path`, test the portal's API endpoints:
+```bash
+# Test standard CKAN v3 path (default)
+curl "https://portal.example.com/api/3/action/package_search?q=test&rows=1"
+
+# Test alternative path (if above fails with 404)
+curl "https://portal.example.com/api/action/package_search?q=test&rows=1"
+```
+
+### Examples
+
+#### Standard CKAN Portal
 
 ```json
 {
@@ -85,6 +103,26 @@ The `defaults` object provides fallback values when a portal is not found in the
 }
 ```
 
+#### Portal with Custom API Path (e.g., data.gov.uk)
+
+```json
+{
+  "id": "data-gov-uk",
+  "name": "data.gov.uk",
+  "api_url": "https://data.gov.uk",
+  "api_url_aliases": [
+    "https://www.data.gov.uk",
+    "http://data.gov.uk",
+    "http://www.data.gov.uk"
+  ],
+  "api_path": "/api/action",
+  "dataset_view_url": "https://data.gov.uk/dataset/{name}",
+  "organization_view_url": "https://data.gov.uk/publisher/{name}"
+}
+```
+
+**Note**: The `api_path` field was added in v0.4.37 to support portals like data.gov.uk that use `/api/action/` instead of the standard `/api/3/action/` endpoint.
+
 ### URL Placeholder Reference
 
 | Placeholder | Description | Available In |
@@ -93,8 +131,38 @@ The `defaults` object provides fallback values when a portal is not found in the
 | `{name}` | Dataset/organization slug | Both URLs |
 | `{server_url}` | Original API base URL | Both URLs |
 
+### Known Portal Configurations
+
+The following portals have been tested and verified (as of v0.4.37):
+
+#### ✅ Working with Standard API Path (`/api/3/action/`)
+
+| Portal | Country | CKAN Version | Notes |
+|--------|---------|--------------|-------|
+| dati.gov.it | 🇮🇹 Italy | 2.10.3 | Requires `force_text_field: true` |
+| catalog.data.gov | 🇺🇸 USA | 2.11.4 | Standard configuration |
+| open.canada.ca/data | 🇨🇦 Canada | 2.10.8 | Standard configuration |
+| data.gov.au | 🇦🇺 Australia | 2.11.4 | Standard configuration |
+| demo.ckan.org | 🌍 Demo | 2.11.3 | Standard configuration |
+
+#### ✅ Working with Custom API Path
+
+| Portal | Country | API Path | Notes |
+|--------|---------|----------|-------|
+| data.gov.uk | 🇬🇧 UK | `/api/action/` | `status_show` blocked, but search works |
+
+#### ❌ Known Issues
+
+| Portal | Country | Issue | Reason |
+|--------|---------|-------|--------|
+| data.europa.eu | 🇪🇺 EU | 404 | Not using standard CKAN API |
+| datos.gob.es | 🇪🇸 Spain | 403 | WAF blocks all API access |
+| data.gouv.fr | 🇫🇷 France | 404 | Not using CKAN |
+
 ### Related Code
 
 - **URL Generation**: `src/utils/url-generator.ts`
 - **Search Query Resolution**: `src/utils/search.ts`
 - **Portal Matching**: Uses exact match on `api_url` or any `api_url_aliases`
+- **API Path Resolution**: `src/utils/portal-config.ts` (`getPortalApiPath()`)
+- **HTTP Client**: `src/utils/http.ts` (uses dynamic API paths)
