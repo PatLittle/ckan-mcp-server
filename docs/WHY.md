@@ -16,9 +16,11 @@ Impari una volta, usi ovunque. 🌍
 
 ### 🎯 Livello 1: La Ricerca Semplice
 
-**Tu chiedi**: "Mostrami tutti i dataset sulla mobilità su dati.gov.it"
+**Tu chiedi**: "Ci sono dataset sulla mobilità su dati.gov.it?"
 
-**Risultato**: 1.758 dataset trovati!
+**Risultato**: Sì. 1.758 dataset (as of 1 febbraio 2026)!
+
+> Nota: i numeri variano nel tempo perché i cataloghi si aggiornano continuamente.
 
 Invece di navigare pagine e pagine del catalogo, ottieni tutto in un colpo. Facile!
 
@@ -36,7 +38,7 @@ Invece di navigare pagine e pagine del catalogo, ottieni tutto in un colpo. Faci
 title:bike OR title:bici*
 ```
 
-**Risultato**: 43 dataset mirati (invece di 1.758!).
+**Risultato**: 43 dataset mirati (invece di 1.758!) (as of 1 febbraio 2026).
 
 Il simbolo `*` è un jolly (wildcard) che trova anche "bicicletta", "biciclette", ecc. Vedi? Già molto più preciso!
 
@@ -61,12 +63,22 @@ Ottieni:
 
 **Il sistema interroga** il catalogo con filtri temporali e aggregazioni.
 
-**Risultato**: 40.072 dataset creati negli ultimi 6 mesi, con la classifica delle top 50 organizzazioni!
+**Query usata**:
+
+```
+q: *:*
+fq: metadata_created:[NOW-6MONTHS TO *]
+facet_field: ["organization"]
+```
+
+**Risultato**: 40.072 dataset creati negli ultimi 6 mesi, con la classifica delle top 50 organizzazioni (as of 1 febbraio 2026)!
 
 **Top 3**:
 1. Regione Toscana: 12.602 dataset
 2. Regione Veneto: 6.555 dataset
 3. Regione Lombardia: 3.304 dataset
+
+> Nota: i numeri cambiano nel tempo. Inoltre puoi usare `metadata_created` (creazione record), `modified` o `issued` (se presenti) e ottenere risultati diversi.
 
 Perfetto per capire chi è più attivo nell'open data, senza scaricare nulla!
 
@@ -80,15 +92,17 @@ Perfetto per capire chi è più attivo nell'open data, senza scaricare nulla!
 
 **Filtri combinati**:
 - Ricerca nel titolo: `title:appalti OR title:contratti`
-- Filtro temporale: ultimi 3 mesi
+- Filtro temporale: ultimi 3 mesi (es. `metadata_created:[NOW-3MONTHS TO *]`)
 
-**Risultato**: 127 dataset trovati!
+> Nota: se usi `modified` o `issued` al posto di `metadata_created`, il conteggio può cambiare.
 
-Esempio di dataset:
-- **Titolo**: "Gare e appalti"
-- **Organizzazione**: Comune di Bologna
-- **Ultimo aggiornamento**: 2026-01-29
-- **Formati**: CSV, JSON, Parquet, RDF...
+**Risultato**: 32 dataset trovati (as of 1 febbraio 2026).
+
+Esempio di dataset (uno dei risultati possibili):
+- **Titolo**: "COMUNE MONZA Appalti e affidamenti"
+- **Organizzazione**: Regione Lombardia
+- **Ultimo aggiornamento**: 2026-01-31
+- **Formati**: CSV, JSON, RDF, TSV, XML...
 
 Boom! 💥 Dati freschi sulla trasparenza degli appalti pubblici.
 
@@ -110,7 +124,7 @@ Ottieni tutti i dataset pubblicati da quell'organizzazione, con statistiche comp
 title:bike OR title:cycling
 ```
 
-**Risultato**: 366 dataset!
+**Risultato**: 366 dataset (as of 1 febbraio 2026)!
 
 **La parte magica**: impari a usare questo strumento una volta, poi funziona su **qualsiasi portale CKAN del mondo**. Italia, USA, UK, Canada, EU... stesso metodo, dati diversi!
 
@@ -126,7 +140,7 @@ Finora abbiamo visto solo **metadati** (titoli, descrizioni, organizzazioni). Ma
 
 **Server**: `dati.comune.messina.it`
 **Dataset**: "Ordinanze viabili"
-**Totale record**: 2.041 ordinanze
+**Totale record**: 2.041 ordinanze (as of 1 febbraio 2026)
 
 **Tu chiedi**: "Dammi solo le ordinanze di tipo 'divieto_transito'"
 
@@ -136,7 +150,7 @@ Finora abbiamo visto solo **metadati** (titoli, descrizioni, organizzazioni). Ma
 filters: { "tipo": "divieto_transito" }
 ```
 
-**Risultato**: 259 ordinanze (su 2.041 totali)!
+**Risultato**: 259 ordinanze (su 2.041 totali) (as of 1 febbraio 2026)!
 
 **Campi disponibili**:
 - `numero`: numero ordinanza
@@ -168,7 +182,7 @@ Hai visto i tool principali in azione. Ma ce ne sono altri che ti danno poteri e
 
 Il sistema usa un **algoritmo di ranking** che considera titolo, descrizione, tag e organizzazione per darti i risultati **più pertinenti** in cima.
 
-**Risultato**: 38 dataset ordinati per rilevanza!
+**Risultato**: 38 dataset ordinati per rilevanza (as of 1 febbraio 2026)!
 
 **Tool usato**: `ckan_find_relevant_datasets`
 
@@ -180,7 +194,7 @@ Il sistema usa un **algoritmo di ranking** che considera titolo, descrizione, ta
 
 Ricerca tra tutte le organizzazioni registrate sul portale.
 
-**Risultato**: 7 organizzazioni trovate, tra cui:
+**Risultato**: 7 organizzazioni trovate (as of 1 febbraio 2026), tra cui:
 - Ministero della Salute (51 dataset)
 - Agenzia di Tutela della Salute di Pavia (10 dataset)
 - Agenzia di Tutela della Salute di Brescia (10 dataset)
@@ -195,7 +209,7 @@ Ricerca tra tutte le organizzazioni registrate sul portale.
 
 Ottieni la classifica dei tag più popolari, perfetto per capire quali temi sono più coperti!
 
-**Top 3**:
+**Top 3** (as of 1 febbraio 2026):
 1. "eu": 8.032 dataset
 2. "N_A": 7.285 dataset
 3. "lamma": 6.443 dataset
@@ -210,7 +224,7 @@ Ottieni la classifica dei tag più popolari, perfetto per capire quali temi sono
 
 Vedi tutti i dataset di quel gruppo tematico.
 
-**Risultato**: 8.947 dataset sul tema Ambiente!
+**Risultato**: 8.947 dataset sul tema Ambiente (as of 1 febbraio 2026)!
 
 I gruppi sono raccolte curate di dataset su temi specifici (Ambiente, Salute, Economia, ecc.).
 
@@ -225,7 +239,7 @@ I gruppi sono raccolte curate di dataset su temi specifici (Ambiente, Salute, Ec
 Il sistema interroga le **metriche MQA** (Metadata Quality Assessment) di data.europa.eu:
 
 **Dataset**: "ocds-appalti-ordinari-anno-2018" (ANAC)
-**Punteggio complessivo**: 395/405 (quasi perfetto!)
+**Punteggio complessivo**: 395/405 (quasi perfetto!) (as of 1 febbraio 2026)
 
 **Dettaglio dimensioni**:
 - ✅ Accessibilità: 100/100
@@ -271,7 +285,7 @@ Per analisi complesse, quando i filtri semplici non bastano!
 
 **Tu chiedi**: "Il portale dati.gov.it è raggiungibile? Che versione usa?"
 
-Verifica lo stato del server:
+Verifica lo stato del server (as of 1 febbraio 2026):
 - ✅ Online
 - Versione CKAN: 2.10.3
 - Titolo: "Dati Gov IT"
@@ -302,7 +316,7 @@ Vedi la differenza? 😎
 
 **Domanda**: "Trova dataset su appalti aggiornati negli ultimi 3 mesi su dati.gov.it"
 
-**Risultato**: 127 dataset, tutti recenti e pronti per l'analisi!
+**Risultato**: 32 dataset, tutti recenti e pronti per l'analisi! (as of 1 febbraio 2026)
 
 ---
 
@@ -312,7 +326,7 @@ Vedi la differenza? 😎
 
 **Domanda**: "Analizza quali organizzazioni hanno creato più dataset negli ultimi 6 mesi"
 
-**Risultato**: Classifica pronta (Toscana: 12.602, Veneto: 6.555, Lombardia: 3.304), perfetta per il tuo paper!
+**Risultato**: Classifica pronta (Toscana: 12.602, Veneto: 6.555, Lombardia: 3.304) (as of 1 febbraio 2026), perfetta per il tuo paper!
 
 ---
 
@@ -368,7 +382,7 @@ A: Con qualsiasi client che supporta MCP (Model Context Protocol).
 A: Sì, il server è open source. Serve un client MCP compatibile.
 
 **Q: Posso contribuire?**
-A: Assolutamente! Questo è un progetto open source: [GitHub repo](https://github.com/yourusername/ckan-mcp-server)
+A: Assolutamente! Questo è un progetto open source: [GitHub repo](https://github.com/ondata/ckan-mcp-server)
 
 ---
 
@@ -376,7 +390,7 @@ A: Assolutamente! Questo è un progetto open source: [GitHub repo](https://githu
 
 Pronto a provare? Vai al [README.md](../README.md) per l'installazione!
 
-Hai domande o idee? Apri una [issue su GitHub](https://github.com/yourusername/ckan-mcp-server/issues)!
+Hai domande o idee? Apri una [issue su GitHub](https://github.com/ondata/ckan-mcp-server/issues)!
 
 ---
 
