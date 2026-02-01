@@ -1,12 +1,12 @@
 # Perché CKAN MCP Server? 🚀
 
-Hai mai provato a cercare dati aperti e ti sei perso tra interfacce web complicate? Clicca qui, filtra là, cambia pagina, torna indietro, rifiltra... frustrante, vero?
+Hai cercato dati aperti e ti sei perso tra interfacce web complicate? Clicca qui, filtra là, cambia pagina, torna indietro, rifiltra... scomodo, vero?
 
-**C'è un modo migliore**: chiedere quello che vuoi, in linguaggio naturale, e ottenere risposte precise. Come una conversazione con un amico che conosce perfettamente tutti i cataloghi dati aperti.
+**C'è un modo migliore**: chiedere quello che vuoi, in linguaggio naturale, e ottenere risposte. Come una conversazione con un amico che conosce i cataloghi dati aperti.
 
 ## Come funziona (in breve)
 
-Questo strumento si integra con **la tua AI preferita** e ti permette di interrogare **qualsiasi portale CKAN** (dati.gov.it, data.gov.uk, data.gov, ecc.) usando domande normali.
+Questo strumento si integra con **la tua AI preferita** e ti permette di interrogare **qualsiasi portale [CKAN](https://ckan.org/)** (dati.gov.it, data.gov.uk, data.gov, ecc.) usando domande normali.
 
 Impari una volta, usi ovunque. 🌍
 
@@ -16,7 +16,7 @@ Impari una volta, usi ovunque. 🌍
 
 ### 🎯 Livello 1: la ricerca semplice
 
-**Tu chiedi**: "Ci sono dataset sulla mobilità su dati.gov.it?"
+**Tu chiedi**: "Ci sono dataset sulla mobilità su dati.gov.it?" (NOTA: dati.gov.it è il portale nazionale italiano dei dati aperti, basato su CKAN)
 
 **Risultato**: Sì. 1.758 dataset (as of 1 febbraio 2026)!
 
@@ -32,7 +32,7 @@ Invece di navigare pagine e pagine del catalogo, ottieni tutto in un colpo. Faci
 
 **Tu chiedi**: "Voglio solo dataset che hanno 'bike' o 'bici' nel titolo"
 
-**La query usata**:
+**La query che verrà usata**:
 
 ```
 title:bike OR title:bici*
@@ -40,7 +40,7 @@ title:bike OR title:bici*
 
 **Risultato**: 43 dataset mirati (invece di 1.758!) (as of 1 febbraio 2026).
 
-Il simbolo `*` è un jolly (wildcard) che trova anche "bicicletta", "biciclette", ecc. Vedi? Già molto più preciso!
+Il simbolo `*` è un jolly (wildcard) che trova anche "bicicletta", "biciclette", ecc..
 
 **Bonus**: "Mostrami i dettagli del primo dataset"
 
@@ -80,7 +80,7 @@ facet_field: ["organization"]
 
 > Nota: i numeri cambiano nel tempo. Inoltre puoi usare `metadata_created` (creazione record), `modified` o `issued` (se presenti) e ottenere risultati diversi.
 
-Perfetto per capire chi è più attivo nell'open data, senza scaricare nulla!
+`issued` si riferisce alla data di pubblicazione del dataset, mentre le altre date (sul portale dati.gov.it) si riferiscono ai metadati.
 
 **Tool usato**: `ckan_package_search` (con faceting per aggregazioni)
 
@@ -154,7 +154,7 @@ Finora abbiamo visto solo **metadati** (titoli, descrizioni, organizzazioni). Ma
 
 **Tu chiedi**: "Fammi vedere le prime 5 righe"
 
-**Risultato**: confermi che esistono campi come `tipo`, `data_pubblicazione`, `numero`, `aree`, `sintesi`.
+**Risultato**: scopri che esistono campi come `tipo`, `data_pubblicazione`, `numero`, `aree`, `sintesi`.
 
 **Tool usato**: `ckan_datastore_search`
 
@@ -186,6 +186,33 @@ filters: { "tipo": "divieto_transito" }
 
 ---
 
+#### Esempio extra: query SQL avanzata (datastore)
+
+**Tu chiedi**: "Conta quante ordinanze per tipo ci sono nel dataset "Ordinanze viabili" di Messina su dati.comune.messina.it"
+
+SQL direttamente sul DataStore:
+
+```sql
+SELECT tipo, COUNT(*) as totale
+FROM "17301b8b-2a5b-425f-80b0-5b75bb1793e9"
+GROUP BY tipo
+ORDER BY totale DESC
+LIMIT 5
+```
+
+**Risultato**:
+1. divieto_sosta: 1.015
+2. lavori: 267
+3. divieto_transito: 259
+4. autorizzazione: 192
+5. divieto_sosta, divieto_transito: 186
+
+Per analisi complesse, quando i filtri semplici non bastano!
+
+**Tool usato**: `ckan_datastore_search_sql`
+
+---
+
 ## 🦸 Altri super poteri
 
 Hai visto i tool principali in azione. Ma ce ne sono altri che ti danno poteri extra!
@@ -202,6 +229,8 @@ Ricerca tra tutte le organizzazioni registrate sul portale.
 - Agenzia di Tutela della Salute di Brescia (10 dataset)
 
 **Tool usato**: `ckan_organization_search`
+
+> Nota: la ricerca puo essere sensibile alle maiuscole. Se non trovi risultati, prova in minuscolo (es. "anac").
 
 ---
 
@@ -249,11 +278,13 @@ I gruppi sono raccolte curate di dataset su temi specifici (Ambiente, Salute, Ec
 
 **Step 1 - Verifica che ANAC esista su dati.gov.it**
 
-**Tu chiedi**: "C'è ANAC tra le organizzazioni in dati.gov.it?"
+**Tu chiedi**: "C'è anac tra le organizzazioni in dati.gov.it?"
 
 **Risultato**: sì, organizzazione "ANAC - Autorità Nazionale Anticorruzione" trovata (69 dataset) (as of 1 febbraio 2026).
 
 **Tool usato**: `ckan_organization_search`
+
+> Nota: la ricerca puo essere sensibile alle maiuscole. E "ANAC" invece di "anac" potrebbe non dare risultati.
 
 ---
 
@@ -298,33 +329,6 @@ Perfetto per valutare se un dataset è ben documentato e utilizzabile!
 
 ---
 
-### 🔍 Query SQL avanzate (datastore)
-
-**Tu chiedi**: "Conta quante ordinanze per tipo ci sono nel dataset di Messina"
-
-SQL direttamente sul DataStore:
-
-```sql
-SELECT tipo, COUNT(*) as totale
-FROM "17301b8b-2a5b-425f-80b0-5b75bb1793e9"
-GROUP BY tipo
-ORDER BY totale DESC
-LIMIT 5
-```
-
-**Risultato**:
-1. divieto_sosta: 1.015
-2. lavori: 267
-3. divieto_transito: 259
-4. autorizzazione: 192
-5. divieto_sosta, divieto_transito: 186
-
-Per analisi complesse, quando i filtri semplici non bastano!
-
-**Tool usato**: `ckan_datastore_search_sql`
-
----
-
 ### 🌐 Verifica se un portale è online
 
 **Tu chiedi**: "Il portale dati.gov.it è raggiungibile? Che versione usa?"
@@ -338,17 +342,6 @@ Verifica lo stato del server (as of 1 febbraio 2026):
 Utile prima di lanciare query su portali che non conosci!
 
 **Tool usato**: `ckan_status_show`
-
----
-
-## 📊 Comparazione: web vs MCP server
-
-| Metodo | Steps | Tempo | Precisione |
-|--------|-------|-------|-----------|
-| **Interfaccia Web** | Clicca → cerca → filtra → pagina → rifiltra → pagina → esporta → analizza | 10-15 minuti | Dipende da te |
-| **MCP Server** | Chiedi → ottieni | 30 secondi | Sempre precisa |
-
-Vedi la differenza? 😎
 
 ---
 
@@ -378,9 +371,9 @@ Vedi la differenza? 😎
 
 **Scenario**: Vuoi monitorare nuovi dataset su mobilità urbana per creare una app.
 
-**Domanda**: "Cerca dataset su mobilità urbana pubblicati nell'ultimo mese"
+**Domanda**: "Cerca dati su mobilità urbana pubblicati negli ultimi 3 mesi su dati.gov.it"
 
-**Risultato**: 5 dataset (as of 1 febbraio 2026). Feed di novità, sempre aggiornato.
+**Risultato**: 1 dataset (as of 1 febbraio 2026). Esempio: "Aree elementari 2021" (Regione Toscana).
 
 ---
 
