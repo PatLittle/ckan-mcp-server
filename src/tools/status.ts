@@ -4,6 +4,7 @@
 
 import { z } from "zod";
 import { makeCkanRequest } from "../utils/http.js";
+import { addDemoFooter } from "../utils/formatting.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export function registerStatusTools(server: McpServer) {
@@ -49,7 +50,7 @@ Returns:
           `**Site URL**: ${result.site_url || 'N/A'}\n`;
 
         return {
-          content: [{ type: "text", text: markdown }],
+          content: [{ type: "text", text: addDemoFooter(markdown) }],
           structuredContent: result
         };
       } catch (error) {

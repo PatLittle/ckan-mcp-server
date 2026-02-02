@@ -24,71 +24,47 @@ MCP (Model Context Protocol) server for interacting with CKAN-based open data po
 
 ---
 
+> ## 🚀 **Recommended: Install Locally**
+>
+> ```bash
+> npm install -g @aborruso/ckan-mcp-server
+> ```
+>
+> **Benefits:**
+> - ✅ **No request limits** - unlimited queries
+> - ✅ **Faster** - no network latency
+> - ✅ **Always available** - no shared quota
+> - ✅ **Free** - open source, no costs
+>
+> The Cloudflare Workers endpoint is only for quick testing (100k requests/month shared globally across all users).
+
+---
+
 ## Installation
 
-### From npm (recommended)
+Install via npm:
 
 ```bash
 npm install -g @aborruso/ckan-mcp-server
 ```
 
-### From source
+That's it! The server will be available as `ckan-mcp-server` command or via `npx @aborruso/ckan-mcp-server`.
 
-```bash
-# Clone or copy the project
-cd ckan-mcp-server
+### Quick Testing with Workers (optional)
 
-# Install dependencies
-npm install
+For quick testing without installation, you can use the public Cloudflare Workers endpoint:
 
-# Build with esbuild (fast, ~4ms)
-npm run build
-
-# Run tests (212 tests)
-npm test
+```
+https://ckan-mcp-server.andy-pr.workers.dev/mcp
 ```
 
-## Usage Options
-
-### Option 1: Local Installation (stdio mode)
-
-**Best for**: Personal use with local MCP clients
-
-Install and run locally on your machine (see Installation section above).
-
-### Option 2: Self-Hosted HTTP Server
-
-**Best for**: Team use, custom infrastructure
-
-Deploy on your own server using Node.js:
-
-```bash
-TRANSPORT=http PORT=3000 npm start
-```
-
-### Option 3: Cloudflare Workers
-
-**Best for**: Global access, zero infrastructure, free hosting
-
-Use the public Workers endpoint (no local install required):
-
-```json
-{
-  "mcpServers": {
-    "ckan": {
-      "url": "https://ckan-mcp-server.andy-pr.workers.dev/mcp"
-    }
-  }
-}
-```
-
-**NOTE**: This service uses the Cloudflare Workers free tier which has a limit of 100,000 requests per month shared globally across all users. **ITS OPERATION IS THEREFORE NOT GUARANTEED**. With local installation, you will not have any problems.
-
-Want your own deployment? See [DEPLOYMENT.md](docs/DEPLOYMENT.md).
+**⚠️ Warning**: This is a demo instance with 100,000 requests/month shared globally across all users. Not recommended for production use. Install locally for reliable service.
 
 ## MCP Client Configuration
 
-This server works with any MCP-compatible client. Below are configuration examples for popular clients, organized by category. Using `@aborruso/ckan-mcp-server@latest` ensures you always get the latest version.
+This server works with any MCP-compatible client. Below are configuration examples for popular clients, organized by category.
+
+**Recommended**: Use `@aborruso/ckan-mcp-server@latest` to always get the latest version.
 
 ### CLI Tools
 
@@ -203,7 +179,9 @@ npm install -g @aborruso/ckan-mcp-server
 }
 ```
 
-**Using Cloudflare Workers (HTTP)**:
+[Detailed guide](https://github.com/ondata/ckan-mcp-server/discussions/4#discussion-9359684)
+
+**For testing only - Cloudflare Workers endpoint**:
 
 ```json
 {
@@ -215,9 +193,7 @@ npm install -g @aborruso/ckan-mcp-server
 }
 ```
 
-**NOTE**: The Cloudflare Workers endpoint uses the free tier (100,000 requests/month limit shared globally across all users).
-
-[Detailed guide](https://github.com/ondata/ckan-mcp-server/discussions/4#discussion-9359684)
+⚠️ **Warning**: Demo instance with 100,000 requests/month shared globally across all users. Not reliable for production use.
 
 ### Web Tools
 
@@ -229,7 +205,7 @@ See [ChatGPT web guide](docs/guide/chatgpt/chatgpt_web.md)
 
 See [Claude web guide](docs/guide/claude/claude_web.md)
 
-**Note**: Web tools use a public demo server with a 100,000 calls/month limit shared globally across all users. For reliable usage, install the server locally.
+⚠️ **Note**: Web tools use a demo server with 100,000 requests/month shared globally across all users. **For reliable usage, install the server locally** (see Installation section above).
 
 ## Available Tools
 

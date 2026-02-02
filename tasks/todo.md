@@ -1,124 +1,83 @@
-# Task: Aggiungere tool ckan_organization_search
+# Plan: Push Users to Local Node.js Installation
 
-## Obiettivo
+User wants to encourage everyone to install Node.js version locally instead of using Cloudflare Workers demo instance. Workers has 100k requests/month shared limit and may be discontinued.
 
-Implementare un nuovo tool MCP dedicato alla ricerca di organizzazioni per nome, con interfaccia più semplice rispetto a `package_search` con sintassi Solr.
+## Goal
 
-## Fasi
+Strongly recommend local npm installation as primary method. Position Cloudflare Workers as demo/testing only.
 
-### Fase 1: Implementazione tool
-- [ ] Aggiungere `ckan_organization_search` in `src/index.ts` (prima riga 872)
-- [ ] Schema input: `server_url`, `pattern`, `response_format`
-- [ ] Costruire query Solr automatica: `organization:*{pattern}*`
-- [ ] Chiamare `package_search` con `rows=0` e `facet.field=organization`
-- [ ] Output JSON: `{ count: N, organizations: [...] }`
-- [ ] Output markdown: tabella organizzazioni con conteggio dataset
+## Phase 1: README Restructure ✅ COMPLETED
 
-### Fase 2: Testing
-- [ ] Build: `npm run build`
-- [ ] Test con pattern "toscana"
-- [ ] Verificare output JSON
-- [ ] Verificare output markdown
+### Task 1.1: Add Banner at Top ✅
+- [x] Add prominent banner after Features section
+- [x] Format: "🚀 Recommended: Install locally"
+- [x] Show command: `npm install -g @aborruso/ckan-mcp-server`
+- [x] List benefits: No limits, Faster, Always available, Free
+- [x] Note Workers is for testing only
 
-### Fase 3: Documentazione
-- [ ] Aggiungere esempi in `EXAMPLES.md`
-- [ ] Aggiornare `LOG.md` con data e modifiche
+### Task 1.2: Reorganize Installation Section ✅
+- [x] Make "From npm" the ONLY method in Installation section
+- [x] Move "From source" to Development section
+- [x] Remove confusing "Usage Options" section
+- [x] Add simple note: "Workers endpoint available for quick testing"
 
-## Dettagli Implementazione
+### Task 1.3: Update MCP Client Configuration ✅
+- [x] Make npx/global install the primary examples
+- [x] Move Workers HTTP config to end as "Testing only" option
+- [x] Add warning about 100k/month shared limit in each Workers example
 
-**Posizione**: Dopo tool `ckan_organization_show` (circa riga 700) e prima di `ckan_datastore_search`
+## Phase 2: Worker Response Footer (MOST VISIBLE) ✅ COMPLETED
 
-**Firma tool**:
-```typescript
-server.registerTool(
-  "ckan_organization_search",
-  {
-    title: "Search CKAN Organizations by Name",
-    description: "...",
-    inputSchema: z.object({
-      server_url: z.string().url(),
-      pattern: z.string().min(1).describe("Search pattern (wildcards added automatically)"),
-      response_format: ResponseFormatSchema
-    }).strict(),
-    annotations: {
-      readOnlyHint: true,
-      destructiveHint: false,
-      idempotentHint: true,
-      openWorldHint: true
-    }
-  },
-  async (params) => { ... }
-)
-```
+### Task 2.1: Add Footer to All Tool Responses on Workers ✅
+- [x] Detect if running on Workers (via `typeof WorkerGlobalScope !== 'undefined'`)
+- [x] Add footer to markdown responses when on Workers:
+  ```
+  ---
+  ℹ️ Demo instance (100k requests/month shared globally). For unlimited access: https://github.com/ondata/ckan-mcp-server#installation
+  ```
+- [x] Add utility functions `isWorkers()` and `addDemoFooter()` in `src/utils/formatting.ts`
+- [x] Apply to all tool handlers (package, organization, datastore, status, tag, group, quality)
 
-**Logica**:
-1. Query Solr: `organization:*${params.pattern}*`
-2. API call: `package_search` con `rows=0`, `facet.field=["organization"]`, `facet.limit=500`
-3. Parsing facets per estrarre organizzazioni matchate
-4. Output formattato
+### Task 2.2: Add HTTP Headers to Worker (for debugging) ✅
+- [x] Edit `src/worker.ts`
+- [x] Add `X-Service-Notice: Demo instance - 100k requests/month shared globally`
+- [x] Add `X-Recommendation: https://github.com/ondata/ckan-mcp-server#installation`
+- [x] Add these headers to /mcp endpoint responses
 
-## Note
+## Phase 3: Server Info Tool
 
-- Molto più semplice di costruire query manualmente
-- Risparmio token: restituisce solo organizzazioni, non dataset
-- Pattern matching automatico (l'utente non deve ricordare wildcard Solr)
+### Task 3.1: Create `server_info` Tool
+- [ ] Create new tool in `src/tools/status.ts` or separate file
+- [ ] Return instance type (demo/local)
+- [ ] Show installation command
+- [ ] List benefits of local install
+- [ ] Only show for Workers instances (detect via env)
+
+### Task 3.2: Update Documentation
+- [ ] Add `server_info` to Available Tools section in README
+- [ ] Document in CLAUDE.md
+- [ ] Add test in `tests/integration/status.test.ts`
+
+## Phase 4: Review and Test
+
+### Task 4.1: Check All References
+- [ ] Search README for all Workers URL mentions
+- [ ] Add warning notes to each mention
+- [ ] Verify tone is helpful but firm
+
+### Task 4.2: Test Worker Headers
+- [ ] Deploy to Cloudflare
+- [ ] Verify headers present in responses
+- [ ] Test with curl
+
+## Questions
+
+- Should `server_info` be a separate tool or added to `ckan_status_show`?
+- Include "deprecation warning" language or just "recommended local"?
+- Add header to health endpoint too?
 
 ---
 
-## Review
-
-### Modifiche Completate
-
-**File modificati**:
-1. `src/index.ts` - Aggiunto tool `ckan_organization_search` (righe 680-785)
-2. `EXAMPLES.md` - Aggiunti esempi di utilizzo (righe 54-73)
-3. `LOG.md` - Documentata la nuova feature
-
-**Implementazione**:
-- Tool registrato tra `ckan_organization_show` e `ckan_datastore_search`
-- Schema input: `server_url`, `pattern`, `response_format`
-- Query Solr automatica: `organization:*{pattern}*`
-- Utilizza `package_search` con `rows=0` per efficienza massima
-- Output JSON: `{ count, total_datasets, organizations: [...] }`
-- Output markdown: tabella formattata con org e conteggio dataset
-
-**Testing**:
-- Build completato con successo (47ms, esbuild)
-- Test manuale con pattern "toscana": ✅
-  - 2 organizzazioni trovate
-  - 11.000 dataset totali
-  - Output JSON corretto
-  - Zero dataset scaricati (solo facet)
-
-**Vantaggi**:
-- **UX migliorata**: API semplice vs sintassi Solr
-- **Efficienza**: filtraggio lato server, zero dataset trasmessi
-- **Token saving**: solo metadata organizzazioni
-- **Performance**: wildcard automatici, no costruzione query manuale
-
-### Prossimi Passi
-
-Per utilizzare il tool:
-1. Riavviare Claude Code per caricare il nuovo server MCP
-2. Il tool sarà disponibile come `ckan_organization_search`
-
-### Esempio Output
-
-```json
-{
-  "count": 2,
-  "total_datasets": 11000,
-  "organizations": [
-    {
-      "name": "regione-toscana",
-      "display_name": "Regione Toscana",
-      "dataset_count": 10988
-    },
-    {
-      "name": "autorita-idrica-toscana",
-      "display_name": "Autorità Idrica Toscana",
-      "dataset_count": 12
-    }
-  ]
-}
-```
+**Priority**: Phase 1 (README) is most important
+**Effort**: ~2-3 hours total
+**Breaking Changes**: None (only docs + new tool)

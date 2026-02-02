@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
-import { truncateText } from "../utils/formatting.js";
+import { truncateText, addDemoFooter } from "../utils/formatting.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 export function registerDatastoreTools(server: McpServer) {
@@ -130,7 +130,7 @@ Examples:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -232,7 +232,7 @@ Examples:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {

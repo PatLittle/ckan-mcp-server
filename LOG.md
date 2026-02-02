@@ -2,6 +2,35 @@
 
 ## 2026-02-02
 
+### Release v0.4.39 - Local Install Promotion
+
+**Objective**: Strongly encourage users to install locally instead of using shared Cloudflare Workers demo.
+
+**Changes**:
+- Added prominent banner in README recommending local npm installation
+- Simplified Installation section - npm as primary method
+- Repositioned Workers endpoint as "testing only" option
+- Added visible footer to all tool responses when running on Workers
+- Added HTTP headers to Workers responses (X-Service-Notice, X-Recommendation)
+- Updated all MCP client configuration examples to prioritize local install
+- Added note in DEPLOYMENT.md clarifying it's internal team documentation
+
+**Footer shown to Workers users**:
+```
+ℹ️ Demo instance (100k requests/month shared globally). For unlimited access: https://github.com/ondata/ckan-mcp-server#installation
+```
+
+**Files modified**:
+- README.md (banner, installation section, client config examples)
+- src/utils/formatting.ts (isWorkers(), addDemoFooter() functions)
+- src/tools/*.ts (7 tool files - applied footer to markdown responses)
+- src/worker.ts (HTTP headers for debugging)
+- docs/DEPLOYMENT.md (internal documentation note)
+
+**No breaking changes** - All existing functionality preserved
+
+---
+
 ### Website - Fix flag emoji rendering on Linux/desktop
 
 - **Fix**: Replace emoji flags with SVG images from Twemoji CDN

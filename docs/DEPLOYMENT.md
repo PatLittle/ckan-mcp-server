@@ -1,5 +1,7 @@
 # Cloudflare Workers Deployment Guide
 
+> **Note**: This document contains internal development team notes for deploying to Cloudflare Workers. Most users should install the server locally via npm instead (see main README).
+
 Complete step-by-step guide to deploy CKAN MCP Server on Cloudflare Workers.
 
 ## Prerequisites

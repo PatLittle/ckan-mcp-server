@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
-import { truncateText, formatDate } from "../utils/formatting.js";
+import { truncateText, formatDate, addDemoFooter } from "../utils/formatting.js";
 import { getDatasetViewUrl } from "../utils/url-generator.js";
 import { resolveSearchQuery } from "../utils/search.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -560,7 +560,7 @@ ${params.fq ? `**Filter**: ${params.fq}\n` : ''}
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -738,7 +738,7 @@ Examples:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -822,7 +822,7 @@ Examples:
 
         const markdown = formatPackageShowMarkdown(result, params.server_url);
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {

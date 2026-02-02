@@ -42,3 +42,27 @@ export function formatBytes(bytes: number | undefined): string {
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 }
+
+/**
+ * Detect if running on Cloudflare Workers
+ */
+export function isWorkers(): boolean {
+  // Check for Workers-specific globals
+  try {
+    return typeof WorkerGlobalScope !== 'undefined';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Add demo instance footer to markdown responses when running on Workers
+ */
+export function addDemoFooter(text: string): string {
+  if (!isWorkers()) {
+    return text;
+  }
+
+  const footer = '\n\n---\nℹ️ Demo instance (100k requests/month shared globally). For unlimited access: https://github.com/ondata/ckan-mcp-server#installation';
+  return text + footer;
+}

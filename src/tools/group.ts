@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
-import { truncateText, formatDate } from "../utils/formatting.js";
+import { truncateText, formatDate, addDemoFooter } from "../utils/formatting.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 type GroupFacetItem = {
@@ -156,7 +156,7 @@ Returns:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -242,7 +242,7 @@ Returns:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -338,7 +338,7 @@ Returns:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {

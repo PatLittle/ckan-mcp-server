@@ -5,7 +5,7 @@
 import { z } from "zod";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
-import { truncateText, formatDate } from "../utils/formatting.js";
+import { truncateText, formatDate, addDemoFooter } from "../utils/formatting.js";
 import { getOrganizationViewUrl } from "../utils/url-generator.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
@@ -142,7 +142,7 @@ Returns:
             }
 
             return {
-              content: [{ type: "text", text: truncateText(markdown) }]
+              content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
             };
           }
           throw error;
@@ -179,7 +179,7 @@ Returns:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -279,7 +279,7 @@ Returns:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {
@@ -386,7 +386,7 @@ Examples:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(markdown) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
         };
       } catch (error) {
         return {

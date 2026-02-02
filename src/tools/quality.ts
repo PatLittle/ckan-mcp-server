@@ -6,6 +6,7 @@ import { z } from "zod";
 import axios from "axios";
 import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
+import { addDemoFooter } from "../utils/formatting.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
 const MQA_API_BASE = "https://data.europa.eu/api/mqa/cache/datasets";
@@ -874,7 +875,7 @@ export function registerQualityTools(server: McpServer): void {
         return {
           content: [{
             type: "text" as const,
-            text: output
+            text: addDemoFooter(output)
           }]
         };
       } catch (error) {
@@ -922,7 +923,7 @@ export function registerQualityTools(server: McpServer): void {
         return {
           content: [{
             type: "text" as const,
-            text: output
+            text: addDemoFooter(output)
           }]
         };
       } catch (error) {

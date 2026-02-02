@@ -198,7 +198,7 @@ export default {
     <pre><code>curl ${url.origin}/health</code></pre>
 
     <div class="footer">
-      Version 0.4.38 • Running on Cloudflare Workers • <a href="https://github.com/ondata/ckan-mcp-server/blob/main/LICENSE.txt" target="_blank">MIT License</a>
+      Version 0.4.39 • Running on Cloudflare Workers • <a href="https://github.com/ondata/ckan-mcp-server/blob/main/LICENSE.txt" target="_blank">MIT License</a>
     </div>
   </div>
 </body>
@@ -214,7 +214,7 @@ export default {
     if (request.method === 'GET' && url.pathname === '/health') {
       return new Response(JSON.stringify({
         status: 'ok',
-        version: '0.4.38',
+        version: '0.4.39',
         tools: 15,
         resources: 7,
         prompts: 5,
@@ -232,9 +232,11 @@ export default {
       try {
         const response = await transport.handleRequest(request);
 
-        // Add CORS headers
+        // Add CORS headers and service notices
         const headers = new Headers(response.headers);
         headers.set('Access-Control-Allow-Origin', '*');
+        headers.set('X-Service-Notice', 'Demo instance - 100k requests/month shared globally');
+        headers.set('X-Recommendation', 'https://github.com/ondata/ckan-mcp-server#installation');
 
         return new Response(response.body, {
           status: response.status,
