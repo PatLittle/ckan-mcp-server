@@ -478,10 +478,6 @@
 - **Fix**: Normalize natural-language queries before search
 - **Gemini**: Added API key input and NL→Solr query call
 
-### Web GUI landing + Pages deploy
-- **Web GUI**: Added static landing page in `web-gui/public`
-- **CI**: Added GitHub Pages workflow for auto deploy on HTML changes
-
 ## 2026-01-10
 
 ### Version 0.4.7 - Portal search parser override
