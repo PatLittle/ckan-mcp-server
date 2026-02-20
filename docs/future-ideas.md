@@ -209,11 +209,13 @@ Source: https://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/
 
 MCP Apps enables tools to return interactive UI components (sandboxed iframes) rendered directly in the conversation. Tools add `_meta.ui.resourceUri` to responses; the UI can call back tool methods via JSON-RPC.
 
-Supported clients: Claude, ChatGPT, Goose, VS Code Insiders.
+Supported clients (claimed): Claude, ChatGPT, Goose, VS Code Insiders.
 
-### DataStore Table Viewer (High Priority)
+> **⚠️ Status (2026-02-20)**: Tested on Claude.ai — MCP Apps is NOT yet active in public clients. The `_meta.ui` field is silently ignored. Server-side implementation (v0.4.40) is complete and correct but effectively dormant. Retest when Anthropic announces public availability.
 
-`ckan_datastore_search` returns an interactive sortable/filterable/paginated table instead of plain text. The UI calls the tool with updated parameters on sort/filter/page change — no re-query needed from the user.
+### DataStore Table Viewer (High Priority) — ~~IMPLEMENTED~~ v0.4.40, awaiting client support
+
+`ckan_datastore_search` returns an interactive sortable/filterable/paginated table instead of plain text. Server-side done; blocked on client support.
 
 **Target users**: data analysts, journalists, PA staff exploring tabular open data.
 
