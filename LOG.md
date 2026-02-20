@@ -1,7 +1,19 @@
 # LOG
 
+## 2026-02-20 (v0.4.41)
+
+- Fix MCP Apps implementation (was broken in v0.4.40):
+  - `_meta.ui.resourceUri` moved to tool DEFINITION (not result) using `registerAppTool` from `@modelcontextprotocol/ext-apps/server`
+  - URI scheme changed from `ckan-ui://` to `ui://ckan/` (required by spec)
+  - Resource now uses `RESOURCE_MIME_TYPE` from ext-apps (required by clients)
+  - Resource registered via `registerAppResource` instead of `server.registerResource`
+  - Data passed to UI via `structuredContent` in tool result; HTML listener updated to handle `ui/toolResult` JSON-RPC format
+  - Table viewer extended to `ckan_package_search`: datasets flattened to title/organization/formats/num_resources/modified/license columns
+  - Added `@modelcontextprotocol/ext-apps` as runtime dependency
+
 ## 2026-02-20
 
+- **⚠️ MCP Apps not yet supported by Claude.ai/Claude Desktop clients**: `_meta.ui.resourceUri` is silently ignored — the interactive table viewer never appears. The server-side implementation is correct and ready; waiting for client support. Feature is effectively dormant until Anthropic ships MCP Apps in public clients.
 - Add DataStore Table Viewer (MCP Apps interactive UI)
   - New MCP resource `ckan-ui://datastore-table` serves self-contained HTML table viewer
   - `ckan_datastore_search` now returns `_meta.ui.resourceUri` + `_meta.ui.data` for MCP Apps clients

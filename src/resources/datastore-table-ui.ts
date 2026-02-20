@@ -2,14 +2,16 @@
  * DataStore Table Viewer UI Resource
  *
  * Serves the interactive table HTML for MCP Apps clients.
- * URI: ckan-ui://datastore-table
+ * URI: ui://ckan/datastore-table
  *
  * The HTML content is inlined so it works in both Node.js and
  * Cloudflare Workers (no fs module available in Workers).
  */
 
-import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { registerAppResource, RESOURCE_MIME_TYPE } from "@modelcontextprotocol/ext-apps/server";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+
+export const DATASTORE_TABLE_RESOURCE_URI = "ui://ckan/datastore-table";
 
 // Inline HTML - kept in sync with src/ui/datastore-table.html
 const DATASTORE_TABLE_HTML = `<!DOCTYPE html>
@@ -299,10 +301,14 @@ const DATASTORE_TABLE_HTML = `<!DOCTYPE html>
     window.addEventListener('message',function(event){
       var msg=event.data;
       if(!msg||typeof msg!=='object') return;
-      var data=
-        (msg._meta&&msg._meta.ui&&msg._meta.ui.data)||
-        (msg.toolResult&&msg.toolResult._meta&&msg.toolResult._meta.ui&&msg.toolResult._meta.ui.data)||
-        (msg.result&&msg.result._meta&&msg.result._meta.ui&&msg.result._meta.ui.data)||
+      // ext-apps: ui/toolResult notification
+      var data=null;
+      if(msg.method==='ui/toolResult'&&msg.params&&msg.params.result){
+        data=msg.params.result.structuredContent||null;
+      }
+      // fallback: direct structuredContent or legacy _meta
+      if(!data) data=
+        msg.structuredContent||
         (msg.fields&&msg.records?msg:null);
       if(data&&(data.fields||data.records)) initTable(data);
     });
@@ -312,20 +318,19 @@ const DATASTORE_TABLE_HTML = `<!DOCTYPE html>
 </html>`;
 
 export function registerDatastoreTableUiResource(server: McpServer) {
-  server.registerResource(
-    "ckan-datastore-table-ui",
-    new ResourceTemplate("ckan-ui://datastore-table", { list: undefined }),
+  registerAppResource(
+    server,
+    "CKAN DataStore Table Viewer",
+    DATASTORE_TABLE_RESOURCE_URI,
     {
-      title: "CKAN DataStore Table Viewer",
-      description: "Interactive sortable/filterable/paginated table for DataStore query results (MCP Apps UI)",
-      mimeType: "text/html",
+      description: "Interactive sortable/filterable/paginated table for CKAN data results (MCP Apps UI)",
     },
     async (uri) => {
       return {
         contents: [
           {
             uri: uri.href,
-            mimeType: "text/html",
+            mimeType: RESOURCE_MIME_TYPE,
             text: DATASTORE_TABLE_HTML,
           },
         ],

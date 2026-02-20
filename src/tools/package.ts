@@ -9,6 +9,8 @@ import { truncateText, formatDate, addDemoFooter } from "../utils/formatting.js"
 import { getDatasetViewUrl } from "../utils/url-generator.js";
 import { resolveSearchQuery } from "../utils/search.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { registerAppTool } from "@modelcontextprotocol/ext-apps/server";
+import { DATASTORE_TABLE_RESOURCE_URI } from "../resources/datastore-table-ui.js";
 
 type RelevanceWeights = {
   title: number;
@@ -279,7 +281,8 @@ export function registerPackageTools(server: McpServer) {
   /**
    * Search for datasets on a CKAN server
    */
-  server.registerTool(
+  registerAppTool(
+    server,
     "ckan_package_search",
     {
       title: "Search CKAN Datasets",
@@ -446,7 +449,8 @@ Examples:
         destructiveHint: false,
         idempotentHint: true,
         openWorldHint: true
-      }
+      },
+      _meta: { ui: { resourceUri: DATASTORE_TABLE_RESOURCE_URI } }
     },
     async (params) => {
       try {
@@ -559,8 +563,31 @@ ${params.fq ? `**Filter**: ${params.fq}\n` : ''}
           markdown += `\n---\n**More results available**: Use \`start: ${nextStart}\` to see next page.\n`;
         }
 
+        const tableFields = [
+          { id: "title", type: "text" },
+          { id: "organization", type: "text" },
+          { id: "formats", type: "text" },
+          { id: "num_resources", type: "int" },
+          { id: "metadata_modified", type: "timestamp" },
+          { id: "license_id", type: "text" }
+        ];
+        const tableRecords = (result.results || []).map((pkg: any) => ({
+          title: pkg.title || pkg.name,
+          organization: pkg.organization?.title || "-",
+          formats: [...new Set((pkg.resources || []).map((r: any) => r.format).filter(Boolean))].join(", ") || "-",
+          num_resources: pkg.num_resources || 0,
+          metadata_modified: pkg.metadata_modified || "-",
+          license_id: pkg.license_id || "-"
+        }));
+
         return {
-          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }],
+          structuredContent: {
+            server_url: params.server_url,
+            total: result.count || 0,
+            fields: tableFields,
+            records: tableRecords
+          }
         };
       } catch (error) {
         return {

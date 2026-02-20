@@ -7,12 +7,15 @@ import { ResponseFormat, ResponseFormatSchema } from "../types.js";
 import { makeCkanRequest } from "../utils/http.js";
 import { truncateText, addDemoFooter } from "../utils/formatting.js";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { registerAppTool } from "@modelcontextprotocol/ext-apps/server";
+import { DATASTORE_TABLE_RESOURCE_URI } from "../resources/datastore-table-ui.js";
 
 export function registerDatastoreTools(server: McpServer) {
   /**
    * DataStore search
    */
-  server.registerTool(
+  registerAppTool(
+    server,
     "ckan_datastore_search",
     {
       title: "Search CKAN DataStore",
@@ -56,7 +59,8 @@ Examples:
         destructiveHint: false,
         idempotentHint: true,
         openWorldHint: false
-      }
+      },
+      _meta: { ui: { resourceUri: DATASTORE_TABLE_RESOURCE_URI } }
     },
     async (params) => {
       try {
@@ -131,17 +135,12 @@ Examples:
 
         return {
           content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }],
-          _meta: {
-            ui: {
-              resourceUri: "ckan-ui://datastore-table",
-              data: {
-                server_url: params.server_url,
-                resource_id: params.resource_id,
-                total: result.total || 0,
-                fields: result.fields || [],
-                records: result.records || []
-              }
-            }
+          structuredContent: {
+            server_url: params.server_url,
+            resource_id: params.resource_id,
+            total: result.total || 0,
+            fields: result.fields || [],
+            records: result.records || []
           }
         };
       } catch (error) {
