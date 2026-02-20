@@ -130,7 +130,19 @@ Examples:
         }
 
         return {
-          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }]
+          content: [{ type: "text", text: truncateText(addDemoFooter(markdown)) }],
+          _meta: {
+            ui: {
+              resourceUri: "ckan-ui://datastore-table",
+              data: {
+                server_url: params.server_url,
+                resource_id: params.resource_id,
+                total: result.total || 0,
+                fields: result.fields || [],
+                records: result.records || []
+              }
+            }
+          }
         };
       } catch (error) {
         return {

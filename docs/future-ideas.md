@@ -203,9 +203,45 @@ export default {
 
 ---
 
+## MCP Apps Interactive UI (2026-02-20)
+
+Source: https://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/
+
+MCP Apps enables tools to return interactive UI components (sandboxed iframes) rendered directly in the conversation. Tools add `_meta.ui.resourceUri` to responses; the UI can call back tool methods via JSON-RPC.
+
+Supported clients: Claude, ChatGPT, Goose, VS Code Insiders.
+
+### DataStore Table Viewer (High Priority)
+
+`ckan_datastore_search` returns an interactive sortable/filterable/paginated table instead of plain text. The UI calls the tool with updated parameters on sort/filter/page change — no re-query needed from the user.
+
+**Target users**: data analysts, journalists, PA staff exploring tabular open data.
+
+### Auto Chart from DataStore (Medium Priority)
+
+After a DataStore query, auto-detect numeric + categorical/temporal columns and offer a bar/line/pie chart. Users choose axes without exporting to Excel.
+
+**Target users**: analysts wanting quick visual insight on open data series.
+
+### Search Results Card View (Medium Priority)
+
+`ckan_package_search` results as interactive cards (name, org, format badges, date) with live client-side filters for format/org/year. Click a card to expand details via `ckan_package_show`.
+
+**Target users**: researchers browsing many results to narrow down by format or publisher.
+
+### MQA Quality Scorecard (Low Priority, dati.gov.it only)
+
+Visual gauge/radar chart for the 4 MQA dimensions (accessibility, reusability, interoperability, findability) with a clickable list of failing flags.
+
+**Target users**: PA open data managers checking and improving their dataset quality.
+
+---
+
 ## Backlog Priority
 
 1. ~~**High**: MCP Resource Templates~~ ✅ Done (v0.3.0)
 2. ~~**Medium**: `ckan_tag_list`, `ckan_group_list/show`~~ ✅ Done (v0.4.3)
-3. **Medium**: Portal presets, audit tool, insight tools
-4. **Low**: Caching, authentication, config options
+3. **High**: DataStore Table Viewer (MCP Apps interactive UI)
+4. **Medium**: Portal presets, audit tool, insight tools
+5. **Medium**: Auto Chart from DataStore, Search Results Card View
+6. **Low**: Caching, authentication, config options, MQA Scorecard UI

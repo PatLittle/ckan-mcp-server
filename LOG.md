@@ -1,5 +1,31 @@
 # LOG
 
+## 2026-02-20
+
+- Add DataStore Table Viewer (MCP Apps interactive UI)
+  - New MCP resource `ckan-ui://datastore-table` serves self-contained HTML table viewer
+  - `ckan_datastore_search` now returns `_meta.ui.resourceUri` + `_meta.ui.data` for MCP Apps clients
+  - Interactive features: sortable columns (numeric/date/string type-aware), text filter, pagination (10/25/50/100 rows/page)
+  - Works in Node.js and Cloudflare Workers (HTML inlined in TypeScript module, no fs dependency)
+  - Non-breaking: text/markdown output unchanged; non-MCP-Apps clients ignore `_meta`
+  - Files: `src/ui/datastore-table.html`, `src/resources/datastore-table-ui.ts`, updated `src/tools/datastore.ts` and `src/resources/index.ts`
+  - Tests: 228 passing (7 new)
+  - Ideas: `docs/future-ideas.md` updated with MCP Apps section
+  - OpenSpec: `add-datastore-table-viewer` created and implemented
+
+## 2026-02-09
+
+### Feature Request - One-click Installation
+
+- Created issue #11 for one-click MCP server installation support
+- Proposes `claude://install-mcp-server` protocol integration
+- Based on Anthropic Desktop Extensions announcement
+- **Updated proposal**: Two one-click installers to serve different use cases
+  - 🚀 **"Try it now"** → HTTP Worker (instant, zero install, shared quota)
+  - 💪 **"Install locally"** → npx (unlimited, requires Node.js)
+- User journey: try demo first, install locally when ready for production
+- Files: GitHub issue #11 + comment
+
 ## 2026-02-02
 
 ### Release v0.4.39 - Local Install Promotion
