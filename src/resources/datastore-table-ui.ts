@@ -301,13 +301,14 @@ const DATASTORE_TABLE_HTML = `<!DOCTYPE html>
     window.addEventListener('message',function(event){
       var msg=event.data;
       if(!msg||typeof msg!=='object') return;
-      // ext-apps: ui/toolResult notification
+      // ext-apps spec: ui/notifications/tool-result with structuredContent
       var data=null;
-      if(msg.method==='ui/toolResult'&&msg.params&&msg.params.result){
-        data=msg.params.result.structuredContent||null;
+      if(msg.method==='ui/notifications/tool-result'&&msg.params&&msg.params.structuredContent){
+        data=msg.params.structuredContent;
       }
-      // fallback: direct structuredContent or legacy _meta
+      // fallbacks for older/alternative shapes
       if(!data) data=
+        (msg.method==='ui/toolResult'&&msg.params&&msg.params.result&&msg.params.result.structuredContent)||
         msg.structuredContent||
         (msg.fields&&msg.records?msg:null);
       if(data&&(data.fields||data.records)) initTable(data);

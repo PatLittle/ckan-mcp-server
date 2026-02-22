@@ -354,12 +354,15 @@
     }
 
     // ── MCP Apps message listener ────────────────────────────────────
-    // Handles multiple message shapes that MCP Apps clients may use.
+    // Spec: host sends JSON-RPC notification ui/notifications/tool-result
+    // with structuredContent containing { fields, records, total }.
+    // Fallbacks handle older/alternative message shapes.
 
     window.addEventListener('message', function (event) {
       var msg = event.data;
       if (!msg || typeof msg !== 'object') return;
       var data =
+        (msg.method === 'ui/notifications/tool-result' && msg.params && msg.params.structuredContent) ||
         (msg._meta && msg._meta.ui && msg._meta.ui.data) ||
         (msg.toolResult && msg.toolResult._meta && msg.toolResult._meta.ui && msg.toolResult._meta.ui.data) ||
         (msg.result && msg.result._meta && msg.result._meta.ui && msg.result._meta.ui.data) ||

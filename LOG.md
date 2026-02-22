@@ -1,6 +1,11 @@
 # LOG
 
-## 2026-02-22
+## 2026-02-22 (v0.4.43)
+
+- Fix MCP Apps message listener to use correct JSON-RPC method per ext-apps spec:
+  - `ui/notifications/tool-result` (was `ui/toolResult`) with data in `msg.params.structuredContent`
+  - Fixed in both `src/ui/datastore-table.html` and inlined HTML in `src/resources/datastore-table-ui.ts`
+  - Kept fallbacks for older/alternative message shapes
 
 - Audit and improve Zod parameter descriptions across all tools for "code mode" SDK compatibility:
   - `ckan_organization_list/show/search`: added `.describe()` on all parameters (previously none)
