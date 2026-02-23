@@ -298,15 +298,32 @@ const DATASTORE_TABLE_HTML = `<!DOCTYPE html>
       currentPage=1; sortCol=null; sortDir=1; filterText='';
       render();
     }
+    // SEP-1865 handshake: host won't send tool-result until initialized
+    var _pending={};var _nid=1;
+    function mcpReq(method,params){
+      var id=_nid++;
+      return new Promise(function(res,rej){
+        _pending[id]={resolve:res,reject:rej};
+        window.parent.postMessage({jsonrpc:'2.0',id:id,method:method,params:params||{}},'*');
+      });
+    }
+    function mcpNot(method,params){
+      window.parent.postMessage({jsonrpc:'2.0',method:method,params:params||{}},'*');
+    }
+    mcpReq('ui/initialize',{protocolVersion:'2026-01-26',appCapabilities:{},appInfo:{name:'ckan-datastore-table',version:'1.0.0'}})
+      .then(function(){mcpNot('ui/notifications/initialized');});
     window.addEventListener('message',function(event){
       var msg=event.data;
       if(!msg||typeof msg!=='object') return;
-      // ext-apps spec: ui/notifications/tool-result with structuredContent
+      if(msg.id!==undefined&&_pending[msg.id]){
+        var r=_pending[msg.id];delete _pending[msg.id];
+        if(msg.error)r.reject(new Error(JSON.stringify(msg.error)));else r.resolve(msg.result);
+        return;
+      }
       var data=null;
       if(msg.method==='ui/notifications/tool-result'&&msg.params&&msg.params.structuredContent){
         data=msg.params.structuredContent;
       }
-      // fallbacks for older/alternative shapes
       if(!data) data=
         (msg.method==='ui/toolResult'&&msg.params&&msg.params.result&&msg.params.result.structuredContent)||
         msg.structuredContent||

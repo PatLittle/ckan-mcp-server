@@ -353,14 +353,52 @@
       render();
     }
 
+    // ── MCP Apps handshake (SEP-1865) ────────────────────────────────
+    // Host will NOT send tool-result until widget completes:
+    //   1. widget → host: ui/initialize (request)
+    //   2. host  → widget: response
+    //   3. widget → host: ui/notifications/initialized (notification)
+
+    var _pendingRequests = {};
+    var _nextId = 1;
+
+    function mcpRequest(method, params) {
+      var id = _nextId++;
+      return new Promise(function (resolve, reject) {
+        _pendingRequests[id] = { resolve: resolve, reject: reject };
+        window.parent.postMessage({ jsonrpc: '2.0', id: id, method: method, params: params || {} }, '*');
+      });
+    }
+
+    function mcpNotify(method, params) {
+      window.parent.postMessage({ jsonrpc: '2.0', method: method, params: params || {} }, '*');
+    }
+
+    mcpRequest('ui/initialize', {
+      protocolVersion: '2026-01-26',
+      appCapabilities: {},
+      appInfo: { name: 'ckan-datastore-table', version: '1.0.0' }
+    }).then(function () {
+      mcpNotify('ui/notifications/initialized');
+    });
+
     // ── MCP Apps message listener ────────────────────────────────────
-    // Spec: host sends JSON-RPC notification ui/notifications/tool-result
-    // with structuredContent containing { fields, records, total }.
-    // Fallbacks handle older/alternative message shapes.
+    // Handles JSON-RPC responses (handshake) and tool-result notifications.
 
     window.addEventListener('message', function (event) {
       var msg = event.data;
       if (!msg || typeof msg !== 'object') return;
+
+      // JSON-RPC response (for handshake)
+      if (msg.id !== undefined && _pendingRequests[msg.id]) {
+        var req = _pendingRequests[msg.id];
+        delete _pendingRequests[msg.id];
+        if (msg.error) req.reject(new Error(JSON.stringify(msg.error)));
+        else req.resolve(msg.result);
+        return;
+      }
+
+      // tool-result notification
       var data =
         (msg.method === 'ui/notifications/tool-result' && msg.params && msg.params.structuredContent) ||
         (msg._meta && msg._meta.ui && msg._meta.ui.data) ||

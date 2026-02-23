@@ -1,5 +1,14 @@
 # LOG
 
+## 2026-02-23 (v0.4.44)
+
+- Fix MCP Apps: implement mandatory SEP-1865 handshake in DataStore Table Viewer HTML
+  - Widget now sends `ui/initialize` request to host on load
+  - After host response, sends `ui/notifications/initialized`
+  - Without this handshake, compliant hosts (MCPJam, Goose, etc.) never send `tool-result`
+  - Fixed in both `src/ui/datastore-table.html` and inlined HTML in `src/resources/datastore-table-ui.ts`
+  - Confirmed working in MCPJam (interactive table renders correctly)
+
 ## 2026-02-22 (v0.4.43)
 
 - Fix MCP Apps message listener to use correct JSON-RPC method per ext-apps spec:
