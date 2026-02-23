@@ -573,6 +573,7 @@ ${params.fq ? `**Filter**: ${params.fq}\n` : ''}
         ];
         const tableRecords = (result.results || []).map((pkg: any) => ({
           title: pkg.title || pkg.name,
+          url: getDatasetViewUrl(params.server_url, pkg),
           organization: pkg.organization?.title || "-",
           formats: [...new Set((pkg.resources || []).map((r: any) => r.format).filter(Boolean))].join(", ") || "-",
           num_resources: pkg.num_resources || 0,

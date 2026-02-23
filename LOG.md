@@ -1,5 +1,10 @@
 # LOG
 
+## 2026-02-23 (v0.4.47)
+
+- DataStore Table UI: add hyperlinks on dataset titles, open in new tab
+- DataStore Table UI: increase spacing (body padding, header/controls gap, th/td padding)
+
 ## 2026-02-23 (v0.4.46)
 
 - Fix Workers: use `Accept-Encoding: identity` in fetch branch to avoid gzip decompression failures

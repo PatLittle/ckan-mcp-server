@@ -11,13 +11,13 @@
       font-size: 13px;
       background: #fff;
       color: #1a1a1a;
-      padding: 12px;
+      padding: 16px;
     }
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 14px;
       flex-wrap: wrap;
     }
     .title { font-size: 14px; font-weight: 600; color: #333; }
@@ -30,8 +30,8 @@
     }
     .controls {
       display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 10px;
+      margin-bottom: 12px;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -62,7 +62,7 @@
     table { width: 100%; border-collapse: collapse; font-size: 12px; }
     th {
       background: #f5f5f5;
-      padding: 7px 10px;
+      padding: 10px 14px;
       text-align: left;
       font-weight: 600;
       white-space: nowrap;
@@ -75,7 +75,7 @@
     th.sort-asc::after { content: ' \25B2'; font-size: 9px; color: #0066cc; }
     th.sort-desc::after { content: ' \25BC'; font-size: 9px; color: #0066cc; }
     td {
-      padding: 5px 10px;
+      padding: 8px 14px;
       border-bottom: 1px solid #f0f0f0;
       vertical-align: top;
       max-width: 220px;
@@ -86,6 +86,8 @@
     tr:hover td { background: #fafafa; }
     tr:last-child td { border-bottom: none; }
     td.null-val { color: #bbb; font-style: italic; }
+    td a { color: #0066cc; text-decoration: none; }
+    td a:hover { text-decoration: underline; }
     .pagination {
       display: flex;
       align-items: center;
@@ -269,7 +271,11 @@
             } else {
               var s = String(v);
               var display = s.length > 80 ? s.slice(0, 77) + '\u2026' : s;
-              html += '<td title="' + escHtml(s) + '">' + escHtml(display) + '</td>';
+              if (f.id === 'title' && rec.url) {
+                html += '<td title="' + escHtml(s) + '"><a href="' + escHtml(rec.url) + '" target="_blank" rel="noopener noreferrer">' + escHtml(display) + '</a></td>';
+              } else {
+                html += '<td title="' + escHtml(s) + '">' + escHtml(display) + '</td>';
+              }
             }
           });
           html += '</tr>';
