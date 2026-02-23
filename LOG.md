@@ -1,5 +1,12 @@
 # LOG
 
+## 2026-02-23 (v0.4.46)
+
+- Fix Workers: use `Accept-Encoding: identity` in fetch branch to avoid gzip decompression failures
+  - Cloudflare Workers `DecompressionStream` was silently failing on gzip responses
+  - `Accept-Encoding: identity` prevents server from sending compressed responses
+  - Eliminates the binary garbage output on all CKAN API calls from Workers
+
 ## 2026-02-23 (v0.4.45)
 
 - Fix MCP Apps: add timeout fallback to SEP-1865 handshake
