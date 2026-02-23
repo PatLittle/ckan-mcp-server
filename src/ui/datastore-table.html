@@ -374,13 +374,22 @@
       window.parent.postMessage({ jsonrpc: '2.0', method: method, params: params || {} }, '*');
     }
 
+    var _initialized = false;
+    function sendInitialized() {
+      if (_initialized) return;
+      _initialized = true;
+      mcpNotify('ui/notifications/initialized');
+    }
+
+    // Timeout fallback: if host doesn't respond to ui/initialize within 1.5s,
+    // send initialized anyway (handles hosts with partial spec support)
+    setTimeout(sendInitialized, 1500);
+
     mcpRequest('ui/initialize', {
       protocolVersion: '2026-01-26',
       appCapabilities: {},
       appInfo: { name: 'ckan-datastore-table', version: '1.0.0' }
-    }).then(function () {
-      mcpNotify('ui/notifications/initialized');
-    });
+    }).then(sendInitialized).catch(sendInitialized);
 
     // ── MCP Apps message listener ────────────────────────────────────
     // Handles JSON-RPC responses (handshake) and tool-result notifications.

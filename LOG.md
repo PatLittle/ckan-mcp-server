@@ -1,5 +1,12 @@
 # LOG
 
+## 2026-02-23 (v0.4.45)
+
+- Fix MCP Apps: add timeout fallback to SEP-1865 handshake
+  - If host doesn't respond to `ui/initialize` within 1.5s, send `initialized` anyway
+  - Handles hosts with partial spec support without blocking the widget forever
+  - Fixed in both `src/ui/datastore-table.html` and inlined HTML in `src/resources/datastore-table-ui.ts`
+
 ## 2026-02-23 (v0.4.44)
 
 - Fix MCP Apps: implement mandatory SEP-1865 handshake in DataStore Table Viewer HTML

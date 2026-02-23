@@ -310,8 +310,11 @@ const DATASTORE_TABLE_HTML = `<!DOCTYPE html>
     function mcpNot(method,params){
       window.parent.postMessage({jsonrpc:'2.0',method:method,params:params||{}},'*');
     }
+    var _inited=false;
+    function sendInited(){if(_inited)return;_inited=true;mcpNot('ui/notifications/initialized');}
+    setTimeout(sendInited,1500);
     mcpReq('ui/initialize',{protocolVersion:'2026-01-26',appCapabilities:{},appInfo:{name:'ckan-datastore-table',version:'1.0.0'}})
-      .then(function(){mcpNot('ui/notifications/initialized');});
+      .then(sendInited).catch(sendInited);
     window.addEventListener('message',function(event){
       var msg=event.data;
       if(!msg||typeof msg!=='object') return;
