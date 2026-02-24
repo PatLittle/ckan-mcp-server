@@ -1,3 +1,4 @@
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&repo=./)
 [![npm version](https://img.shields.io/npm/v/@aborruso/ckan-mcp-server)](https://www.npmjs.com/package/@aborruso/ckan-mcp-server)
 [![GitHub](https://img.shields.io/badge/github-ondata%2Fckan--mcp--server-blue?logo=github)](https://github.com/ondata/ckan-mcp-server)
 [![deepwiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ondata/ckan-mcp-server)
