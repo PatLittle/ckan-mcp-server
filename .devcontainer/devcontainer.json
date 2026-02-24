@@ -1,0 +1,30 @@
+{
+  "name": "ckan-mcp-server (Codespaces)",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+
+  "postCreateCommand": "npm install -g @aborruso/ckan-mcp-server && chmod +x .devcontainer/start-mcp.sh",
+
+  "remoteEnv": {
+    "TRANSPORT": "http",
+    "PORT": "3000"
+  },
+
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "CKAN MCP Server",
+      "visibility": "public",
+      "onAutoForward": "openBrowser"
+    }
+  },
+
+  "postStartCommand": "bash .devcontainer/start-mcp.sh",
+
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  }
+}
