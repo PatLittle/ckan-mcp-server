@@ -6,7 +6,7 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
 
-  "postCreateCommand": "npm run build && npm start && chmod +x .devcontainer/start-mcp.sh",
+  "postCreateCommand": "npm run build",
 
   "remoteEnv": {
     "TRANSPORT": "http",
@@ -21,5 +21,5 @@
     }
   },
 
-  "postStartCommand": "bash .devcontainer/start-mcp.sh"
+  "postStartCommand": "npm start"
 }
